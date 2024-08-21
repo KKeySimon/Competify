@@ -1,25 +1,9 @@
-import { useState, useEffect } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
+import { Link } from "react-router-dom";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState("");
-
-  useEffect(() => {
-    fetch("http://localhost:3000/api")
-      .then((response) => {
-        if (response.status >= 400) {
-          throw new Error("server error");
-        }
-        return response.json();
-      })
-      .then((response) => {
-        console.log(response);
-        setCount(response["fruits"][0]);
-      });
-  }, []);
-
   return (
     <>
       <div>
@@ -32,12 +16,10 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
+        <Link to="/sign-up">SignUp page</Link>
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
