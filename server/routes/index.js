@@ -4,9 +4,28 @@ const pool = require("../model/pool");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 
-router.get("/", (req, res) => {
-  console.log("index get request received!");
-  res.json({ fruits: ["apple", "orange", "banana"] });
+router.get("/", (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return res.status(200).json({ message: "Authorized" });
+  } else {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+});
+
+router.post("/login", function (req, res, next) {
+  passport.authenticate("local", function (err, user, info) {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).json({ message: info.message });
+    }
+
+    req.login(user, (err) => {
+      if (err) return next(err);
+      return res.status(200).json({ message: "Login successful!" });
+    });
+  })(req, res, next);
 });
 
 router.post("/sign-up", async (req, res, next) => {
@@ -26,21 +45,6 @@ router.post("/sign-up", async (req, res, next) => {
     }
     return next(err);
   }
-});
-
-router.post("/login", function (req, res, next) {
-  // https://github.com/jwalton/passport-api-docs?tab=readme-ov-file#reqloginuser-callback
-  passport.authenticate("local", function (err, user, info) {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.status(401).json({ message: info.message });
-    }
-
-    req.login(user, next);
-    return res.status(200).json({ message: "Login successful!" });
-  })(req, res, next);
 });
 
 module.exports = router;
