@@ -11,6 +11,8 @@ function SignUp() {
 
     await fetch("http://localhost:3000/api/login", {
       method: "POST",
+      // This must be included to send/receive session cookies to the browser (learned it the hard way...)
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },

@@ -2,8 +2,20 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import { Link } from "react-router-dom";
 import "./App.css";
+import { useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    fetch("http://localhost:3000/api", { credentials: "include" })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new Error("server error");
+        }
+        return response.json();
+      })
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
+  }, []);
   return (
     <>
       <div>
