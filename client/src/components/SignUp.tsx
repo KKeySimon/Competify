@@ -3,7 +3,7 @@ function SignUp() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  async function handleLogin(e: React.FormEvent) {
+  async function handleSignUp(e: React.FormEvent) {
     // prevents default behavior from occuring, which in form's case is redirecting to action URL in form
     e.preventDefault();
 
@@ -17,6 +17,11 @@ function SignUp() {
       body: JSON.stringify(userData),
     })
       .then((response) => {
+        if (response.status === 409) {
+          return response.json().then((data) => {
+            throw new Error(data.message);
+          });
+        }
         if (!response.ok) {
           throw new Error("Something went wrong!");
         }
@@ -33,7 +38,7 @@ function SignUp() {
   return (
     <div>
       <h1>This is the SignUp page!</h1>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleSignUp}>
         <input
           type="text"
           placeholder="Username"
