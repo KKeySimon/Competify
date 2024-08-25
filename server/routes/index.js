@@ -4,10 +4,13 @@ const pool = require("../model/pool");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 
+// Simple Authorization Check
 router.get("/", (req, res, next) => {
   if (req.isAuthenticated()) {
+    console.log("Authorized");
     return res.status(200).json({ message: "Authorized" });
   } else {
+    console.log("Non-Authorized");
     return res.status(401).json({ message: "Unauthorized" });
   }
 });
@@ -45,6 +48,15 @@ router.post("/sign-up", async (req, res, next) => {
     }
     return next(err);
   }
+});
+
+router.get("/logout", (req, res, next) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.send("logout complete!");
+  });
 });
 
 module.exports = router;

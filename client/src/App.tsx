@@ -1,43 +1,23 @@
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import { Link } from "react-router-dom";
 import "./App.css";
-import { useEffect } from "react";
-
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
+import Navbar from "./components/Navbar";
+import HomePage from "./components/HomePage";
+import Login from "./components/Login";
+import SignUp from "./components/Login";
+import { Routes, Route } from "react-router-dom";
 function App() {
-  useEffect(() => {
-    fetch("http://localhost:3000/api", { credentials: "include" })
-      .then((response) => {
-        if (response.status >= 400) {
-          throw new Error("server error");
-        }
-        return response.json();
-      })
-      .then((response) => console.log(response))
-      .catch((error) => console.log(error));
-  }, []);
   return (
     <>
+      <Navbar />
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/sign-up" element={<SignUp />} />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-        <Link to="/sign-up">SignUp page</Link>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }
-
 export default App;

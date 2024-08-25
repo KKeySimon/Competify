@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-function SignUp() {
+function Login() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -57,4 +57,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default Login;

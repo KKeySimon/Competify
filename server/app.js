@@ -28,7 +28,12 @@ app.use(
     resave: false,
     // Recommended to be set to False for login to reduce server storage
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 },
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24,
+      sameSite: "strict",
+      /* This strict was added from here. Look here for potential source of bugs if needed
+        https://stackoverflow.com/questions/61999068/how-do-i-use-cookies-in-express-session-connect-sid-will-soon-be-rejected */
+    },
   })
 );
 
