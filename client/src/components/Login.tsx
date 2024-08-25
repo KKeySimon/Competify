@@ -1,7 +1,18 @@
-import React, { useState } from "react";
-function Login() {
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { LoginProps } from "../../types";
+
+function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
 
   async function handleLogin(e: React.FormEvent) {
     // prevents default behavior from occuring, which in form's case is redirecting to action URL in form
@@ -25,6 +36,7 @@ function Login() {
         return response.json();
       })
       .then((data) => {
+        setIsLoggedIn(true);
         console.log(data);
         console.log(data.message);
       })
