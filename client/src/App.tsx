@@ -18,7 +18,7 @@ function App() {
     fetch("http://localhost:3000/api", { credentials: "include" })
       .then((response) => {
         if (response.status >= 400) {
-          throw new Error("server error");
+          throw new Error("Unauthorized");
         } else if (response.status === 200) {
           setIsLoggedIn(true);
         } else {

@@ -1,0 +1,19 @@
+.navbar {
+  width: 100vw;
+  height: 5vh;
+  display: flex;
+  flex: 0 0 100vw;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+}
+
+.navbar,
+a {
+  border-radius: 20px;
+  padding: 1vh;
+  cursor: pointer;
+}
+a:hover {
+  background-color: #e7e7e7;
+}

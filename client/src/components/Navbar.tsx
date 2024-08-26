@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
 import { LoginProps } from "../../types";
+import styles from "./Navbar.module.css";
 
 function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
-  async function handleLogout(e: React.MouseEvent<HTMLButtonElement>) {
-    e.preventDefault();
-
+  async function handleLogout() {
     await fetch("http://localhost:3000/api/logout", {
       credentials: "include",
     })
@@ -20,11 +19,10 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   }
 
   return (
-    <div>
+    <div className={styles.navbar}>
+      <Link to="/">Home</Link>
       {isLoggedIn ? (
-        <li>
-          <button onClick={handleLogout}>Logout</button>
-        </li>
+        <a onClick={handleLogout}>Logout</a>
       ) : (
         <Link to="/login">Login</Link>
       )}

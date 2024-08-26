@@ -1,0 +1,33 @@
+.background {
+  /* Height is set to 95vh as navbar should take up 5vh */
+  height: 95vh;
+  width: 100vw;
+  background-color: cornflowerblue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  display: flex;
+  text-align: left;
+  flex-direction: column;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1em;
+  width: clamp(45ch, 50%, 50ch);
+}
+.logo {
+  text-align: center;
+  flex: 1 1 0%;
+}
+.forms {
+  flex: 5 1 0%;
+}
+.loginSignupBtn {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+.login {
+  margin-bottom: 1rem;
+}
