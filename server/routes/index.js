@@ -34,7 +34,8 @@ router.post("/login", function (req, res, next) {
 router.post("/sign-up", async (req, res, next) => {
   try {
     console.log(req.body);
-    const hashedPassword = bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    console.log(hashedPassword);
     await pool.query("INSERT INTO users (username, password) VALUES ($1, $2)", [
       req.body.username,
       hashedPassword,
@@ -44,7 +45,7 @@ router.post("/sign-up", async (req, res, next) => {
     // 23505 occurs when unique constraint is violated which in this case is the unique username constraint
     if (err.code === "23505") {
       // 409 means request can't be completed due to current state
-      return res.status(409).json({ message: "Username already exists." });
+      return res.status(409).json({ message: "Username already exists" });
     }
     return next(err);
   }

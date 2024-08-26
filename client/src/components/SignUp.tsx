@@ -1,13 +1,77 @@
-import React, { useState } from "react";
-function SignUp() {
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { Alert, Form, Button } from "react-bootstrap";
+
+interface SignUpError {
+  username: string;
+  password: string;
+  confirmPassword: string;
+  apiError: string;
+}
+
+interface SignUpProps {
+  isLoggedIn: boolean;
+}
+
+function SignUp({ isLoggedIn }: SignUpProps) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [errors, setErrors] = useState<SignUpError>({
+    username: "",
+    password: "",
+    confirmPassword: "",
+    apiError: "",
+  });
+  const [success, setSuccess] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
+
+  const validateForm = () => {
+    const newErrors: SignUpError = {
+      username: "",
+      password: "",
+      confirmPassword: "",
+      apiError: "",
+    };
+    if (!username) {
+      newErrors.username = "Username is required";
+    }
+    if (!password) {
+      newErrors.password = "Password is required";
+    }
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+    return newErrors;
+  };
 
   async function handleSignUp(e: React.FormEvent) {
     // prevents default behavior from occuring, which in form's case is redirecting to action URL in form
     e.preventDefault();
 
+    const formErrors = validateForm();
+
+    if (Object.values(formErrors).some((error) => error !== "")) {
+      setErrors(formErrors);
+      return;
+    }
+    setErrors({
+      username: "",
+      password: "",
+      confirmPassword: "",
+      apiError: "",
+    });
     const userData = { username, password };
+    console.log(password);
 
     await fetch("http://localhost:3000/api/sign-up", {
       method: "POST",
@@ -29,32 +93,83 @@ function SignUp() {
       })
       .then((data) => {
         console.log(data.message);
+        setSuccess(true);
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
       })
       .catch((error) => {
+        setErrors({ ...errors, apiError: error.message });
         console.log(error.message);
       });
   }
 
   return (
     <div>
-      <h1>This is the SignUp page!</h1>
-      <form onSubmit={handleSignUp}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Sign Up</button>
-      </form>
+      <h1>Sign Up</h1>
+      {errors.apiError && <Alert variant="danger">{errors.apiError}</Alert>}
+      {success && (
+        <Alert variant="success">
+          Successful signup! Redirecting to login page...
+        </Alert>
+      )}
+      <Form onSubmit={handleSignUp}>
+        <Form.Group className="mb-3" controlId="formBasicUsername">
+          <Form.Label>Username</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => {
+              setErrors({ ...errors, username: "" });
+              setUsername(e.target.value);
+            }}
+            isInvalid={!!errors.username}
+          />
+          <Form.Control.Feedback type="invalid">
+            {errors.username}
+          </Form.Control.Feedback>
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => {
+              setErrors({ ...errors, password: "" });
+              setPassword(e.target.value);
+            }}
+            isInvalid={!!errors.password}
+          />
+          <Form.Control.Feedback type="invalid">
+            {errors.password}
+          </Form.Control.Feedback>
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
+          <Form.Label>Confirm Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => {
+              setErrors({ ...errors, confirmPassword: "" });
+              setConfirmPassword(e.target.value);
+            }}
+            isInvalid={!!errors.confirmPassword}
+          />
+          <Form.Control.Feedback type="invalid">
+            {errors.confirmPassword}
+          </Form.Control.Feedback>
+        </Form.Group>
+
+        <Button variant="primary" type="submit">
+          Sign Up
+        </Button>
+        <Link to="/login">Already have an account? Log in</Link>
+      </Form>
     </div>
   );
 }

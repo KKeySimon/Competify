@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LoginProps } from "../../types";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -45,7 +45,7 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
 
     const formErrors = validateForm();
 
-    if (formErrors.username !== "" || formErrors.password !== "") {
+    if (Object.values(formErrors).some((error) => error !== "")) {
       setErrors(formErrors);
       return;
     }
@@ -82,7 +82,7 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
 
   return (
     <div>
-      <h1>This is the Login page!</h1>
+      <h1>Login</h1>
       {errors.apiError && <Alert variant="danger">{errors.apiError}</Alert>}
       <Form onSubmit={handleLogin}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -121,6 +121,7 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
         <Button variant="primary" type="submit">
           Login
         </Button>
+        <Link to="/sign-up">Sign Up</Link>
       </Form>
     </div>
   );
