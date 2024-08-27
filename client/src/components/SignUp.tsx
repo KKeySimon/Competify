@@ -6,6 +6,7 @@ import styles from "./SignUp.module.css";
 interface SignUpError {
   username: string;
   password: string;
+  email: string;
   confirmPassword: string;
   apiError: string;
 }
@@ -21,9 +22,11 @@ function SignUp({ isLoggedIn }: SignUpProps) {
   const [errors, setErrors] = useState<SignUpError>({
     username: "",
     password: "",
+    email: "",
     confirmPassword: "",
     apiError: "",
   });
+  const [email, setEmail] = useState<string>("");
   const [success, setSuccess] = useState<boolean>(false);
 
   const navigate = useNavigate();
@@ -40,12 +43,16 @@ function SignUp({ isLoggedIn }: SignUpProps) {
       password: "",
       confirmPassword: "",
       apiError: "",
+      email: "",
     };
     if (!username) {
       newErrors.username = "Username is required";
     }
     if (!password) {
       newErrors.password = "Password is required";
+    }
+    if (!email) {
+      newErrors.email = "Email is required";
     }
     if (!confirmPassword) {
       newErrors.confirmPassword = "Please confirm your password";
@@ -68,10 +75,11 @@ function SignUp({ isLoggedIn }: SignUpProps) {
     setErrors({
       username: "",
       password: "",
+      email: "",
       confirmPassword: "",
       apiError: "",
     });
-    const userData = { username, password };
+    const userData = { username, password, email };
     console.log(password);
 
     await fetch("http://localhost:3000/api/sign-up", {
@@ -117,7 +125,24 @@ function SignUp({ isLoggedIn }: SignUpProps) {
               Successful signup! Redirecting to login page...
             </Alert>
           )}
+
           <Form onSubmit={handleSignUp}>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => {
+                  setErrors({ ...errors, email: "" });
+                  setEmail(e.target.value);
+                }}
+                isInvalid={!!errors.email}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.email}
+              </Form.Control.Feedback>
+            </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicUsername">
               <Form.Label>Username</Form.Label>
               <Form.Control

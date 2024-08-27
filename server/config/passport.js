@@ -4,16 +4,16 @@ const pool = require("../model/pool");
 const bcrypt = require("bcryptjs");
 
 passport.use(
-  new LocalStrategy(async (username, password, done) => {
+  new LocalStrategy(async (email, password, done) => {
     try {
       const { rows } = await pool.query(
-        "SELECT * FROM users WHERE username = $1",
-        [username]
+        "SELECT * FROM users WHERE email = $1",
+        [email]
       );
       const user = rows[0];
 
       if (!user) {
-        return done(null, false, { message: "Incorrect username" });
+        return done(null, false, { message: "Incorrect email" });
       }
       const match = await bcrypt.compare(password, user.password);
       if (!match) {

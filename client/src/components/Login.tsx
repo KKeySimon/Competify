@@ -7,16 +7,16 @@ import { Alert } from "react-bootstrap";
 import styles from "./Login.module.css";
 
 interface LoginError {
-  username: string;
+  email: string;
   password: string;
   apiError: string;
 }
 
 function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
-  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errors, setErrors] = useState<LoginError>({
-    username: "",
+    email: "",
     password: "",
     apiError: "",
   });
@@ -30,9 +30,9 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   }, [isLoggedIn, navigate]);
 
   const validateForm = () => {
-    const newErrors: LoginError = { username: "", password: "", apiError: "" };
-    if (!username) {
-      newErrors.username = "Username is required";
+    const newErrors: LoginError = { email: "", password: "", apiError: "" };
+    if (!email) {
+      newErrors.email = "Email is required";
     }
     if (!password) {
       newErrors.password = "Password is required";
@@ -50,8 +50,8 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
       setErrors(formErrors);
       return;
     }
-    setErrors({ username: "", password: "", apiError: "" });
-    const userData = { username, password };
+    setErrors({ email: "", password: "", apiError: "" });
+    const userData = { username: email, password };
 
     await fetch("http://localhost:3000/api/login", {
       method: "POST",
@@ -90,19 +90,19 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
           {errors.apiError && <Alert variant="danger">{errors.apiError}</Alert>}
           <Form onSubmit={handleLogin}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Username</Form.Label>
+              <Form.Label>Email</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Username"
-                value={username}
+                type="email"
+                placeholder="Email"
+                value={email}
                 onChange={(e) => {
-                  setErrors({ ...errors, username: "" });
-                  setUsername(e.target.value);
+                  setErrors({ ...errors, email: "" });
+                  setEmail(e.target.value);
                 }}
-                isInvalid={!!errors.username}
+                isInvalid={!!errors.email}
               />
               <Form.Control.Feedback type="invalid">
-                {errors.username}
+                {errors.email}
               </Form.Control.Feedback>
             </Form.Group>
 

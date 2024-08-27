@@ -36,10 +36,10 @@ router.post("/sign-up", async (req, res, next) => {
     console.log(req.body);
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     console.log(hashedPassword);
-    await pool.query("INSERT INTO users (username, password) VALUES ($1, $2)", [
-      req.body.username,
-      hashedPassword,
-    ]);
+    await pool.query(
+      "INSERT INTO users (username, password, email) VALUES ($1, $2, $3)",
+      [req.body.username, hashedPassword, req.body.email]
+    );
     return res.status(201).json({ message: "Sign up successful!" });
   } catch (err) {
     // 23505 occurs when unique constraint is violated which in this case is the unique username constraint
