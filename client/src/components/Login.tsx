@@ -24,6 +24,7 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("login", isLoggedIn);
     if (isLoggedIn) {
       navigate("/");
     }

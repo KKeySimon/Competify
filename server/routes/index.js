@@ -7,10 +7,8 @@ const bcrypt = require("bcryptjs");
 // Simple Authorization Check
 router.get("/", (req, res, next) => {
   if (req.isAuthenticated()) {
-    console.log("Authorized");
     return res.status(200).json({ message: "Authorized" });
   } else {
-    console.log("Non-Authorized");
     return res.status(401).json({ message: "Unauthorized" });
   }
 });

@@ -10,7 +10,8 @@ import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
 
   // useEffect & isLoggedIn state is moved from NavBar to App as other components will eventually
   // need to use whether user is logged in. Shouldn't tighty couple the 2 together
@@ -28,8 +29,20 @@ function App() {
         return response.json();
       })
       .then((response) => console.log(response))
-      .catch((error) => console.log(error));
+      .catch(() => {
+        setIsLoggedIn(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
+
+  // This is needed as without loading, i.e. isLoggedIn is initially set to false
+  // App loads and instantly renders /room before isLoggedIn is set to true and will redirect
+  // to home and /room will not finish loading
+  if (loading) {
+    return <div>Authenticating...</div>; // Optionally show a loading indicator
+  }
 
   return (
     <>
@@ -44,7 +57,7 @@ function App() {
             }
           />
           <Route path="/sign-up" element={<SignUp isLoggedIn={isLoggedIn} />} />
-          <Route path="/room" element={<RoomsList />} />
+          <Route path="/room" element={<RoomsList isLoggedIn={isLoggedIn} />} />
         </Routes>
       </div>
     </>

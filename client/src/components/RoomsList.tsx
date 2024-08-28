@@ -1,11 +1,26 @@
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import NewRoomPopup from "./NewRoomPopup";
+import RoomCard from "./RoomCard";
 import { Room } from "../../types";
+import { useNavigate } from "react-router-dom";
 
-function RoomsList() {
+interface RoomsListProps {
+  isLoggedIn: boolean;
+}
+
+function RoomsList({ isLoggedIn }: RoomsListProps) {
   const [trigger, setTrigger] = useState(false);
   const [rooms, setRooms] = useState<Room[]>([]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(isLoggedIn);
+    if (!isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
 
   useEffect(() => {
     fetch("http://localhost:3000/api/room", {
@@ -32,7 +47,14 @@ function RoomsList() {
       <NewRoomPopup trigger={trigger} setTrigger={setTrigger} />
       <ul>
         {rooms.map((room) => (
-          <li key={room.roomId}>{room.roomName}</li>
+          <RoomCard
+            key={room.roomId}
+            userId={room.userId}
+            joinedAt={room.joinedAt}
+            roomId={room.roomId}
+            roomName={room.roomName}
+            createdBy={room.createdBy}
+          />
         ))}
       </ul>
     </div>

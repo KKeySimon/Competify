@@ -5,7 +5,7 @@ export interface LoginProps {
 
 export interface Room {
   userId: number;
-  name: string;
+  joinedAt: string;
   roomId: number;
   roomName: string;
   createdBy: string;
