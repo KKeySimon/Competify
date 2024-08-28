@@ -50,4 +50,9 @@ const PORT = 3000;
 const indexRouter = require("./routes/index");
 app.use("/api", indexRouter);
 
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).send(err);
+});
+
 app.listen(PORT, () => console.log("Listening in on port " + PORT));
