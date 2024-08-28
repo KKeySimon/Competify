@@ -60,4 +60,7 @@ router.get("/logout", (req, res, next) => {
   });
 });
 
+const roomRoute = require("./room");
+router.use("/room", roomRoute);
+
 module.exports = router;
