@@ -1,7 +1,9 @@
+import styles from "./HomePage.module.css";
+
 function HomePage() {
   return (
     <>
-      <div>This is homepage ^_^</div>
+      <div className={styles.background}>Competify</div>
     </>
   );
 }

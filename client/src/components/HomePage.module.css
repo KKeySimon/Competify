@@ -1,0 +1,11 @@
+.background {
+  /* Height is set to 95vh as navbar should take up 5vh */
+  height: 95vh;
+  width: 100vw;
+  background-color: cornflowerblue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10em;
+  font-weight: 1000;
+}

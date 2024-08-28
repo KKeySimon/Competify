@@ -16,9 +16,8 @@ function RoomsList({ isLoggedIn }: RoomsListProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(isLoggedIn);
     if (!isLoggedIn) {
-      navigate("/");
+      navigate("/login");
     }
   }, [isLoggedIn, navigate]);
 
