@@ -6,11 +6,13 @@
   justify-content: space-between;
   align-items: center;
   background-color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 .navbar,
 a {
-  border-radius: 20px;
   padding: 1vh;
   cursor: pointer;
 }

@@ -1,4 +1,11 @@
-import { CloseButton, Form, Button, Alert } from "react-bootstrap";
+import {
+  CloseButton,
+  Form,
+  Button,
+  Alert,
+  ListGroup,
+  ListGroupItem,
+} from "react-bootstrap";
 import styles from "./NewRoomPopup.module.css";
 import { useState } from "react";
 
@@ -10,6 +17,7 @@ interface PopupProps {
 interface newRoomError {
   name: string;
   apiError: string;
+  emails: string;
 }
 
 function NewRoomPopup({ trigger, setTrigger }: PopupProps) {
@@ -17,12 +25,22 @@ function NewRoomPopup({ trigger, setTrigger }: PopupProps) {
   const [errors, setErrors] = useState<newRoomError>({
     name: "",
     apiError: "",
+    emails: "",
   });
   const [success, setSuccess] = useState<boolean>(false);
-  const [invites, setInvites] = useState<string>("");
+  const [inviteInput, setInviteInput] = useState<string>("");
+  const [inviteList, setInviteList] = useState<string[]>([]);
+  // https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
 
   const validateForm = () => {
-    const newErrors: newRoomError = { name: "", apiError: "" };
+    const newErrors: newRoomError = { name: "", apiError: "", emails: "" };
     if (!name) {
       newErrors.name = "Name is required";
     }
@@ -35,7 +53,7 @@ function NewRoomPopup({ trigger, setTrigger }: PopupProps) {
       setErrors(formErrors);
       return;
     }
-    setErrors({ name: "", apiError: "" });
+    setErrors({ name: "", apiError: "", emails: "" });
     const roomData = { name };
     await fetch("http://localhost:3000/api/room/new", {
       method: "POST",
@@ -105,18 +123,59 @@ function NewRoomPopup({ trigger, setTrigger }: PopupProps) {
                 {errors.name}
               </Form.Control.Feedback>
             </Form.Group>
-
             <Form.Group className="mb-3" controlId="formInvitePeople">
-              <Form.Label>Invite People (comma separated emails)</Form.Label>
+              <Form.Label>Invite People</Form.Label>
               <Form.Control
-                type="text"
+                type="email"
                 placeholder="Invite emails"
-                value={invites}
+                value={inviteInput}
                 onChange={(e) => {
-                  setInvites(e.target.value);
+                  setInviteInput(e.target.value);
+                  setErrors({ ...errors, emails: "" });
                 }}
+                isInvalid={!!errors.emails}
               />
+              <Button
+                variant="primary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (
+                    inviteList.indexOf(inviteInput) < 0 &&
+                    inviteInput.length !== 0 &&
+                    validateEmail(inviteInput)
+                  ) {
+                    setInviteList([...inviteList, inviteInput]);
+                  } else {
+                    if (inviteInput.length !== 0) {
+                      if (!validateEmail(inviteInput)) {
+                        setErrors({
+                          ...errors,
+                          emails: "Not a valid email address!",
+                        });
+                      }
+                    }
+                  }
+                  setInviteInput("");
+                }}
+              >
+                Invite
+              </Button>
+              <Form.Control.Feedback type="invalid">
+                {errors.emails}
+              </Form.Control.Feedback>
             </Form.Group>
+            <ListGroup>
+              {inviteList.map((invite) => (
+                <div>
+                  <ListGroupItem key={invite}>{invite}</ListGroupItem>
+                  <CloseButton
+                    onClick={() =>
+                      setInviteList(inviteList.filter((i) => i !== invite))
+                    }
+                  />
+                </div>
+              ))}
+            </ListGroup>
             <div
               className={styles.createRoomBtn}
               onClick={(e) => {

@@ -23,6 +23,9 @@ model users {
   email        String?        @unique @db.VarChar(255)
   createdRooms rooms[]        @relation("CreatedRooms")
   joinedRooms  usersInRooms[]
+
+  invitesSent     invites[] @relation("InviterRelation")
+  invitesReceived invites[] @relation("InviteeRelation")
 }
 
 model rooms {
@@ -33,6 +36,7 @@ model rooms {
   created_at   DateTime       @default(now())
   updated_at   DateTime       @updatedAt
   usersInRooms usersInRooms[]
+  invites      invites[]
 
   @@unique([name, userId])
 }
@@ -45,4 +49,16 @@ model usersInRooms {
   joinedAt DateTime @default(now())
 
   @@id([userId, roomId])
+}
+
+model invites {
+  inviter   users    @relation("InviterRelation", fields: [inviterId], references: [id], onDelete: Cascade)
+  inviterId Int
+  invitee   users    @relation("InviteeRelation", fields: [inviteeId], references: [id], onDelete: Cascade)
+  inviteeId Int
+  room      rooms    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId    Int
+  sentAt    DateTime @default(now())
+
+  @@id([inviterId, inviteeId, roomId])
 }

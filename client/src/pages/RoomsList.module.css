@@ -1,9 +1,24 @@
+/* Overriding default bootstrap(?) css */
 .list {
-  /* Remove margin for all <ul>s (and padding, because different browsers have different default styles) */
   margin: 3em;
   padding-left: 0;
 }
 
 .link:hover {
   background-color: transparent;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 1rem;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100vw;
 }

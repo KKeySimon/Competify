@@ -41,9 +41,11 @@ function RoomsList({ isLoggedIn }: RoomsListProps) {
       });
   }, []);
   return (
-    <div>
-      <h1>Rooms</h1>
-      <Button onClick={() => setTrigger(true)}>New Room</Button>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1>Rooms</h1>
+        <Button onClick={() => setTrigger(true)}>New Room</Button>
+      </div>
       <NewRoomPopup trigger={trigger} setTrigger={setTrigger} />
       <ul className={styles.list}>
         {rooms.map((room) => (
