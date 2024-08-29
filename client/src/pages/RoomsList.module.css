@@ -1,0 +1,9 @@
+.list {
+  /* Remove margin for all <ul>s (and padding, because different browsers have different default styles) */
+  margin: 3em;
+  padding-left: 0;
+}
+
+.link:hover {
+  background-color: transparent;
+}

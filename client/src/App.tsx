@@ -2,10 +2,10 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import Navbar from "./components/Navbar";
-import HomePage from "./components/HomePage";
-import Login from "./components/Login";
-import SignUp from "./components/SignUp";
-import RoomsList from "./components/RoomsList";
+import HomePage from "./pages/HomePage";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import RoomsList from "./pages/RoomsList";
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -57,6 +57,7 @@ function App() {
           />
           <Route path="/sign-up" element={<SignUp isLoggedIn={isLoggedIn} />} />
           <Route path="/room" element={<RoomsList isLoggedIn={isLoggedIn} />} />
+          {/* <Route path="/room/:id" element={<Room />} /> */}
         </Routes>
       </div>
     </>

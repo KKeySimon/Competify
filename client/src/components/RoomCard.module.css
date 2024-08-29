@@ -1,2 +1,16 @@
 .header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card {
+  background-color: bisque;
+  border-radius: 1em;
+  padding: 1em;
+  border: solid transparent;
+  transition: border-color 0.3s;
+}
+
+.card:hover {
+  border-color: steelblue;
 }

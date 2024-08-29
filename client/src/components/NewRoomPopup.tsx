@@ -19,6 +19,7 @@ function NewRoomPopup({ trigger, setTrigger }: PopupProps) {
     apiError: "",
   });
   const [success, setSuccess] = useState<boolean>(false);
+  const [invites, setInvites] = useState<string>("");
 
   const validateForm = () => {
     const newErrors: newRoomError = { name: "", apiError: "" };
@@ -103,6 +104,18 @@ function NewRoomPopup({ trigger, setTrigger }: PopupProps) {
               <Form.Control.Feedback type="invalid">
                 {errors.name}
               </Form.Control.Feedback>
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formInvitePeople">
+              <Form.Label>Invite People (comma separated emails)</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Invite emails"
+                value={invites}
+                onChange={(e) => {
+                  setInvites(e.target.value);
+                }}
+              />
             </Form.Group>
             <div
               className={styles.createRoomBtn}

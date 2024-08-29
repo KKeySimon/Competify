@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import NewRoomPopup from "./NewRoomPopup";
-import RoomCard from "./RoomCard";
+import NewRoomPopup from "../components/NewRoomPopup";
+import RoomCard from "../components/RoomCard";
 import { Room } from "../../types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import styles from "./RoomsList.module.css";
 
 interface RoomsListProps {
   isLoggedIn: boolean;
@@ -44,16 +45,18 @@ function RoomsList({ isLoggedIn }: RoomsListProps) {
       <h1>Rooms</h1>
       <Button onClick={() => setTrigger(true)}>New Room</Button>
       <NewRoomPopup trigger={trigger} setTrigger={setTrigger} />
-      <ul>
+      <ul className={styles.list}>
         {rooms.map((room) => (
-          <RoomCard
-            key={room.roomId}
-            userId={room.userId}
-            joinedAt={room.joinedAt}
-            roomId={room.roomId}
-            roomName={room.roomName}
-            createdBy={room.createdBy}
-          />
+          <Link className={styles.link} to={room.roomId.toString()}>
+            <RoomCard
+              key={room.roomId}
+              userId={room.userId}
+              joinedAt={room.joinedAt}
+              roomId={room.roomId}
+              roomName={room.roomName}
+              createdBy={room.createdBy}
+            />
+          </Link>
         ))}
       </ul>
     </div>
