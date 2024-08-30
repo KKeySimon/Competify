@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import RoomsList from "./pages/RoomsList";
+import Room from "./pages/Room";
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -46,7 +47,7 @@ function App() {
   return (
     <>
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      <div>
+      <div className="content">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route
@@ -57,7 +58,7 @@ function App() {
           />
           <Route path="/sign-up" element={<SignUp isLoggedIn={isLoggedIn} />} />
           <Route path="/room" element={<RoomsList isLoggedIn={isLoggedIn} />} />
-          {/* <Route path="/room/:id" element={<Room />} /> */}
+          <Route path="/room/:id" element={<Room />} />
         </Routes>
       </div>
     </>

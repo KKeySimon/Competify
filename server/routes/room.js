@@ -54,6 +54,7 @@ router.post(
   "/new",
   isAuth,
   asyncHandler(async (req, res, next) => {
+    console.log(req.body);
     try {
       const createRoom = await prisma.rooms.create({
         data: {
@@ -68,12 +69,55 @@ router.post(
           room: { connect: { id: createRoom.id } },
         },
       });
-      res.status(201).json({ message: "Room created" });
+      const invitePromises = req.body.inviteList.map(async (inviteEmail) => {
+        const invitee = await prisma.users.findFirst({
+          where: { email: inviteEmail },
+        });
+
+        if (!invitee) {
+          return null;
+        }
+
+        if (req.user.id === invitee.id) {
+          return null;
+        }
+
+        return prisma.invites.create({
+          data: {
+            inviter: { connect: { id: req.user.id } },
+            invitee: { connect: { id: invitee.id } },
+            room: { connect: { id: createRoom.id } },
+          },
+        });
+      });
+      const inviteAllUsers = await Promise.all(invitePromises);
+      const filteredInvites = inviteAllUsers.filter(Boolean);
+
+      res.status(201).json(filteredInvites);
     } catch (err) {
       if (err.code === "P2002") {
         return res.status(409).send(err);
       }
       next(err);
+    }
+  })
+);
+
+// Not finished
+router.get(
+  "/:id",
+  isAuth,
+  asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+    const currUserId = req.user.id;
+    try {
+      const valid = await prisma.usersInRooms.findFirst({
+        where: { userId: currUserId, roomId: parseInt(id) },
+      });
+
+      return res.status(201);
+    } catch (err) {
+      return res.status(401);
     }
   })
 );

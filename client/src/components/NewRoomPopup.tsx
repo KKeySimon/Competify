@@ -8,6 +8,7 @@ import {
 } from "react-bootstrap";
 import styles from "./NewRoomPopup.module.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface PopupProps {
   trigger: boolean;
@@ -39,6 +40,8 @@ function NewRoomPopup({ trigger, setTrigger }: PopupProps) {
       );
   };
 
+  const navigate = useNavigate();
+
   const validateForm = () => {
     const newErrors: newRoomError = { name: "", apiError: "", emails: "" };
     if (!name) {
@@ -54,7 +57,7 @@ function NewRoomPopup({ trigger, setTrigger }: PopupProps) {
       return;
     }
     setErrors({ name: "", apiError: "", emails: "" });
-    const roomData = { name };
+    const roomData = { name, inviteList };
     await fetch("http://localhost:3000/api/room/new", {
       method: "POST",
       credentials: "include",
@@ -73,10 +76,10 @@ function NewRoomPopup({ trigger, setTrigger }: PopupProps) {
         console.log(data.message);
         setSuccess(true);
         setTimeout(() => {
-          // TODO: Should redirect to newly created room
           setTrigger(false);
           setSuccess(false);
           setName("");
+          // TODO Add navgation
         }, 2000);
       })
       .catch((error) => {
@@ -166,8 +169,8 @@ function NewRoomPopup({ trigger, setTrigger }: PopupProps) {
             </Form.Group>
             <ListGroup>
               {inviteList.map((invite) => (
-                <div>
-                  <ListGroupItem key={invite}>{invite}</ListGroupItem>
+                <div key={invite}>
+                  <ListGroupItem>{invite}</ListGroupItem>
                   <CloseButton
                     onClick={() =>
                       setInviteList(inviteList.filter((i) => i !== invite))

@@ -33,7 +33,6 @@ function RoomsList({ isLoggedIn }: RoomsListProps) {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         setRooms(data);
       })
       .catch((error) => {
@@ -49,9 +48,12 @@ function RoomsList({ isLoggedIn }: RoomsListProps) {
       <NewRoomPopup trigger={trigger} setTrigger={setTrigger} />
       <ul className={styles.list}>
         {rooms.map((room) => (
-          <Link className={styles.link} to={room.roomId.toString()}>
+          <Link
+            key={room.roomId}
+            className={styles.link}
+            to={room.roomId.toString()}
+          >
             <RoomCard
-              key={room.roomId}
               userId={room.userId}
               joinedAt={room.joinedAt}
               roomId={room.roomId}
