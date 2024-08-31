@@ -111,13 +111,23 @@ router.get(
     const { id } = req.params;
     const currUserId = req.user.id;
     try {
+      const room = await prisma.rooms.findFirst({
+        where: { id: parseInt(id) },
+      });
       const valid = await prisma.usersInRooms.findFirst({
         where: { userId: currUserId, roomId: parseInt(id) },
       });
-
-      return res.status(201);
+      console.log(room);
+      if (!room) {
+        return res.status(404).send({ message: "Room not found" });
+      }
+      if (!valid) {
+        return res.status(401).send({ message: "No permission to enter room" });
+      }
+      return res.status(201).send(valid);
     } catch (err) {
-      return res.status(401);
+      console.error(err);
+      return res.status(500).send({ error: "An error occurred." });
     }
   })
 );

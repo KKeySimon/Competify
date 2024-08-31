@@ -37,6 +37,7 @@ model rooms {
   updated_at   DateTime       @updatedAt
   usersInRooms usersInRooms[]
   invites      invites[]
+  competitions competitions[]
 
   @@unique([name, userId])
 }
@@ -61,4 +62,24 @@ model invites {
   sentAt    DateTime @default(now())
 
   @@id([inviterId, inviteeId, roomId])
+}
+
+model competitions {
+  id           Int       @id @default(autoincrement())
+  room         rooms     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId       Int
+  name         String
+  startTime    DateTime
+  endTime      DateTime?
+  // https://stackoverflow.com/questions/313417/whats-the-best-way-to-store-the-days-of-the-week-an-event-takes-place-on-in-a-r
+  daysOfWeek   Int?
+  repeatsEvery Int
+  frequency    Frequency
+}
+
+enum Frequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
 }
