@@ -24,7 +24,7 @@
   text-align: center;
   flex: 1 1 0%;
 }
-.createRoomBtn {
+.createCompetitionBtn {
   display: flex;
   justify-content: space-between;
   margin-top: 30px;

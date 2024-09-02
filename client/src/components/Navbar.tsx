@@ -21,7 +21,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   return (
     <div className={styles.navbar}>
       <Link to="/">Home</Link>
-      <Link to="/room">Rooms</Link>
+      <Link to="/competition">Competitions</Link>
       {isLoggedIn ? (
         <a onClick={handleLogout}>Logout</a>
       ) : (

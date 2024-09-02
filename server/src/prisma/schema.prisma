@@ -58,9 +58,9 @@ model competitions {
   // https://stackoverflow.com/questions/313417/whats-the-best-way-to-store-the-days-of-the-week-an-event-takes-place-on-in-a-r
   days_of_week          Int?
   repeats_every         Int
-  frequency             Frequency
-  created_by            users                   @relation("CreatedCompetitions", fields: [userId], references: [id])
-  userId                Int
+  frequency             Frequency?
+  created_by            users                   @relation("CreatedCompetitions", fields: [user_id], references: [id])
+  user_id               Int
   created_at            DateTime                @default(now())
   updated_at            DateTime                @updatedAt
   users_in_competitions users_in_competitions[]

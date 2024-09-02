@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import session from "express-session";
 const pgSession = require("connect-pg-simple")(session);
 import cors from "cors";
@@ -10,13 +10,13 @@ const corsOptions = {
   credentials: true,
 };
 import passport from "passport";
-
+import pool from "./model/pool";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 const postgreStore = new pgSession({
-  pool: require("./model/pool"),
+  pool: pool,
   createTableIfMissing: true,
 });
 
@@ -51,7 +51,7 @@ const indexRouter = require("./routes/index");
 app.use("/api", indexRouter);
 
 // We use any for err as any request could throw any error in the application
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+app.use((err: any, req, res, next) => {
   console.error(err);
   res.status(500).send(err);
 });

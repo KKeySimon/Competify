@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-function Room() {
+function Competition() {
   const { id } = useParams();
   const [error, setError] = useState<string>("");
   useEffect(() => {
@@ -32,4 +32,4 @@ function Room() {
   return <div>{id}</div>;
 }
 
-export default Room;
+export default Competition;

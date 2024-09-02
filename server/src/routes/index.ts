@@ -1,8 +1,8 @@
-const express = require("express");
-const passport = require("passport");
-const pool = require("../model/pool");
+import express from "express";
+import passport from "passport";
+import pool from "../model/pool";
 const router = express.Router();
-const bcrypt = require("bcryptjs");
+import bcrypt from "bcryptjs";
 
 // Simple Authorization Check
 router.get("/", (req, res, next) => {
@@ -58,7 +58,7 @@ router.get("/logout", (req, res, next) => {
   });
 });
 
-const roomRoute = require("./room");
-router.use("/room", roomRoute);
+import competitionRoute from "./competition";
+router.use("/competition", competitionRoute);
 
 module.exports = router;
