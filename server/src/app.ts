@@ -1,15 +1,15 @@
 require("dotenv").config();
 
-const express = require("express");
-const session = require("express-session");
+import express, { Request, Response, NextFunction } from "express";
+import session from "express-session";
 const pgSession = require("connect-pg-simple")(session);
-const cors = require("cors");
+import cors from "cors";
 const corsOptions = {
   // Vite uses port 5173
   origin: ["http://localhost:5173"],
   credentials: true,
 };
-const passport = require("passport");
+import passport from "passport";
 
 const app = express();
 app.use(express.json());
@@ -50,7 +50,8 @@ const PORT = 3000;
 const indexRouter = require("./routes/index");
 app.use("/api", indexRouter);
 
-app.use((err, req, res, next) => {
+// We use any for err as any request could throw any error in the application
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
   res.status(500).send(err);
 });
