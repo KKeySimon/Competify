@@ -54,7 +54,6 @@ router.post(
   "/new",
   isAuth,
   asyncHandler(async (req, res, next) => {
-    console.log(req.body);
     try {
       const createRoom = await prisma.rooms.create({
         data: {
@@ -110,25 +109,20 @@ router.get(
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     const currUserId = req.user.id;
-    try {
-      const room = await prisma.rooms.findFirst({
-        where: { id: parseInt(id) },
-      });
-      const valid = await prisma.usersInRooms.findFirst({
-        where: { userId: currUserId, roomId: parseInt(id) },
-      });
-      console.log(room);
-      if (!room) {
-        return res.status(404).send({ message: "Room not found" });
-      }
-      if (!valid) {
-        return res.status(401).send({ message: "No permission to enter room" });
-      }
-      return res.status(201).send(valid);
-    } catch (err) {
-      console.error(err);
-      return res.status(500).send({ error: "An error occurred." });
+    const room = await prisma.rooms.findFirst({
+      where: { id: parseInt(id) },
+    });
+    const valid = await prisma.usersInRooms.findFirst({
+      where: { userId: currUserId, roomId: parseInt(id) },
+    });
+    console.log(room);
+    if (!room) {
+      return res.status(404).send({ message: "Room not found" });
     }
+    if (!valid) {
+      return res.status(401).send({ message: "No permission to enter room" });
+    }
+    return res.status(201).send(valid);
   })
 );
 
