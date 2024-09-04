@@ -5,10 +5,14 @@ import {
   Alert,
   ListGroup,
   ListGroupItem,
+  Modal,
 } from "react-bootstrap";
 import styles from "./NewCompetitionPopup.module.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DateTimePicker from "./DateTimePicker";
+import "react-day-picker/style.css";
+import { format } from "date-fns";
 
 interface PopupProps {
   trigger: boolean;
@@ -19,6 +23,8 @@ interface newCompetitionError {
   name: string;
   apiError: string;
   emails: string;
+  startDate: string;
+  endDate: string;
 }
 
 function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
@@ -27,10 +33,21 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
     name: "",
     apiError: "",
     emails: "",
+    startDate: "",
+    endDate: "",
   });
   const [success, setSuccess] = useState<boolean>(false);
   const [inviteInput, setInviteInput] = useState<string>("");
   const [inviteList, setInviteList] = useState<string[]>([]);
+  const [startDateFocus, setStartDateFocus] = useState<boolean>(false);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [startTime, setStartTime] = useState<string>("00:00");
+  const [repeat, setRepeat] = useState(false);
+  const [endDateFocus, setEndDateFocus] = useState<boolean>(false);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [endTime, setEndTime] = useState<string>("00:00");
+  const [repeatInterval, setRepeatInterval] = useState<string>("daily");
+  const [repeatEvery, setRepeatEvery] = useState<number>(1);
   // https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
   const validateEmail = (email: string) => {
     return String(email)
@@ -40,6 +57,30 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
       );
   };
 
+  const formatDateTime = (date: Date | undefined, time: string) => {
+    if (!date || !time) return "";
+
+    const formattedDate = format(new Date(date), "MM/dd/yyyy");
+    const formattedTime = format(new Date(`1970-01-01T${time}:00`), "hh:mm aa");
+
+    return `${formattedDate} ${formattedTime}`;
+  };
+
+  const getIntervalLabel = (interval) => {
+    switch (interval) {
+      case "daily":
+        return "Days";
+      case "weekly":
+        return "Weeks";
+      case "monthly":
+        return "Months";
+      case "everyX":
+        return "Days"; // Default to Days since it's the most common
+      default:
+        return "";
+    }
+  };
+
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -47,9 +88,21 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
       name: "",
       apiError: "",
       emails: "",
+      startDate: "",
+      endDate: "",
     };
     if (!name) {
       newErrors.name = "Name is required";
+    }
+    if (!startDate) {
+      newErrors.startDate = "Start date is required";
+    }
+    if (repeat) {
+      if (!endDate) {
+        newErrors.endDate = "End date is required";
+      } else if (startDate && endDate <= startDate) {
+        newErrors.endDate = "End date needs to be after start date";
+      }
     }
     return newErrors;
   };
@@ -60,8 +113,24 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
       setErrors(formErrors);
       return;
     }
-    setErrors({ name: "", apiError: "", emails: "" });
-    const competitionData = { name, inviteList };
+    setErrors({
+      name: "",
+      apiError: "",
+      emails: "",
+      startDate: "",
+      endDate: "",
+    });
+    const competitionData = {
+      name,
+      inviteList,
+      startDate,
+      startTime,
+      repeat,
+      repeatEvery,
+      repeatInterval,
+      endDate,
+      endTime,
+    };
     await fetch("http://localhost:3000/api/competition/new", {
       method: "POST",
       credentials: "include",
@@ -171,19 +240,130 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
               <Form.Control.Feedback type="invalid">
                 {errors.emails}
               </Form.Control.Feedback>
+              <ListGroup>
+                {inviteList.map((invite) => (
+                  <div key={invite}>
+                    <ListGroupItem>{invite}</ListGroupItem>
+                    <CloseButton
+                      onClick={() =>
+                        setInviteList(inviteList.filter((i) => i !== invite))
+                      }
+                    />
+                  </div>
+                ))}
+              </ListGroup>
             </Form.Group>
-            <ListGroup>
-              {inviteList.map((invite) => (
-                <div key={invite}>
-                  <ListGroupItem>{invite}</ListGroupItem>
-                  <CloseButton
-                    onClick={() =>
-                      setInviteList(inviteList.filter((i) => i !== invite))
-                    }
+            <Form.Group className="mb-3" controlId="formStartTime">
+              <Form.Label>Start Time</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="MM/DD/YYYY HH:MM AM"
+                value={formatDateTime(startDate, startTime)}
+                onClick={() => setStartDateFocus(true)}
+                readOnly
+                isInvalid={!!errors.startDate}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.startDate}
+              </Form.Control.Feedback>
+            </Form.Group>
+
+            <Modal
+              show={startDateFocus}
+              onHide={() => setStartDateFocus(false)}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Select Date and Time</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <DateTimePicker
+                  dateValue={startDate}
+                  setDateValue={setStartDate}
+                  timeValue={startTime}
+                  setTimeValue={setStartTime}
+                />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => setStartDateFocus(false)}
+                >
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                label="Repeat"
+                checked={repeat}
+                onChange={() => setRepeat(!repeat)}
+              />
+            </Form.Group>
+
+            {repeat && (
+              <>
+                <Form.Group className="mb-3" controlId="formInterval">
+                  <Form.Label>Repeat Interval</Form.Label>
+                  <Form.Select
+                    value={repeatInterval}
+                    onChange={(e) => setRepeatInterval(e.target.value)}
+                  >
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </Form.Select>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    Every X {getIntervalLabel(repeatInterval)}
+                  </Form.Label>
+                  <Form.Control
+                    type="number"
+                    value={repeatEvery}
+                    onChange={(e) => setRepeatEvery(parseInt(e.target.value))}
                   />
-                </div>
-              ))}
-            </ListGroup>
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formEndTime">
+                  <Form.Label>End Time</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="MM/DD/YYYY HH:MM AM"
+                    value={formatDateTime(endDate, endTime)}
+                    onClick={() => setEndDateFocus(true)}
+                    readOnly
+                    isInvalid={!!errors.endDate}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.endDate}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </>
+            )}
+
+            <Modal show={endDateFocus} onHide={() => setEndDateFocus(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Select Date and Time</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <DateTimePicker
+                  dateValue={endDate}
+                  setDateValue={setEndDate}
+                  timeValue={endTime}
+                  setTimeValue={setEndTime}
+                />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => setEndDateFocus(false)}
+                >
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
             <div
               className={styles.createCompetitionBtn}
               onClick={(e) => {

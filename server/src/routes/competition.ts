@@ -14,7 +14,7 @@ router.get(
   asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
     const currUserId = req.user.id;
 
-    const rooms = await prisma.users_in_competitions.findMany({
+    const competitions = await prisma.users_in_competitions.findMany({
       where: {
         user_id: currUserId,
       },
@@ -32,7 +32,7 @@ router.get(
       },
     });
     res.status(200).json(
-      rooms.map((entry) => ({
+      competitions.map((entry) => ({
         userId: entry.user_id,
         competitionId: entry.competition_id,
         joinedAt: entry.joined_at,
@@ -102,6 +102,7 @@ router.get(
   "/:id",
   isAuth,
   asyncHandler(async (req: AuthRequest, res: Response, next): Promise<void> => {
+    console.log("dasdas");
     const { id } = req.params;
     const currUserId = req.user.id;
     const competition = await prisma.competitions.findFirst({
