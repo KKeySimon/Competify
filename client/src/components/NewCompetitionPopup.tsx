@@ -6,6 +6,9 @@ import {
   ListGroup,
   ListGroupItem,
   Modal,
+  ButtonGroup,
+  ToggleButtonGroup,
+  ToggleButton,
 } from "react-bootstrap";
 import styles from "./NewCompetitionPopup.module.css";
 import { useState } from "react";
@@ -48,6 +51,7 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
   const [endTime, setEndTime] = useState<string>("00:00");
   const [repeatInterval, setRepeatInterval] = useState<string>("daily");
   const [repeatEvery, setRepeatEvery] = useState<number>(1);
+  const [daysOfWeek, setDaysOfWeek] = useState<number[]>([]);
   // https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
   const validateEmail = (email: string) => {
     return String(email)
@@ -66,7 +70,7 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
     return `${formattedDate} ${formattedTime}`;
   };
 
-  const getIntervalLabel = (interval) => {
+  const getIntervalLabel = (interval: string) => {
     switch (interval) {
       case "daily":
         return "Days";
@@ -123,14 +127,14 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
     const competitionData = {
       name,
       inviteList,
-      startDate,
-      startTime,
+      startDate: new Date(startDate!),
       repeat,
       repeatEvery,
       repeatInterval,
       endDate,
-      endTime,
+      daysOfWeek,
     };
+
     await fetch("http://localhost:3000/api/competition/new", {
       method: "POST",
       credentials: "include",
@@ -143,10 +147,11 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
         if (!response.ok) {
           throw new Error("Something went wrong!");
         }
+        console.log(response);
         return response.json();
       })
       .then((data) => {
-        console.log(data.message);
+        console.log(data);
         setSuccess(true);
         setTimeout(() => {
           setTrigger(false);
@@ -314,6 +319,38 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
                     <option value="weekly">Weekly</option>
                     <option value="monthly">Monthly</option>
                   </Form.Select>
+                  {repeatInterval === "weekly" && (
+                    <ToggleButtonGroup
+                      type="checkbox"
+                      value={daysOfWeek}
+                      onChange={(val) => {
+                        setDaysOfWeek(val);
+                      }}
+                      className="mb-3"
+                    >
+                      <ToggleButton id="sunday" value={1}>
+                        Sun
+                      </ToggleButton>
+                      <ToggleButton id="monday" value={2}>
+                        Mon
+                      </ToggleButton>
+                      <ToggleButton id="tuesday" value={3}>
+                        Tue
+                      </ToggleButton>
+                      <ToggleButton id="wednesday" value={4}>
+                        Wed
+                      </ToggleButton>
+                      <ToggleButton id="thursday" value={5}>
+                        Thu
+                      </ToggleButton>
+                      <ToggleButton id="friday" value={6}>
+                        Fri
+                      </ToggleButton>
+                      <ToggleButton id="saturday" value={7}>
+                        Sat
+                      </ToggleButton>
+                    </ToggleButtonGroup>
+                  )}
                 </Form.Group>
                 <Form.Group className="mb-3">
                   <Form.Label>
