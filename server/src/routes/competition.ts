@@ -57,12 +57,13 @@ router.post(
       res: Response,
       next: NextFunction
     ): Promise<void> => {
+      console.log(req.body);
       let daysOfWeek = 0;
       for (let i = 0; i < req.body.daysOfWeek.length; i++) {
         daysOfWeek += Math.pow(2, i);
       }
       let frequency: Frequency;
-      switch (req.body.frequencyStr) {
+      switch (req.body.repeatInterval) {
         case "daily":
           frequency = Frequency.DAILY;
           break;

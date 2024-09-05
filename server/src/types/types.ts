@@ -15,5 +15,5 @@ export interface CreateCompetition
   startDate: string;
   endDate: string;
   daysOfWeek: number[];
-  frequencyStr: string;
+  repeatInterval: string;
 }
