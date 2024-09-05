@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Frequency } from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
 const prisma = new PrismaClient();
 
@@ -6,41 +6,43 @@ import express from "express";
 const router = express.Router();
 const isAuth = require("./authMiddleware").isAuth;
 import asyncHandler from "express-async-handler";
-import { AuthRequest } from "../types/types";
+import { AuthRequest, CreateCompetition } from "../types/types";
 
 router.get(
   "/",
   isAuth,
-  asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
-    const currUserId = req.user.id;
+  asyncHandler(
+    async (req: AuthRequest<{}>, res: Response, next: NextFunction) => {
+      const currUserId = req.user.id;
 
-    const competitions = await prisma.users_in_competitions.findMany({
-      where: {
-        user_id: currUserId,
-      },
-      include: {
-        competition: {
-          select: {
-            name: true,
-            created_by: {
-              select: {
-                username: true,
+      const competitions = await prisma.users_in_competitions.findMany({
+        where: {
+          user_id: currUserId,
+        },
+        include: {
+          competition: {
+            select: {
+              name: true,
+              created_by: {
+                select: {
+                  username: true,
+                },
               },
             },
           },
         },
-      },
-    });
-    res.status(200).json(
-      competitions.map((entry) => ({
-        userId: entry.user_id,
-        competitionId: entry.competition_id,
-        joinedAt: entry.joined_at,
-        name: entry.competition.name,
-        createdBy: entry.competition.created_by.username,
-      }))
-    );
-  })
+      });
+      res.status(200).json(
+        competitions.map((entry) => ({
+          userId: entry.user_id,
+          competitionId: entry.competition_id,
+          joinedAt: entry.joined_at,
+          name: entry.competition.name,
+          createdBy: entry.competition.created_by.username,
+        }))
+      );
+    }
+  )
 );
 
 // TODO: Apply asyncHandler on all other functions in the server
@@ -51,16 +53,37 @@ router.post(
   isAuth,
   asyncHandler(
     async (
-      req: AuthRequest,
+      req: AuthRequest<CreateCompetition>,
       res: Response,
       next: NextFunction
     ): Promise<void> => {
+      let daysOfWeek = 0;
+      for (let i = 0; i < req.body.daysOfWeek.length; i++) {
+        daysOfWeek += Math.pow(2, i);
+      }
+      let frequency: Frequency;
+      switch (req.body.frequencyStr) {
+        case "daily":
+          frequency = Frequency.DAILY;
+          break;
+        case "weekly":
+          frequency = Frequency.WEEKLY;
+          break;
+        case "monthly":
+          frequency = Frequency.MONTHLY;
+          break;
+        default:
+          throw new Error("Invalid frequency type");
+      }
       const createCompetition = await prisma.competitions.create({
         data: {
           name: req.body.name,
-          created_by: { connect: { id: req.user.id } },
-          start_time: new Date(),
+          start_time: new Date(req.body.startDate),
+          end_time: new Date(req.body.endDate),
+          days_of_week: daysOfWeek,
           repeats_every: 0,
+          frequency: frequency,
+          created_by: { connect: { id: req.user.id } },
         },
       });
 
@@ -101,25 +124,27 @@ router.post(
 router.get(
   "/:id",
   isAuth,
-  asyncHandler(async (req: AuthRequest, res: Response, next): Promise<void> => {
-    console.log("dasdas");
-    const { id } = req.params;
-    const currUserId = req.user.id;
-    const competition = await prisma.competitions.findFirst({
-      where: { id: parseInt(id) },
-    });
-    const valid = await prisma.users_in_competitions.findFirst({
-      where: { user_id: currUserId, competition_id: parseInt(id) },
-    });
-    console.log(competition);
-    if (!competition) {
-      res.status(404).send({ message: "Competition not found" });
+  asyncHandler(
+    async (req: AuthRequest<{}>, res: Response, next): Promise<void> => {
+      console.log("dasdas");
+      const { id } = req.params;
+      const currUserId = req.user.id;
+      const competition = await prisma.competitions.findFirst({
+        where: { id: parseInt(id) },
+      });
+      const valid = await prisma.users_in_competitions.findFirst({
+        where: { user_id: currUserId, competition_id: parseInt(id) },
+      });
+      console.log(competition);
+      if (!competition) {
+        res.status(404).send({ message: "Competition not found" });
+      }
+      if (!valid) {
+        res.status(401).send({ message: "No permission to enter competition" });
+      }
+      res.status(200).send(valid);
     }
-    if (!valid) {
-      res.status(401).send({ message: "No permission to enter competition" });
-    }
-    res.status(200).send(valid);
-  })
+  )
 );
 
 export default router;
