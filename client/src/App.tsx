@@ -5,8 +5,8 @@ import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import RoomsList from "./pages/RoomsList";
-import Room from "./pages/Room";
+import CompetitionsList from "./pages/CompetitionsList";
+import Competition from "./pages/Competition";
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -38,8 +38,8 @@ function App() {
   }, []);
 
   // This is needed as without loading, i.e. isLoggedIn is initially set to false
-  // App loads and instantly renders /room before isLoggedIn is set to true and will redirect
-  // to home and /room will not finish loading
+  // App loads and instantly renders /competition before isLoggedIn is set to true and will redirect
+  // to home and /competition will not finish loading
   if (loading) {
     return <div>Authenticating...</div>; // Optionally show a loading indicator
   }
@@ -57,8 +57,11 @@ function App() {
             }
           />
           <Route path="/sign-up" element={<SignUp isLoggedIn={isLoggedIn} />} />
-          <Route path="/room" element={<RoomsList isLoggedIn={isLoggedIn} />} />
-          <Route path="/room/:id" element={<Room />} />
+          <Route
+            path="/competition"
+            element={<CompetitionsList isLoggedIn={isLoggedIn} />}
+          />
+          <Route path="/competition/:id" element={<Competition />} />
         </Routes>
       </div>
     </>

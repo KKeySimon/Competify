@@ -3,10 +3,10 @@ export interface LoginProps {
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export interface Room {
+export interface Competition {
   userId: number;
   joinedAt: string;
-  roomId: number;
-  roomName: string;
+  competitionId: number;
+  name: string;
   createdBy: string;
 }

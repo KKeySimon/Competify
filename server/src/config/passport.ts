@@ -1,7 +1,7 @@
-const passport = require("passport");
+import passport from "passport";
 const LocalStrategy = require("passport-local").Strategy;
-const pool = require("../model/pool");
-const bcrypt = require("bcryptjs");
+import pool from "../model/pool";
+import bcrypt from "bcryptjs";
 
 passport.use(
   new LocalStrategy(async (email, password, done) => {
@@ -26,7 +26,7 @@ passport.use(
   })
 );
 
-passport.serializeUser((user, done) => {
+passport.serializeUser((user: any, done) => {
   done(null, user.id);
 });
 

@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-function Room() {
+function Competition() {
   const { id } = useParams();
   const [error, setError] = useState<string>("");
   useEffect(() => {
-    fetch("http://localhost:3000/api/room/" + id, {
+    fetch("http://localhost:3000/api/competition/" + id, {
       credentials: "include",
     })
       .then((response) => {
         if (response.status === 404) {
-          throw new Error("Room not found");
+          throw new Error("Competition not found");
         } else if (response.status === 401) {
-          throw new Error("No permissions for this room");
+          throw new Error("No permissions for this competition");
         }
         return response.json();
       })
@@ -32,4 +32,4 @@ function Room() {
   return <div>{id}</div>;
 }
 
-export default Room;
+export default Competition;
