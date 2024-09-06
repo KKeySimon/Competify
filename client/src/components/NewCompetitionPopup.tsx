@@ -6,7 +6,6 @@ import {
   ListGroup,
   ListGroupItem,
   Modal,
-  ButtonGroup,
   ToggleButtonGroup,
   ToggleButton,
 } from "react-bootstrap";
@@ -157,12 +156,12 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
           setTrigger(false);
           setSuccess(false);
           setName("");
-          // TODO Add navgation
+          navigate("/" + data.id);
         }, 2000);
       })
       .catch((error) => {
-        setErrors({ ...errors, apiError: error.message });
         console.log(error.message);
+        setErrors({ ...errors, apiError: error.message });
       });
   }
   return trigger ? (

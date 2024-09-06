@@ -1,4 +1,4 @@
-import { PrismaClient, Frequency } from "@prisma/client";
+import { PrismaClient, Frequency, competitions } from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
 const prisma = new PrismaClient();
 
@@ -76,17 +76,32 @@ router.post(
         default:
           throw new Error("Invalid frequency type");
       }
-      const createCompetition = await prisma.competitions.create({
-        data: {
-          name: req.body.name,
-          start_time: new Date(req.body.startDate),
-          end_time: new Date(req.body.endDate),
-          days_of_week: daysOfWeek,
-          repeats_every: 0,
-          frequency: frequency,
-          created_by: { connect: { id: req.user.id } },
-        },
-      });
+      let createCompetition: competitions;
+      if (req.body.repeat) {
+        createCompetition = await prisma.competitions.create({
+          data: {
+            name: req.body.name,
+            start_time: new Date(req.body.startDate),
+            end_time: new Date(req.body.endDate),
+            days_of_week: daysOfWeek,
+            repeats_every: req.body.repeatEvery,
+            frequency: frequency,
+            created_by: { connect: { id: req.user.id } },
+          },
+        });
+      } else {
+        createCompetition = await prisma.competitions.create({
+          data: {
+            name: req.body.name,
+            start_time: new Date(req.body.startDate),
+            end_time: undefined,
+            days_of_week: undefined,
+            repeats_every: 0,
+            frequency: undefined,
+            created_by: { connect: { id: req.user.id } },
+          },
+        });
+      }
 
       await prisma.users_in_competitions.create({
         data: {
@@ -114,9 +129,9 @@ router.post(
         }
       );
       const inviteAllUsers = await Promise.all(invitePromises);
-      const filteredInvites = inviteAllUsers.filter(Boolean);
+      inviteAllUsers.filter(Boolean);
 
-      res.status(201).json(filteredInvites);
+      res.status(201).json(createCompetition);
     }
   )
 );
