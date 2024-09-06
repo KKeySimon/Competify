@@ -19,3 +19,7 @@ export interface CreateCompetition
   repeatEvery: number;
   repeat: boolean;
 }
+
+import { invites } from "@prisma/client";
+
+export interface HandleInvite extends Omit<invites, "sent_at" | "invitee_id"> {}

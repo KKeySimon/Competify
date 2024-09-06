@@ -20,3 +20,22 @@ a {
 a:hover {
   background-color: #e7e7e7;
 }
+
+.logoutNotif {
+  flex-direction: row;
+}
+
+.notificationBar {
+  position: absolute;
+  background-color: cornsilk;
+  border: 1px solid #ddd;
+  border-radius: 0.5em;
+  margin-top: 0.5em;
+  padding: 0.5em;
+  list-style-type: none;
+}
+
+.notification:not(:last-child) {
+  border-bottom: 1px solid;
+  border-color: black;
+}

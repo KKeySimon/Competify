@@ -142,7 +142,6 @@ router.get(
   isAuth,
   asyncHandler(
     async (req: AuthRequest<{}>, res: Response, next): Promise<void> => {
-      console.log("dasdas");
       const { id } = req.params;
       const currUserId = req.user.id;
       const competition = await prisma.competitions.findFirst({
@@ -151,7 +150,6 @@ router.get(
       const valid = await prisma.users_in_competitions.findFirst({
         where: { user_id: currUserId, competition_id: parseInt(id) },
       });
-      console.log(competition);
       if (!competition) {
         res.status(404).send({ message: "Competition not found" });
       }

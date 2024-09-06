@@ -10,3 +10,12 @@ export interface Competition {
   name: string;
   createdBy: string;
 }
+
+export interface Invite {
+  inviterId: number;
+  inviterName: string;
+  inviteeId: number;
+  competitionId: number;
+  competitionName: string;
+  sentAt: string;
+}

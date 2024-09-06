@@ -156,7 +156,7 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
           setTrigger(false);
           setSuccess(false);
           setName("");
-          navigate("/" + data.id);
+          navigate("/competition/" + data.id);
         }, 2000);
       })
       .catch((error) => {

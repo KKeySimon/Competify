@@ -58,7 +58,11 @@ router.get("/logout", (req, res, next) => {
   });
 });
 
+// TODO: Change naming to plural form. This is standard
 import competitionRoute from "./competition";
 router.use("/competition", competitionRoute);
+
+import invitesRoute from "./invites";
+router.use("/invites", invitesRoute);
 
 module.exports = router;
