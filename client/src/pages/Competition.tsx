@@ -72,7 +72,7 @@ function Competition() {
     return () => clearInterval(interval);
     // This must be added to dependency array as without it, interval
     // has no access to state for some reason, I'm guessing it snapshots the
-    // state and keeps using it. So even with a reference, to competition, we need
+    // state and keeps using it. So even with a reference to competition, we need
     // to add this dependency array so the interval is set after competition is fetched
   }, [competition]);
 

@@ -24,8 +24,10 @@ model users {
   created_competitions competitions[]          @relation("CreatedCompetitions")
   joined_competitions  users_in_competitions[]
 
-  invites_sent     invites[] @relation("InviterRelation")
-  invites_received invites[] @relation("InviteeRelation")
+  invites_sent     invites[]     @relation("InviterRelation")
+  invites_received invites[]     @relation("InviteeRelation")
+  submissions      submissions[]
+  events           events[]
 }
 
 model users_in_competitions {
@@ -63,8 +65,30 @@ model competitions {
   user_id               Int
   created_at            DateTime                @default(now())
   updated_at            DateTime                @updatedAt
+  is_numerical          Boolean
   users_in_competitions users_in_competitions[]
   invites               invites[]
+  events                events[]
+}
+
+model events {
+  id             Int           @id @default(autoincrement())
+  competition_id Int
+  belongs_to     competitions  @relation(fields: [competition_id], references: [id])
+  date           DateTime
+  winner_id      Int?
+  winner         users?        @relation(fields: [winner_id], references: [id])
+  upcoming       Boolean
+  submissions    submissions[]
+}
+
+model submissions {
+  id         Int    @id @default(autoincrement())
+  event      events @relation(fields: [event_id], references: [id])
+  event_id   Int
+  belongs_to users  @relation(fields: [user_id], references: [id])
+  user_id    Int
+  content    String
 }
 
 enum Frequency {
