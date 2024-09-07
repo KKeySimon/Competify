@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import PageNotFound from "./pages/PageNotFound";
 import CompetitionsList from "./pages/CompetitionsList";
 import Competition from "./pages/Competition";
 import { Routes, Route } from "react-router-dom";
@@ -62,6 +63,7 @@ function App() {
             element={<CompetitionsList isLoggedIn={isLoggedIn} />}
           />
           <Route path="/competition/:id" element={<Competition />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </div>
     </>

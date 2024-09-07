@@ -156,7 +156,7 @@ router.get(
       if (!valid) {
         res.status(401).send({ message: "No permission to enter competition" });
       }
-      res.status(200).send(valid);
+      res.status(200).send(competition);
     }
   )
 );

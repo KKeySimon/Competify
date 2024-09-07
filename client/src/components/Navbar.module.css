@@ -33,6 +33,7 @@ a:hover {
   margin-top: 0.5em;
   padding: 0.5em;
   list-style-type: none;
+  right: 0;
 }
 
 .notification:not(:last-child) {

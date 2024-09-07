@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LoginProps, Invite } from "../../types";
 import styles from "./Navbar.module.css";
 import { Bell } from "react-bootstrap-icons";
@@ -26,6 +26,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
         console.log(error.message);
       });
   }
+  const navigate = useNavigate();
   async function handleInvite(
     inviterId: number,
     competitionId: number,
@@ -42,7 +43,19 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
         inviter_id: inviterId,
         competition_id: competitionId,
       }),
-    });
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Something went wrong!");
+        }
+        // TODO: Show feedback invite was accepted
+        if (accept) {
+          navigate("/competition/" + competitionId);
+        }
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
   }
 
   useEffect(() => {
@@ -61,7 +74,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
       .catch((error) => {
         console.log(error.message);
       });
-  });
+  }, []);
 
   return (
     <div className={styles.navbar}>
@@ -69,59 +82,70 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
       <Link to="/competition">Competitions</Link>
       {isLoggedIn ? (
         <div className={styles.logoutNotif}>
-          <Bell onClick={() => setBellClicked(!bellClicked)} />
+          <Bell
+            onClick={() => {
+              setBellClicked(!bellClicked);
+              setExpandedNotifications({});
+            }}
+          />
           {bellClicked && (
             <ul className={styles.notificationBar}>
-              {notifications.map((notification) => {
-                const key =
-                  notification.inviteeId + ";" + notification.competitionId;
-                const isExpanded = expandedNotfications[key];
-                return (
-                  <li
-                    key={key}
-                    className={styles.notification}
-                    onClick={() =>
-                      setExpandedNotifications((prev) => ({
-                        ...prev,
-                        [key]: !prev[key],
-                      }))
-                    }
-                  >
-                    {isExpanded ? (
-                      <div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleInvite(
-                              notification.inviterId,
-                              notification.competitionId,
-                              true
-                            );
-                          }}
-                        >
-                          Accept
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleInvite(
-                              notification.inviterId,
-                              notification.competitionId,
-                              false
-                            );
-                          }}
-                        >
-                          Decline
-                        </button>
-                      </div>
-                    ) : (
-                      notification.inviterName +
-                      " sent you an invite to room " +
-                      notification.competitionName
-                    )}
-                  </li>
-                );
-              })}
+              {notifications.length !== 0 ? (
+                <>
+                  {notifications.map((notification) => {
+                    const key =
+                      notification.inviteeId + ";" + notification.competitionId;
+                    const isExpanded = expandedNotfications[key];
+                    return (
+                      <li
+                        key={key}
+                        className={styles.notification}
+                        onClick={() =>
+                          setExpandedNotifications((prev) => ({
+                            ...prev,
+                            [key]: !prev[key],
+                          }))
+                        }
+                      >
+                        {isExpanded ? (
+                          <div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleInvite(
+                                  notification.inviterId,
+                                  notification.competitionId,
+                                  true
+                                );
+                              }}
+                            >
+                              Accept
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleInvite(
+                                  notification.inviterId,
+                                  notification.competitionId,
+                                  false
+                                );
+                              }}
+                            >
+                              Decline
+                            </button>
+                          </div>
+                        ) : (
+                          notification.inviterName +
+                          " sent you an invite to room " +
+                          notification.competitionName
+                        )}
+                      </li>
+                    );
+                  })}
+                </>
+              ) : (
+                <li className={styles.notification}>No notifications!</li>
+              )}
             </ul>
           )}
 
