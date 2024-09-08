@@ -92,6 +92,7 @@ model submissions {
 }
 
 enum Frequency {
+  NONE
   DAILY
   WEEKLY
   MONTHLY

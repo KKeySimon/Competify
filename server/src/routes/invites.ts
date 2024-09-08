@@ -1,10 +1,10 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { AuthRequest } from "../types/types";
-import { PrismaClient } from "@prisma/client";
 import { HandleInvite } from "../types/types";
 
-const prisma = new PrismaClient();
+import prisma from "../prisma/client";
+
 const router = express.Router();
 const isAuth = require("./authMiddleware").isAuth;
 

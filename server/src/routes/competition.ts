@@ -1,12 +1,13 @@
-import { PrismaClient, Frequency, competitions } from "@prisma/client";
+import { Frequency, competitions } from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
-const prisma = new PrismaClient();
-
 import express from "express";
+import asyncHandler from "express-async-handler";
+
+import { AuthRequest, CreateCompetition } from "../types/types";
+import prisma from "../prisma/client";
+
 const router = express.Router();
 const isAuth = require("./authMiddleware").isAuth;
-import asyncHandler from "express-async-handler";
-import { AuthRequest, CreateCompetition } from "../types/types";
 
 router.get(
   "/",
@@ -86,6 +87,7 @@ router.post(
             days_of_week: daysOfWeek,
             repeats_every: req.body.repeatEvery,
             frequency: frequency,
+            is_numerical: true, // TODO
             created_by: { connect: { id: req.user.id } },
           },
         });
@@ -97,7 +99,8 @@ router.post(
             end_time: undefined,
             days_of_week: undefined,
             repeats_every: 0,
-            frequency: undefined,
+            frequency: Frequency.NONE,
+            is_numerical: true, // TODO
             created_by: { connect: { id: req.user.id } },
           },
         });

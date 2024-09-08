@@ -11,6 +11,8 @@ const corsOptions = {
 };
 import passport from "passport";
 import pool from "./model/pool";
+import { startCronJob } from "./util/minute_cron";
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -55,5 +57,7 @@ app.use((err: any, req, res, next) => {
   console.error(err);
   res.status(500).send(err);
 });
+
+startCronJob();
 
 app.listen(PORT, () => console.log("Listening in on port " + PORT));
