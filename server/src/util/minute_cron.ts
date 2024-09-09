@@ -3,6 +3,8 @@ import { CronJob } from "cron";
 import prisma from "../prisma/client";
 
 export const startCronJob = () => {
+  // TODO: See if there are any upcoming events we missed and process
+
   CronJob.from({
     cronTime: "* * * * *", // every minute
     onTick: async () => {
@@ -81,6 +83,7 @@ const getCurrentEventCompetitions = async () => {
   // return list of competition ids
   const competitionIds = new Set();
   upcomingEvents.forEach(({ competition_id }) =>
+    // TODO: Set upcoming of this event to false, create new upcoming event
     competitionIds.add(competition_id)
   );
   return competitionIds;
