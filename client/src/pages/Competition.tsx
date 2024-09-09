@@ -18,6 +18,13 @@ function Competition() {
     is_numerical: boolean;
   }
 
+  interface Submission {
+    id: number;
+    event_id: number;
+    user_id: number;
+    content: string;
+  }
+
   interface Event {
     competition_id: number;
     id: number;
@@ -34,6 +41,7 @@ function Competition() {
   const [error, setError] = useState<string>("");
   const [timeLeft, setTimeLeft] = useState<string>("");
   const [trigger, setTrigger] = useState<boolean>(false);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
   useEffect(() => {
     const fetchCompetitionData = async () => {
       try {
@@ -70,12 +78,24 @@ function Competition() {
         if (!eventsResponse.ok) {
           throw new Error("Error getting upcoming event");
         }
-        const eventsData = await eventsResponse.json();
+        const eventsData: Event = await eventsResponse.json();
         const parsedEvents = {
           ...eventsData,
           date: new Date(eventsData.date),
         };
         setUpcoming(parsedEvents);
+
+        const submissionsResponse = await fetch(
+          `http://localhost:3000/api/competition/${id}/events/${eventsData.id}`,
+          {
+            credentials: "include",
+          }
+        );
+        if (!submissionsResponse.ok) {
+          throw new Error("Error getting submissions");
+        }
+        const submissionsData: Submission[] = await submissionsResponse.json();
+        setSubmissions(submissionsData);
       } catch (err) {
         if (err instanceof Error) {
           console.log(err.message);
@@ -130,6 +150,13 @@ function Competition() {
           <h1>{competition.name}</h1>
           {upcoming && (
             <div>
+              <ul>
+                {submissions.map((submission) => (
+                  <li key={submission.id}>
+                    {submission.id} Submitted: {submission.content}
+                  </li>
+                ))}
+              </ul>
               <p>Upcoming Deadline: {timeLeft}</p>
               <Button onClick={() => setTrigger(true)}>
                 Create Submission

@@ -15,7 +15,6 @@ router.get(
   isAuth,
   isCompetitionAuth,
   asyncHandler(async (req: AuthRequest<{}>, res, next) => {
-    res.status(500);
     const currUserId = req.user.id;
     const { competitionId } = req.params;
     const competitionIdNumber = parseInt(competitionId, 10);
@@ -33,12 +32,28 @@ router.get(
         },
       },
     });
-    console.log(events);
     res.status(200).json(events);
   })
 );
 
-// ------------ EVERYTHING UNDER IS NOT TESTED ------------
+router.get(
+  "/:eventId",
+  isAuth,
+  isCompetitionAuth,
+  asyncHandler(async (req: AuthRequest<{}>, res, next) => {
+    const currUserId = req.user.id;
+    const { eventId } = req.params;
+    const eventIdNumber = parseInt(eventId, 10);
+
+    const submissions = await prisma.submissions.findMany({
+      where: {
+        event_id: eventIdNumber,
+      },
+    });
+    res.status(200).json(submissions);
+  })
+);
+
 router.post(
   "/:eventId/submit",
   isAuth,
@@ -57,6 +72,8 @@ router.post(
     res.status(201).json(submission);
   })
 );
+
+// ------------ EVERYTHING UNDER IS NOT TESTED ------------
 
 router.post(
   "/:eventId/edit/:submissionId",

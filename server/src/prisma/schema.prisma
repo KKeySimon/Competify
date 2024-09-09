@@ -89,6 +89,8 @@ model submissions {
   belongs_to users  @relation(fields: [user_id], references: [id])
   user_id    Int
   content    String
+
+  @@unique([event_id, user_id])
 }
 
 enum Frequency {

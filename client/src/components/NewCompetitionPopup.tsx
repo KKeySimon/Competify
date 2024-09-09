@@ -138,7 +138,6 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
         if (!response.ok) {
           throw new Error("Something went wrong!");
         }
-        console.log(response);
         return response.json();
       })
       .then((data) => {
