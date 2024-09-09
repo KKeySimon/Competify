@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Frequency" AS ENUM ('DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY');
+CREATE TYPE "Frequency" AS ENUM ('NONE', 'DAILY', 'WEEKLY', 'MONTHLY');
 
 -- CreateTable
 CREATE TABLE "session" (
@@ -48,12 +48,34 @@ CREATE TABLE "competitions" (
     "end_time" TIMESTAMP(3),
     "days_of_week" INTEGER,
     "repeats_every" INTEGER NOT NULL,
-    "frequency" "Frequency" NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "frequency" "Frequency",
+    "user_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "is_numerical" BOOLEAN NOT NULL,
 
     CONSTRAINT "competitions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "events" (
+    "id" SERIAL NOT NULL,
+    "competition_id" INTEGER NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "winner_id" INTEGER,
+    "upcoming" BOOLEAN NOT NULL,
+
+    CONSTRAINT "events_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "submissions" (
+    "id" SERIAL NOT NULL,
+    "event_id" INTEGER NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "content" TEXT NOT NULL,
+
+    CONSTRAINT "submissions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -81,4 +103,16 @@ ALTER TABLE "invites" ADD CONSTRAINT "invites_invitee_id_fkey" FOREIGN KEY ("inv
 ALTER TABLE "invites" ADD CONSTRAINT "invites_competition_id_fkey" FOREIGN KEY ("competition_id") REFERENCES "competitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "competitions" ADD CONSTRAINT "competitions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "competitions" ADD CONSTRAINT "competitions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "events" ADD CONSTRAINT "events_competition_id_fkey" FOREIGN KEY ("competition_id") REFERENCES "competitions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "events" ADD CONSTRAINT "events_winner_id_fkey" FOREIGN KEY ("winner_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "submissions" ADD CONSTRAINT "submissions_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "events"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "submissions" ADD CONSTRAINT "submissions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,5 +1,5 @@
 import { Frequency, competitions } from "@prisma/client";
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import express from "express";
 import asyncHandler from "express-async-handler";
 
@@ -59,10 +59,6 @@ router.post(
       next: NextFunction
     ): Promise<void> => {
       console.log(req.body);
-      let daysOfWeek = 0;
-      for (let i = 0; i < req.body.daysOfWeek.length; i++) {
-        daysOfWeek += Math.pow(2, i);
-      }
       let frequency: Frequency;
       switch (req.body.repeatInterval) {
         case "daily":
@@ -84,7 +80,6 @@ router.post(
             name: req.body.name,
             start_time: new Date(req.body.startDate),
             end_time: new Date(req.body.endDate),
-            days_of_week: daysOfWeek,
             repeats_every: req.body.repeatEvery,
             frequency: frequency,
             is_numerical: true, // TODO
@@ -163,5 +158,8 @@ router.get(
     }
   )
 );
+
+import eventsRoute from "./events";
+router.use(":competitionId/events", eventsRoute);
 
 export default router;

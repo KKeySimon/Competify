@@ -58,7 +58,7 @@ model competitions {
   start_time            DateTime
   end_time              DateTime?
   // https://stackoverflow.com/questions/313417/whats-the-best-way-to-store-the-days-of-the-week-an-event-takes-place-on-in-a-r
-  days_of_week          Int?
+  // days_of_week Int? Removed for now cuz it adds too much complexity
   repeats_every         Int
   frequency             Frequency?
   created_by            users                   @relation("CreatedCompetitions", fields: [user_id], references: [id])

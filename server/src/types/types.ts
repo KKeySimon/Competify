@@ -23,3 +23,7 @@ export interface CreateCompetition
 import { invites } from "@prisma/client";
 
 export interface HandleInvite extends Omit<invites, "sent_at" | "invitee_id"> {}
+
+export interface CreateSubmissions {
+  content: string;
+}
