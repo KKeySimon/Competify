@@ -59,6 +59,10 @@ router.post(
       next: NextFunction
     ): Promise<void> => {
       console.log(req.body);
+      const startDate = new Date(req.body.startDate);
+      if (startDate <= new Date()) {
+        res.status(403).send({ message: "Start date must be in the future" });
+      }
       let frequency: Frequency;
       switch (req.body.repeatInterval) {
         case "daily":
@@ -78,7 +82,7 @@ router.post(
         createCompetition = await prisma.competitions.create({
           data: {
             name: req.body.name,
-            start_time: new Date(req.body.startDate),
+            start_time: startDate,
             end_time: new Date(req.body.endDate),
             repeats_every: req.body.repeatEvery,
             frequency: frequency,
@@ -90,7 +94,7 @@ router.post(
         createCompetition = await prisma.competitions.create({
           data: {
             name: req.body.name,
-            start_time: new Date(req.body.startDate),
+            start_time: startDate,
             end_time: undefined,
             days_of_week: undefined,
             repeats_every: 0,
@@ -100,6 +104,14 @@ router.post(
           },
         });
       }
+
+      await prisma.events.create({
+        data: {
+          competition_id: createCompetition.id,
+          date: startDate,
+          upcoming: true,
+        },
+      });
 
       await prisma.users_in_competitions.create({
         data: {
@@ -134,7 +146,6 @@ router.post(
   )
 );
 
-// Not finished
 router.get(
   "/:id",
   isAuth,
@@ -160,6 +171,6 @@ router.get(
 );
 
 import eventsRoute from "./events";
-router.use(":competitionId/events", eventsRoute);
+router.use("/:competitionId/events", eventsRoute);
 
 export default router;

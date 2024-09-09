@@ -19,3 +19,8 @@ export interface Invite {
   competitionName: string;
   sentAt: string;
 }
+
+export interface PopupProps {
+  trigger: boolean;
+  setTrigger: React.Dispatch<React.SetStateAction<boolean>>;
+}

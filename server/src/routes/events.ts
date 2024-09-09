@@ -5,21 +5,22 @@ import { AuthRequest, CreateSubmissions } from "../types/types";
 import { competitions, Frequency } from "@prisma/client";
 import { addDays, addMonths, addWeeks, isBefore, isEqual } from "date-fns";
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const isAuth = require("./authMiddleware").isAuth;
 const isCompetitionAuth = require("./authMiddleware").isCompetitionAuth;
 
-// NOTHING IN events.ts IS TESTED
+// Tested
 router.get(
   "/upcoming",
   isAuth,
   isCompetitionAuth,
   asyncHandler(async (req: AuthRequest<{}>, res, next) => {
+    res.status(500);
     const currUserId = req.user.id;
     const { competitionId } = req.params;
     const competitionIdNumber = parseInt(competitionId, 10);
 
-    const events = await prisma.events.findMany({
+    const events = await prisma.events.findFirst({
       where: {
         competition_id: competitionIdNumber,
         upcoming: true,
@@ -37,6 +38,7 @@ router.get(
   })
 );
 
+// ------------ EVERYTHING UNDER IS NOT TESTED ------------
 router.post(
   "/:eventId/submit",
   isAuth,

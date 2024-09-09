@@ -13,11 +13,7 @@ import { useNavigate } from "react-router-dom";
 import DateTimePicker from "./DateTimePicker";
 import "react-day-picker/style.css";
 import { format } from "date-fns";
-
-interface PopupProps {
-  trigger: boolean;
-  setTrigger: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import { PopupProps } from "../../types";
 
 interface newCompetitionError {
   name: string;
