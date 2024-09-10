@@ -1,5 +1,5 @@
+require("dotenv").config();
 import { CronJob } from "cron";
-
 import prisma from "../prisma/client";
 
 export const startCronJob = () => {
@@ -22,33 +22,45 @@ const sendNotifications = async () => {
   if (competitionIds.size == 0) return;
 
   const usersInCompetitions = await getUsersInCompetitions(competitionIds);
-  usersInCompetitions.forEach(async ({ user_id, competition_id }) => {
-    await sendNotification(user_id, competition_id);
-  });
+  usersInCompetitions.forEach(
+    async ({ user_id, competition_id, user_email }) => {
+      await sendNotification(user_id, competition_id, user_email);
+    }
+  );
 };
 
-const sendNotification = async (user_id, competition_id) => {
-  // TODO
-  console.log(`${user_id}'s competition ${competition_id} is now starting`);
+const sendNotification = async (
+  user_id: number,
+  competition_id: number,
+  user_email: string
+) => {
+  console.log(
+    `${user_id}'s competition ${competition_id} is now starting to email ${user_email}`
+  );
 };
 
-const getUsersInCompetitions = async (competitionIds) => {
+const getUsersInCompetitions = async (competitionIds: Set<number>) => {
   // Query the users_in_competitions table
+  const competitionIdsArr = Array.from(competitionIds);
   const results = await prisma.users_in_competitions.findMany({
     where: {
-      competition_id: {
-        in: competitionIds,
-      },
+      competition_id: { in: competitionIdsArr },
     },
     select: {
       user_id: true,
       competition_id: true,
+      user: {
+        select: {
+          email: true,
+        },
+      },
     },
   });
 
   return results.map((result) => ({
     user_id: result.user_id,
     competition_id: result.competition_id,
+    user_email: result.user.email,
   }));
 };
 
@@ -79,9 +91,8 @@ const getCurrentEventCompetitions = async () => {
       },
     },
   });
-
   // return list of competition ids
-  const competitionIds = new Set();
+  const competitionIds = new Set<number>();
   upcomingEvents.forEach(({ competition_id }) =>
     // TODO: Set upcoming of this event to false, create new upcoming event
     competitionIds.add(competition_id)
