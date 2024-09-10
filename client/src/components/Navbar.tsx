@@ -13,7 +13,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
     Record<string, boolean>
   >({});
   async function handleLogout() {
-    await fetch("http://localhost:3000/api/logout", {
+    await fetch("http://localhost:4000/api/logout", {
       credentials: "include",
     })
       .then((response) => {
@@ -21,11 +21,14 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
           throw new Error("Something went wrong!");
         }
         setIsLoggedIn(false);
+        // Send user to homepage when Logout
+        navigate("/");
       })
       .catch((error) => {
         console.log(error.message);
       });
   }
+
   const navigate = useNavigate();
   async function handleInvite(
     inviterId: number,
@@ -33,7 +36,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
     accept: boolean
   ) {
     const method = accept ? "POST" : "DELETE";
-    await fetch("http://localhost:3000/api/invites/handle", {
+    await fetch("http://localhost:4000/api/invites/handle", {
       method: method,
       headers: {
         "Content-Type": "application/json",
@@ -59,7 +62,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   }
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/invites", {
+    fetch("http://localhost:4000/api/invites", {
       credentials: "include",
     })
       .then((response) => {

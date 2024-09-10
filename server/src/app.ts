@@ -46,7 +46,7 @@ require("./config/passport");
 app.use(passport.initialize());
 app.use(passport.session());
 
-const PORT = 3000;
+const PORT = 4000;
 const indexRouter = require("./routes/index");
 app.use("/api", indexRouter);
 

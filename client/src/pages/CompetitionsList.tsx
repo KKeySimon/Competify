@@ -23,7 +23,7 @@ function CompetitionsList({ isLoggedIn }: CompetitionsListProps) {
   }, [isLoggedIn, navigate]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/competition", {
+    fetch("http://localhost:4000/api/competition", {
       credentials: "include",
     })
       .then((response) => {

@@ -19,7 +19,7 @@ function App() {
   // need to use whether user is logged in. Shouldn't tighty couple the 2 together
   useEffect(() => {
     // If login status not in local storage make API call
-    fetch("http://localhost:3000/api", { credentials: "include" })
+    fetch("http://localhost:4000/api", { credentials: "include" })
       .then((response) => {
         if (response.status >= 400) {
           throw new Error("Unauthorized");

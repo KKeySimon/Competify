@@ -22,7 +22,7 @@ function Competition() {
   const [error, setError] = useState<string>("");
   const [timeLeft, setTimeLeft] = useState<string>("");
   useEffect(() => {
-    fetch("http://localhost:3000/api/competition/" + id, {
+    fetch("http://localhost:4000/api/competition/" + id, {
       credentials: "include",
     })
       .then((response) => {

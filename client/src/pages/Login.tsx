@@ -54,7 +54,7 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
     setErrors({ email: "", password: "", apiError: "" });
     const userData = { username: email, password };
 
-    await fetch("http://localhost:3000/api/login", {
+    await fetch("http://localhost:4000/api/login", {
       method: "POST",
       // This must be included to send/receive session cookies to the browser (learned it the hard way...)
       credentials: "include",
