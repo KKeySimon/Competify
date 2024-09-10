@@ -38,7 +38,9 @@ const run = async () => {
   );
 
   try {
-    return await sesClient.send(sendEmailCommand);
+    const log = await sesClient.send(sendEmailCommand);
+    console.log(log);
+    return log;
   } catch (caught) {
     if (caught instanceof Error && caught.name === "MessageRejected") {
       /** @type { import('@aws-sdk/client-ses').MessageRejected} */
@@ -48,5 +50,4 @@ const run = async () => {
     throw caught;
   }
 };
-
 run();

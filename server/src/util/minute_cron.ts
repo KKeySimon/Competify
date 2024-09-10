@@ -1,6 +1,8 @@
 require("dotenv").config();
 import { CronJob } from "cron";
 import prisma from "../prisma/client";
+import { $Enums, Frequency } from "@prisma/client";
+import { addDays, addMonths, addWeeks } from "date-fns";
 
 export const startCronJob = () => {
   // TODO: See if there are any upcoming events we missed and process
@@ -90,12 +92,64 @@ const getCurrentEventCompetitions = async () => {
         lt: endOfMinute,
       },
     },
+    select: {
+      id: true,
+      competition_id: true,
+      date: true,
+      belongs_to: {
+        select: {
+          repeats_every: true,
+          frequency: true,
+        },
+      },
+    },
   });
-  // return list of competition ids
+
+  updateUpcoming(upcomingEvents);
+
   const competitionIds = new Set<number>();
-  upcomingEvents.forEach(({ competition_id }) =>
-    // TODO: Set upcoming of this event to false, create new upcoming event
-    competitionIds.add(competition_id)
-  );
+  upcomingEvents.forEach(({ competition_id }) => {
+    competitionIds.add(competition_id);
+  });
   return competitionIds;
+};
+
+// NOT TESTED
+interface OldUpcomingEvent {
+  id: number;
+  competition_id: number;
+  date: Date;
+  belongs_to: { repeats_every: number; frequency: $Enums.Frequency };
+}
+
+const updateUpcoming = (upcomingEvents: OldUpcomingEvent[]) => {
+  upcomingEvents.forEach(async (event) => {
+    await prisma.events.update({
+      where: {
+        id: event.id,
+      },
+      data: {
+        upcoming: false,
+      },
+    });
+
+    let newDate: Date;
+    if (event.belongs_to.frequency === Frequency.DAILY) {
+      newDate = addDays(event.date, event.belongs_to.repeats_every);
+    } else if (event.belongs_to.frequency === Frequency.WEEKLY) {
+      newDate = addWeeks(event.date, event.belongs_to.repeats_every);
+    } else if (event.belongs_to.frequency === Frequency.MONTHLY) {
+      newDate = addMonths(event.date, event.belongs_to.repeats_every);
+    } else {
+      console.error("Invalid Frequency!");
+    }
+
+    await prisma.events.create({
+      data: {
+        competition_id: event.competition_id,
+        date: newDate,
+        upcoming: true,
+      },
+    });
+  });
 };
