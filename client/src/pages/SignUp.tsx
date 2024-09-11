@@ -82,6 +82,9 @@ function SignUp({ isLoggedIn }: SignUpProps) {
     const userData = { username, password, email };
     console.log(password);
 
+    // const url = process.env.SERVER_API_URL;
+    // console.log(String(url) + "/sign-up");
+
     await fetch("http://localhost:4000/api/sign-up", {
       method: "POST",
       headers: {
