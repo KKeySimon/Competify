@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import SubmissionPopup from "../components/SubmissionPopup";
+import { Submission } from "../../types";
 
 function Competition() {
   interface Competition {
@@ -16,13 +17,6 @@ function Competition() {
     created_at: string;
     updated_at: string;
     is_numerical: boolean;
-  }
-
-  interface Submission {
-    id: number;
-    event_id: number;
-    user_id: number;
-    content: string;
   }
 
   interface Event {
@@ -42,6 +36,23 @@ function Competition() {
   const [timeLeft, setTimeLeft] = useState<string>("");
   const [trigger, setTrigger] = useState<boolean>(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+
+  const handleSubmitSubmission = (newSubmission: Submission) => {
+    setSubmissions((prevSubmissions) => {
+      const existingIndex = prevSubmissions.findIndex(
+        (submission) => submission.user_id === newSubmission.user_id
+      );
+
+      if (existingIndex !== -1) {
+        const updatedSubmissions = [...prevSubmissions];
+        updatedSubmissions[existingIndex] = newSubmission;
+        return updatedSubmissions;
+      } else {
+        return [...prevSubmissions, newSubmission];
+      }
+    });
+  };
+
   useEffect(() => {
     const fetchCompetitionData = async () => {
       try {
@@ -152,20 +163,22 @@ function Competition() {
             <div>
               <ul>
                 {submissions.map((submission) => (
-                  <li key={submission.id}>
-                    {submission.id} Submitted: {submission.content}
+                  <li key={submission.user_id}>
+                    {submission.belongs_to.username} Submitted:{" "}
+                    {submission.content}
                   </li>
                 ))}
               </ul>
               <p>Upcoming Deadline: {timeLeft}</p>
               <Button onClick={() => setTrigger(true)}>
-                Create Submission
+                Create/Update Submission
               </Button>
               <SubmissionPopup
                 trigger={trigger}
                 setTrigger={setTrigger}
                 isNumerical={competition.is_numerical}
                 eventId={upcoming?.id}
+                handleSubmitSubmission={handleSubmitSubmission}
               />
             </div>
           )}

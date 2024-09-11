@@ -24,3 +24,12 @@ export interface PopupProps {
   trigger: boolean;
   setTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
+export interface Submission {
+  id: number;
+  event_id: number;
+  user_id: number;
+  belongs_to: {
+    username: string;
+  };
+  content: string | number;
+}

@@ -1,11 +1,12 @@
-import { CloseButton, Form, Button } from "react-bootstrap";
-import { PopupProps } from "../../types";
+import { CloseButton, Form, Button, Alert } from "react-bootstrap";
+import { PopupProps, Submission } from "../../types";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 interface SubmissionPopupProps extends PopupProps {
   isNumerical: boolean;
   eventId: number;
+  handleSubmitSubmission: (newSubmission: Submission) => void;
 }
 
 function SubmissionPopup({
@@ -13,10 +14,12 @@ function SubmissionPopup({
   setTrigger,
   isNumerical,
   eventId,
+  handleSubmitSubmission,
 }: SubmissionPopupProps) {
   const { id } = useParams();
   const [submission, setSubmission] = useState<string | number>("");
-
+  const [success, setSuccess] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
   // TODO: NOT COMPELTED
   async function handleCreateSubmission(e: React.FormEvent) {
     e.preventDefault();
@@ -38,15 +41,27 @@ function SubmissionPopup({
     )
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Submission Error!");
+          // TODO : Update other errors to include this
+          // TODO: errorMessage has not been tested yet.
+          const errorMessage = response.text();
+          const errorCode = response.status;
+          throw new Error(
+            `Submission Error! Code: ${errorCode}, Message: ${errorMessage}`
+          );
         }
+        setSuccess(true);
+        setTimeout(() => {
+          setTrigger(false);
+          setSuccess(false);
+          setSubmission("");
+        }, 1000);
         return response.json();
       })
-      .then((data) => {
-        console.log(data);
+      .then((data: Submission) => {
+        handleSubmitSubmission(data);
       })
       .catch((error) => {
-        console.log(error.message);
+        setError(error.message);
       });
   }
 
@@ -54,6 +69,10 @@ function SubmissionPopup({
     <div>
       <CloseButton onClick={() => setTrigger(false)} />
       <h1>Create a submission</h1>
+      {error && <Alert variant="danger">{error}</Alert>}
+      {success && (
+        <Alert variant="success">Submission successfully added!</Alert>
+      )}
       <Form onSubmit={handleCreateSubmission}>
         <Form.Group className="mb-3" controlId="formSubmission">
           <Form.Label>Enter Progress</Form.Label>

@@ -12,8 +12,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.645.0",
-    "@aws-sdk/credential-providers": "^3.645.0",
     "@prisma/client": "^5.19.0",
     "bcryptjs": "^2.4.3",
     "connect-pg-simple": "^9.0.1",

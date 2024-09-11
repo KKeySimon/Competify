@@ -49,6 +49,17 @@ router.get(
       where: {
         event_id: eventIdNumber,
       },
+      select: {
+        id: true,
+        event_id: true,
+        user_id: true,
+        content: true,
+        belongs_to: {
+          select: {
+            username: true,
+          },
+        },
+      },
     });
     res.status(200).json(submissions);
   })
@@ -62,51 +73,59 @@ router.post(
     const currUserId = req.user.id;
     const { eventId } = req.params;
     const eventIdNumber = parseInt(eventId, 10);
-    const submission = await prisma.submissions.create({
-      data: {
-        event_id: eventIdNumber,
-        user_id: currUserId,
-        content: req.body.content,
-      },
-    });
-    res.status(201).json(submission);
-  })
-);
+    const content = req.body.content;
 
-// ------------ EVERYTHING UNDER IS NOT TESTED ------------
-
-router.post(
-  "/:eventId/edit/:submissionId",
-  isAuth,
-  isCompetitionAuth,
-  asyncHandler(async (req: AuthRequest<CreateSubmissions>, res, next) => {
-    const currUserId = req.user.id;
-    const { eventId, submissionId } = req.params;
-    const eventIdNumber = parseInt(eventId, 10);
-    const submissionIdNumber = parseInt(submissionId, 10);
     const existingSubmission = await prisma.submissions.findUnique({
-      where: { id: submissionIdNumber },
-    });
-    if (!existingSubmission) {
-      res.status(404).send({ message: "Submission not found" });
-    }
-    if (existingSubmission.user_id !== currUserId) {
-      res.status(401).send({
-        message: "No edit permission on submission",
-      });
-    }
-    if (existingSubmission.event_id !== eventIdNumber) {
-      res.status(400).send({ message: "Wrong event id" });
-    }
-    const submission = await prisma.submissions.update({
       where: {
-        id: submissionIdNumber,
-      },
-      data: {
-        content: req.body.content,
+        event_id_user_id: {
+          event_id: eventIdNumber,
+          user_id: currUserId,
+        },
       },
     });
-    res.status(201).json(submission);
+
+    if (existingSubmission) {
+      const updatedSubmission = await prisma.submissions.update({
+        where: {
+          id: existingSubmission.id,
+        },
+        data: {
+          content,
+        },
+        select: {
+          id: true,
+          event_id: true,
+          user_id: true,
+          content: true,
+          belongs_to: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      });
+      res.status(200).json(updatedSubmission);
+    } else {
+      const submission = await prisma.submissions.create({
+        data: {
+          event_id: eventIdNumber,
+          user_id: currUserId,
+          content: req.body.content,
+        },
+        select: {
+          id: true,
+          event_id: true,
+          user_id: true,
+          content: true,
+          belongs_to: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      });
+      res.status(201).json(submission);
+    }
   })
 );
 
