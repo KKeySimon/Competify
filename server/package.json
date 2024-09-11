@@ -26,6 +26,7 @@
     "express-async-handler": "^1.2.0",
     "express-session": "^1.18.0",
     "install": "^0.13.0",
+    "mailgun.js": "^10.2.3",
     "npm": "^10.8.2",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
