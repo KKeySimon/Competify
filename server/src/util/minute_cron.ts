@@ -3,6 +3,7 @@ import { CronJob } from "cron";
 import prisma from "../prisma/client";
 import { $Enums, Frequency } from "@prisma/client";
 import { addDays, addMonths, addWeeks } from "date-fns";
+import { sendEmail } from "./mailgun";
 
 export const startCronJob = () => {
   // TODO: See if there are any upcoming events we missed and process
@@ -25,8 +26,20 @@ const sendNotifications = async () => {
 
   const usersInCompetitions = await getUsersInCompetitions(competitionIds);
   usersInCompetitions.forEach(
-    async ({ user_id, competition_id, user_email }) => {
-      await sendNotification(user_id, competition_id, user_email);
+    async ({
+      user_id,
+      competition_id,
+      user_email,
+      competition_name,
+      username,
+    }) => {
+      await sendNotification(
+        user_id,
+        competition_id,
+        competition_name,
+        user_email,
+        username
+      );
     }
   );
 };
@@ -34,11 +47,17 @@ const sendNotifications = async () => {
 const sendNotification = async (
   user_id: number,
   competition_id: number,
-  user_email: string
+  competition_name: string,
+  user_email: string,
+  username: string
 ) => {
   console.log(
     `${user_id}'s competition ${competition_id} is now starting to email ${user_email}`
   );
+  const subject = `Competition ${competition_name} has just finished!`;
+  const text = `Hello, ${username}. To see the results of ${competition_name}, visit http://localhost:5173/competition/${competition_id}`;
+  const html = `<p>Hello, ${username}. To see the results of <strong>${competition_name}</strong>, visit <a href="http://localhost:5173/competition/${competition_id}">this link</a>.</p>`;
+  sendEmail(user_email, subject, text, html);
 };
 
 const getUsersInCompetitions = async (competitionIds: Set<number>) => {
@@ -51,9 +70,15 @@ const getUsersInCompetitions = async (competitionIds: Set<number>) => {
     select: {
       user_id: true,
       competition_id: true,
+      competition: {
+        select: {
+          name: true,
+        },
+      },
       user: {
         select: {
           email: true,
+          username: true,
         },
       },
     },
@@ -62,7 +87,9 @@ const getUsersInCompetitions = async (competitionIds: Set<number>) => {
   return results.map((result) => ({
     user_id: result.user_id,
     competition_id: result.competition_id,
+    competition_name: result.competition.name,
     user_email: result.user.email,
+    username: result.user.username,
   }));
 };
 
@@ -114,7 +141,6 @@ const getCurrentEventCompetitions = async () => {
   return competitionIds;
 };
 
-// NOT TESTED
 interface OldUpcomingEvent {
   id: number;
   competition_id: number;
@@ -133,23 +159,26 @@ const updateUpcoming = (upcomingEvents: OldUpcomingEvent[]) => {
       },
     });
 
-    let newDate: Date;
-    if (event.belongs_to.frequency === Frequency.DAILY) {
-      newDate = addDays(event.date, event.belongs_to.repeats_every);
-    } else if (event.belongs_to.frequency === Frequency.WEEKLY) {
-      newDate = addWeeks(event.date, event.belongs_to.repeats_every);
-    } else if (event.belongs_to.frequency === Frequency.MONTHLY) {
-      newDate = addMonths(event.date, event.belongs_to.repeats_every);
-    } else {
-      console.error("Invalid Frequency!");
-    }
+    if (event.belongs_to.repeats_every !== 0) {
+      let newDate: Date;
+      if (event.belongs_to.frequency === Frequency.DAILY) {
+        newDate = addDays(event.date, event.belongs_to.repeats_every);
+      } else if (event.belongs_to.frequency === Frequency.WEEKLY) {
+        newDate = addWeeks(event.date, event.belongs_to.repeats_every);
+      } else if (event.belongs_to.frequency === Frequency.MONTHLY) {
+        newDate = addMonths(event.date, event.belongs_to.repeats_every);
+      } else {
+        console.error("Invalid Frequency!");
+      }
+      console.log(newDate);
 
-    await prisma.events.create({
-      data: {
-        competition_id: event.competition_id,
-        date: newDate,
-        upcoming: true,
-      },
-    });
+      await prisma.events.create({
+        data: {
+          competition_id: event.competition_id,
+          date: newDate,
+          upcoming: true,
+        },
+      });
+    }
   });
 };

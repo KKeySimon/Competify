@@ -6,7 +6,7 @@ const mg = mailgun.client({
   username: "api",
   key: process.env.MAILGUN_API_KEY,
 });
-const sendEmail = async (
+export const sendEmail = async (
   to: string,
   subject: string,
   text: string,
@@ -14,7 +14,7 @@ const sendEmail = async (
 ) => {
   try {
     const msg = await mg.messages.create(process.env.MAILGUN_DOMAIN, {
-      from: `Excited User <mailgun@${process.env.MAILGUN_DOMAIN}>`,
+      from: `Competify <mailgun@${process.env.MAILGUN_DOMAIN}>`,
       to: [to],
       subject: subject,
       text: text,
@@ -25,5 +25,3 @@ const sendEmail = async (
     console.error(err); // Logs any error
   }
 };
-
-module.exports = sendEmail;
