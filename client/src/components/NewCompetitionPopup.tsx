@@ -134,7 +134,7 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
       daysOfWeek,
     };
 
-    await fetch("http://localhost:4000/api/competition/new", {
+    await fetch("http://localhost:3000/api/competition/new", {
       method: "POST",
       credentials: "include",
       headers: {

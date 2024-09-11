@@ -54,7 +54,11 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
     setErrors({ email: "", password: "", apiError: "" });
     const userData = { username: email, password };
 
-    await fetch("http://localhost:4000/api/login", {
+    // const loginApi = "http://localhost:" + process.env.REACT_APP_SERVER_PORT + "/api/login";
+    // // console.log(loginApi);
+    // console.log(process.env.REACT_APP_SERVER_PORT);
+
+    await fetch("http://localhost:3000/api/login", {
       method: "POST",
       // This must be included to send/receive session cookies to the browser (learned it the hard way...)
       credentials: "include",
