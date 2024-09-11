@@ -69,6 +69,8 @@ model competitions {
   users_in_competitions users_in_competitions[]
   invites               invites[]
   events                events[]
+  priority              Priority
+  policy                Policy
 }
 
 model events {
@@ -98,4 +100,15 @@ enum Frequency {
   DAILY
   WEEKLY
   MONTHLY
+}
+
+enum Priority {
+  HIGHEST
+  LOWEST
+}
+
+enum Policy {
+  FLAT
+  FLAT_CHANGE
+  PERCENTAGE_CHANGE
 }

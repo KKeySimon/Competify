@@ -27,6 +27,12 @@ function Competition() {
     winner_id: number | undefined;
   }
 
+  interface PreviousEvent extends Event {
+    winner: {
+      username: string;
+    };
+  }
+
   const { id } = useParams();
   const [competition, setCompetition] = useState<Competition | undefined>(
     undefined
@@ -36,6 +42,7 @@ function Competition() {
   const [timeLeft, setTimeLeft] = useState<string>("");
   const [trigger, setTrigger] = useState<boolean>(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [previousEvents, setPreviousEvents] = useState<PreviousEvent[]>([]);
 
   const handleSubmitSubmission = (newSubmission: Submission) => {
     setSubmissions((prevSubmissions) => {
@@ -53,6 +60,8 @@ function Competition() {
     });
   };
 
+  // API call to authenticate competition -> grab upcoming event's id
+  // -> grab submissions surrounding upcoming event
   useEffect(() => {
     const fetchCompetitionData = async () => {
       try {
@@ -150,6 +159,37 @@ function Competition() {
     // to add this dependency array so the interval is set after competition is fetched
   }, [upcoming]);
 
+  // API call to grab all (previous) events for the competition
+  useEffect(() => {
+    const fetchAllEvents = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/competition/${id}/events/`,
+          {
+            credentials: "include",
+          }
+        );
+        if (!response.ok) {
+          const errorMessage = response.text();
+          const errorCode = response.status;
+          throw new Error(
+            `Grabbing Events Error! Code: ${errorCode}, Message: ${errorMessage}`
+          );
+        }
+        const data: PreviousEvent[] = await response.json();
+        const parsedData = data.map((event) => ({
+          ...event,
+          date: new Date(event.date),
+        }));
+        setPreviousEvents(parsedData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchAllEvents();
+  }, [id]);
+
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -182,6 +222,19 @@ function Competition() {
               />
             </div>
           )}
+        </div>
+      )}
+      <div>Previous Competition Winners</div>
+      {previousEvents && (
+        <div>
+          <ul>
+            {previousEvents.map((event) => (
+              <li key={event.id}>
+                Date: {event.date.toLocaleDateString()}; Winner:{" "}
+                {event.winner ? event.winner.username : "None"}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

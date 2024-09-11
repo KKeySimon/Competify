@@ -9,7 +9,40 @@ const router = express.Router({ mergeParams: true });
 const isAuth = require("./authMiddleware").isAuth;
 const isCompetitionAuth = require("./authMiddleware").isCompetitionAuth;
 
-// Tested
+router.get(
+  "/",
+  isAuth,
+  isCompetitionAuth,
+  asyncHandler(async (req, res, next) => {
+    console.log("Received");
+    const { competitionId } = req.params;
+    const competitionIdNumber = parseInt(competitionId, 10);
+
+    const events = await prisma.events.findMany({
+      where: {
+        competition_id: competitionIdNumber,
+        upcoming: false,
+      },
+      select: {
+        competition_id: true,
+        id: true,
+        date: true,
+        upcoming: true,
+        winner_id: true,
+        winner: {
+          select: {
+            username: true,
+          },
+        },
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
+    res.status(200).json(events);
+  })
+);
+
 router.get(
   "/upcoming",
   isAuth,

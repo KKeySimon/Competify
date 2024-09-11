@@ -159,6 +159,8 @@ const updateUpcoming = (upcomingEvents: OldUpcomingEvent[]) => {
       },
     });
 
+    determineWinner(event);
+
     if (event.belongs_to.repeats_every !== 0) {
       let newDate: Date;
       if (event.belongs_to.frequency === Frequency.DAILY) {
@@ -181,4 +183,29 @@ const updateUpcoming = (upcomingEvents: OldUpcomingEvent[]) => {
       });
     }
   });
+};
+
+const determineWinner = async (event: OldUpcomingEvent) => {
+  const submissions = await prisma.submissions.findMany({
+    where: {
+      event_id: event.id,
+    },
+  });
+  let best: { id: number; event_id: number; user_id: number; content: string };
+  submissions.forEach((submission) => {
+    // TODO: Insert priority algo (should it be largest/smallest? Biggest Percentage/Flat Increase?, etc)
+    if (!best || submission.content > best.content) {
+      best = submission;
+    }
+  });
+  if (best) {
+    await prisma.events.update({
+      where: {
+        id: event.id,
+      },
+      data: {
+        winner_id: best.user_id,
+      },
+    });
+  }
 };

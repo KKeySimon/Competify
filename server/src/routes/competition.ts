@@ -96,7 +96,6 @@ router.post(
             name: req.body.name,
             start_time: startDate,
             end_time: undefined,
-            days_of_week: undefined,
             repeats_every: 0,
             frequency: Frequency.NONE,
             is_numerical: true, // TODO
