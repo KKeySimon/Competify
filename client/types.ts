@@ -33,3 +33,14 @@ export interface Submission {
   };
   content: string | number;
 }
+
+export enum Priority {
+  HIGHEST = "HIGHEST",
+  LOWEST = "LOWEST",
+}
+
+export enum Policy {
+  FLAT = "FLAT",
+  FLAT_CHANGE = "FLAT_CHANGE",
+  PERCENTAGE_CHANGE = "PERCENTAGE_CHANGE",
+}

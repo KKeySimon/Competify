@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import DateTimePicker from "./DateTimePicker";
 import "react-day-picker/style.css";
 import { format } from "date-fns";
-import { PopupProps } from "../../types";
+import { PopupProps, Priority, Policy } from "../../types";
 
 interface newCompetitionError {
   name: string;
@@ -44,6 +44,8 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
   const [endTime, setEndTime] = useState<string>("00:00");
   const [repeatInterval, setRepeatInterval] = useState<string>("daily");
   const [repeatEvery, setRepeatEvery] = useState<number>(1);
+  const [priority, setPriority] = useState<string>(Priority.HIGHEST);
+  const [policy, setPolicy] = useState<string>(Policy.FLAT);
   // https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
   const validateEmail = (email: string) => {
     return String(email)
@@ -116,6 +118,7 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
       startDate: "",
       endDate: "",
     });
+    console.log(priority);
     const competitionData = {
       name,
       inviteList,
@@ -124,7 +127,10 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
       repeatEvery,
       repeatInterval,
       endDate,
+      priority,
+      policy,
     };
+    console.log(competitionData);
 
     await fetch("http://localhost:3000/api/competition/new", {
       method: "POST",
@@ -261,6 +267,29 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
               <Form.Control.Feedback type="invalid">
                 {errors.startDate}
               </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formInterval">
+              <Form.Label>Priority</Form.Label>
+              <Form.Select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+              >
+                <option value={Priority.HIGHEST}>Highest</option>
+                <option value={Priority.LOWEST}>Lowest</option>
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formInterval">
+              <Form.Label>Policy</Form.Label>
+              <Form.Select
+                value={priority}
+                onChange={(e) => setPolicy(e.target.value)}
+              >
+                <option value={Policy.FLAT}>Flat</option>
+                <option value={Policy.FLAT_CHANGE}>Flat Change</option>
+                <option value={Policy.PERCENTAGE_CHANGE}>
+                  Percentage Change
+                </option>
+              </Form.Select>
             </Form.Group>
 
             <Modal

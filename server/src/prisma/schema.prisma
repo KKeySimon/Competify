@@ -61,7 +61,7 @@ model competitions {
   // days_of_week Int? Removed for now cuz it adds too much complexity
   repeats_every         Int
   frequency             Frequency?
-  created_by            users                   @relation("CreatedCompetitions", fields: [user_id], references: [id])
+  created_by            users                   @relation("CreatedCompetitions", fields: [user_id], references: [id], onDelete: Cascade)
   user_id               Int
   created_at            DateTime                @default(now())
   updated_at            DateTime                @updatedAt
@@ -76,19 +76,19 @@ model competitions {
 model events {
   id             Int           @id @default(autoincrement())
   competition_id Int
-  belongs_to     competitions  @relation(fields: [competition_id], references: [id])
+  belongs_to     competitions  @relation(fields: [competition_id], references: [id], onDelete: Cascade)
   date           DateTime
   winner_id      Int?
-  winner         users?        @relation(fields: [winner_id], references: [id])
+  winner         users?        @relation(fields: [winner_id], references: [id], onDelete: Cascade)
   upcoming       Boolean
   submissions    submissions[]
 }
 
 model submissions {
   id         Int    @id @default(autoincrement())
-  event      events @relation(fields: [event_id], references: [id])
+  event      events @relation(fields: [event_id], references: [id], onDelete: Cascade)
   event_id   Int
-  belongs_to users  @relation(fields: [user_id], references: [id])
+  belongs_to users  @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    Int
   content    String
 

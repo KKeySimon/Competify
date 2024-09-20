@@ -1,4 +1,4 @@
-import { Frequency, competitions } from "@prisma/client";
+import { Frequency, Policy, Priority, competitions } from "@prisma/client";
 import { Response, NextFunction } from "express";
 import express from "express";
 import asyncHandler from "express-async-handler";
@@ -63,6 +63,21 @@ router.post(
       if (startDate <= new Date()) {
         res.status(403).send({ message: "Start date must be in the future" });
       }
+
+      const priority = req.body.priority;
+      if (![Priority.HIGHEST, Priority.LOWEST].includes(priority)) {
+        res.status(400).send({ message: "Invalid priority" });
+      }
+
+      const policy = req.body.policy;
+      if (
+        ![Policy.FLAT, Policy.FLAT_CHANGE, Policy.PERCENTAGE_CHANGE].includes(
+          policy
+        )
+      ) {
+        res.status(400).send({ message: "Invalid policy" });
+      }
+
       let frequency: Frequency;
       switch (req.body.repeatInterval) {
         case "daily":
@@ -86,6 +101,8 @@ router.post(
             end_time: new Date(req.body.endDate),
             repeats_every: req.body.repeatEvery,
             frequency: frequency,
+            priority: priority,
+            policy: policy,
             is_numerical: true, // TODO
             created_by: { connect: { id: req.user.id } },
           },
@@ -98,6 +115,8 @@ router.post(
             end_time: undefined,
             repeats_every: 0,
             frequency: Frequency.NONE,
+            priority: priority,
+            policy: policy,
             is_numerical: true, // TODO
             created_by: { connect: { id: req.user.id } },
           },
