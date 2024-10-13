@@ -81,16 +81,23 @@ model events {
   winner_id      Int?
   winner         users?        @relation(fields: [winner_id], references: [id], onDelete: Cascade)
   upcoming       Boolean
+  previous       Boolean       @default(false)
+  // We add priority and policy to events as well as we want to preserve previous
+  // priorities and policies if they're changed at some point in the future
+  priority       Priority
+  policy         Policy
   submissions    submissions[]
 }
 
 model submissions {
-  id         Int    @id @default(autoincrement())
-  event      events @relation(fields: [event_id], references: [id], onDelete: Cascade)
-  event_id   Int
-  belongs_to users  @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id    Int
-  content    String
+  id             Int      @id @default(autoincrement())
+  event          events   @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  event_id       Int
+  belongs_to     users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id        Int
+  created_at     DateTime @default(now())
+  content        String?
+  content_number Float?
 
   @@unique([event_id, user_id])
 }

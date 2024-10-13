@@ -1,7 +1,13 @@
 require("dotenv").config();
 import { CronJob } from "cron";
 import prisma from "../prisma/client";
-import { $Enums, Frequency } from "@prisma/client";
+import {
+  $Enums,
+  Frequency,
+  Policy,
+  Priority,
+  submissions,
+} from "@prisma/client";
 import { addDays, addMonths, addWeeks } from "date-fns";
 import { sendEmail } from "./mailgun";
 
@@ -129,6 +135,8 @@ const getCurrentEventCompetitions = async () => {
           frequency: true,
         },
       },
+      priority: true,
+      policy: true,
     },
   });
 
@@ -146,20 +154,33 @@ interface OldUpcomingEvent {
   competition_id: number;
   date: Date;
   belongs_to: { repeats_every: number; frequency: $Enums.Frequency };
+  policy: Policy;
+  priority: Priority;
 }
 
 const updateUpcoming = (upcomingEvents: OldUpcomingEvent[]) => {
   upcomingEvents.forEach(async (event) => {
+    determineWinner(event);
+
+    await prisma.events.updateMany({
+      where: {
+        competition_id: event.competition_id,
+        previous: true,
+      },
+      data: {
+        previous: false,
+      },
+    });
+
     await prisma.events.update({
       where: {
         id: event.id,
       },
       data: {
         upcoming: false,
+        previous: true,
       },
     });
-
-    determineWinner(event);
 
     if (event.belongs_to.repeats_every !== 0) {
       let newDate: Date;
@@ -172,13 +193,14 @@ const updateUpcoming = (upcomingEvents: OldUpcomingEvent[]) => {
       } else {
         console.error("Invalid Frequency!");
       }
-      console.log(newDate);
 
       await prisma.events.create({
         data: {
           competition_id: event.competition_id,
           date: newDate,
           upcoming: true,
+          policy: event.policy,
+          priority: event.priority,
         },
       });
     }
@@ -190,12 +212,75 @@ const determineWinner = async (event: OldUpcomingEvent) => {
     where: {
       event_id: event.id,
     },
+    orderBy: {
+      created_at: "asc",
+    },
   });
-  let best: { id: number; event_id: number; user_id: number; content: string };
+  let previousSubmissions: submissions[];
+  if (
+    event.policy === Policy.FLAT_CHANGE ||
+    event.policy === Policy.PERCENTAGE_CHANGE
+  ) {
+    // GRAB previous submissions
+    const previousEvent = await prisma.events.findFirst({
+      where: {
+        previous: true,
+      },
+    });
+
+    previousSubmissions = await prisma.submissions.findMany({
+      where: {
+        event_id: previousEvent.id,
+      },
+    });
+  }
+
+  let best: {
+    id: number;
+    event_id: number;
+    user_id: number;
+    content: string;
+    content_number: number;
+  };
+  let bestComparison = 0;
   submissions.forEach((submission) => {
     // TODO: Insert priority algo (should it be largest/smallest? Biggest Percentage/Flat Increase?, etc)
-    if (!best || submission.content > best.content) {
-      best = submission;
+    if (event.policy === Policy.FLAT) {
+      if (event.priority === Priority.HIGHEST) {
+        if (!best || submission.content_number > best.content_number) {
+          best = submission;
+        }
+      } else if (event.priority === Priority.LOWEST) {
+        if (!best || submission.content_number < best.content_number) {
+          best = submission;
+        }
+      }
+    } else if (
+      event.policy === Policy.FLAT_CHANGE ||
+      event.policy === Policy.PERCENTAGE_CHANGE
+    ) {
+      previousSubmissions.forEach((prevSubmission) => {
+        if (prevSubmission.user_id === submission.user_id) {
+          let diff: number;
+          if (event.policy === Policy.FLAT_CHANGE) {
+            diff = submission.content_number - prevSubmission.content_number;
+          } else if (event.policy === Policy.PERCENTAGE_CHANGE) {
+            diff = submission.content_number / prevSubmission.content_number;
+          }
+
+          if (event.priority === Priority.HIGHEST) {
+            if (!best || diff > bestComparison) {
+              best = submission;
+              bestComparison = diff;
+            }
+          } else if (event.priority === Priority.LOWEST) {
+            if (!best || diff < bestComparison) {
+              best = submission;
+              bestComparison = diff;
+            }
+          }
+        }
+      });
     }
   });
   if (best) {

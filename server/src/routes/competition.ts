@@ -126,6 +126,8 @@ router.post(
       await prisma.events.create({
         data: {
           competition_id: createCompetition.id,
+          policy: policy,
+          priority: priority,
           date: startDate,
           upcoming: true,
         },
