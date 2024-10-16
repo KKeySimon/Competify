@@ -193,7 +193,7 @@ const updateUpcoming = (upcomingEvents: OldUpcomingEvent[]) => {
       } else {
         console.error("Invalid Frequency!");
       }
-
+      console.log("Creating new event!");
       await prisma.events.create({
         data: {
           competition_id: event.competition_id,

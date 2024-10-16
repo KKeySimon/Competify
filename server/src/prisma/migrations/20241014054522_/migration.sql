@@ -1,6 +1,12 @@
 -- CreateEnum
 CREATE TYPE "Frequency" AS ENUM ('NONE', 'DAILY', 'WEEKLY', 'MONTHLY');
 
+-- CreateEnum
+CREATE TYPE "Priority" AS ENUM ('HIGHEST', 'LOWEST');
+
+-- CreateEnum
+CREATE TYPE "Policy" AS ENUM ('FLAT', 'FLAT_CHANGE', 'PERCENTAGE_CHANGE');
+
 -- CreateTable
 CREATE TABLE "session" (
     "sid" VARCHAR NOT NULL,
@@ -46,13 +52,14 @@ CREATE TABLE "competitions" (
     "name" TEXT NOT NULL,
     "start_time" TIMESTAMP(3) NOT NULL,
     "end_time" TIMESTAMP(3),
-    "days_of_week" INTEGER,
     "repeats_every" INTEGER NOT NULL,
     "frequency" "Frequency",
     "user_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "is_numerical" BOOLEAN NOT NULL,
+    "priority" "Priority" NOT NULL,
+    "policy" "Policy" NOT NULL,
 
     CONSTRAINT "competitions_pkey" PRIMARY KEY ("id")
 );
@@ -64,6 +71,9 @@ CREATE TABLE "events" (
     "date" TIMESTAMP(3) NOT NULL,
     "winner_id" INTEGER,
     "upcoming" BOOLEAN NOT NULL,
+    "previous" BOOLEAN NOT NULL DEFAULT false,
+    "priority" "Priority" NOT NULL,
+    "policy" "Policy" NOT NULL,
 
     CONSTRAINT "events_pkey" PRIMARY KEY ("id")
 );
@@ -73,7 +83,9 @@ CREATE TABLE "submissions" (
     "id" SERIAL NOT NULL,
     "event_id" INTEGER NOT NULL,
     "user_id" INTEGER NOT NULL,
-    "content" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "content" TEXT,
+    "content_number" DOUBLE PRECISION,
 
     CONSTRAINT "submissions_pkey" PRIMARY KEY ("id")
 );
@@ -86,6 +98,9 @@ CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "submissions_event_id_user_id_key" ON "submissions"("event_id", "user_id");
 
 -- AddForeignKey
 ALTER TABLE "users_in_competitions" ADD CONSTRAINT "users_in_competitions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -103,16 +118,16 @@ ALTER TABLE "invites" ADD CONSTRAINT "invites_invitee_id_fkey" FOREIGN KEY ("inv
 ALTER TABLE "invites" ADD CONSTRAINT "invites_competition_id_fkey" FOREIGN KEY ("competition_id") REFERENCES "competitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "competitions" ADD CONSTRAINT "competitions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "competitions" ADD CONSTRAINT "competitions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "events" ADD CONSTRAINT "events_competition_id_fkey" FOREIGN KEY ("competition_id") REFERENCES "competitions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "events" ADD CONSTRAINT "events_competition_id_fkey" FOREIGN KEY ("competition_id") REFERENCES "competitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "events" ADD CONSTRAINT "events_winner_id_fkey" FOREIGN KEY ("winner_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "events" ADD CONSTRAINT "events_winner_id_fkey" FOREIGN KEY ("winner_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "submissions" ADD CONSTRAINT "submissions_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "events"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "submissions" ADD CONSTRAINT "submissions_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "events"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "submissions" ADD CONSTRAINT "submissions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "submissions" ADD CONSTRAINT "submissions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -11,6 +11,28 @@ export interface Competition {
   createdBy: string;
 }
 
+export interface ICompetition {
+  id: number;
+  name: string;
+  start_time: Date;
+  end_time: Date | undefined;
+  days_of_week: number | undefined;
+  repeats_every: number;
+  frequency: string | undefined;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+  is_numerical: boolean;
+  invites: string[];
+  users_in_competitions: {
+    competition_id: number;
+    joined_at: Date;
+    user_id: number;
+  }[];
+  priority: string;
+  policy: string;
+}
+
 export interface Invite {
   inviterId: number;
   inviterName: string;

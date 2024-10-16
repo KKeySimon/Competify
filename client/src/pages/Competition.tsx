@@ -2,29 +2,18 @@ import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import SubmissionPopup from "../components/SubmissionPopup";
-import { Submission } from "../../types";
+import { ICompetition, Submission } from "../../types";
+import { Gear } from "react-bootstrap-icons";
+import NewCompetitionPopup from "../components/NewCompetitionPopup";
 
 function Competition() {
-  interface Competition {
-    id: number;
-    name: string;
-    start_time: Date;
-    end_time: Date | undefined;
-    days_of_week: number | undefined;
-    repeats_every: number;
-    frequency: string | undefined;
-    user_id: number;
-    created_at: string;
-    updated_at: string;
-    is_numerical: boolean;
-  }
-
   interface Event {
     competition_id: number;
     id: number;
     date: Date;
     upcoming: boolean;
     winner_id: number | undefined;
+    submissions: Submission[];
   }
 
   interface PreviousEvent extends Event {
@@ -34,7 +23,7 @@ function Competition() {
   }
 
   const { id } = useParams();
-  const [competition, setCompetition] = useState<Competition | undefined>(
+  const [competition, setCompetition] = useState<ICompetition | undefined>(
     undefined
   );
   const [upcoming, setUpcoming] = useState<Event | undefined>();
@@ -43,6 +32,7 @@ function Competition() {
   const [trigger, setTrigger] = useState<boolean>(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [previousEvents, setPreviousEvents] = useState<PreviousEvent[]>([]);
+  const [popupTrigger, setPopupTrigger] = useState(false);
 
   const handleSubmitSubmission = (newSubmission: Submission) => {
     setSubmissions((prevSubmissions) => {
@@ -79,7 +69,9 @@ function Competition() {
         }
 
         const competitionData = await competitionResponse.json();
-        const parsedCompetition = {
+        let parsedCompetition = undefined;
+
+        parsedCompetition = {
           ...competitionData,
           start_time: new Date(competitionData.start_time),
           end_time: competitionData.end_time
@@ -87,6 +79,7 @@ function Competition() {
             : undefined,
         };
 
+        console.log(parsedCompetition);
         setCompetition(parsedCompetition);
 
         const eventsResponse = await fetch(
@@ -99,23 +92,26 @@ function Competition() {
           throw new Error("Error getting upcoming event");
         }
         const eventsData: Event = await eventsResponse.json();
-        const parsedEvents = {
-          ...eventsData,
-          date: new Date(eventsData.date),
-        };
-        setUpcoming(parsedEvents);
+        if (eventsData) {
+          const parsedEvents = {
+            ...eventsData,
+            date: new Date(eventsData.date),
+          };
+          setUpcoming(parsedEvents);
 
-        const submissionsResponse = await fetch(
-          `http://localhost:3000/api/competition/${id}/events/${eventsData.id}`,
-          {
-            credentials: "include",
+          const submissionsResponse = await fetch(
+            `http://localhost:3000/api/competition/${id}/events/${eventsData.id}`,
+            {
+              credentials: "include",
+            }
+          );
+          if (!submissionsResponse.ok) {
+            throw new Error("Error getting submissions");
           }
-        );
-        if (!submissionsResponse.ok) {
-          throw new Error("Error getting submissions");
+          const submissionsData: Submission[] =
+            await submissionsResponse.json();
+          setSubmissions(submissionsData);
         }
-        const submissionsData: Submission[] = await submissionsResponse.json();
-        setSubmissions(submissionsData);
       } catch (err) {
         if (err instanceof Error) {
           console.log(err.message);
@@ -199,13 +195,12 @@ function Competition() {
       {competition && (
         <div>
           <h1>{competition.name}</h1>
-          {upcoming && (
+          {upcoming ? (
             <div>
               <ul>
                 {submissions.map((submission) => (
                   <li key={submission.user_id}>
-                    {submission.belongs_to.username} Submitted:{" "}
-                    {submission.content}
+                    {submission.id} Submitted: {submission.content}
                   </li>
                 ))}
               </ul>
@@ -221,7 +216,27 @@ function Competition() {
                 handleSubmitSubmission={handleSubmitSubmission}
               />
             </div>
+          ) : (
+            <div>No more upcoming events!</div>
           )}
+          <div>
+            <div>
+              <Gear onClick={() => setPopupTrigger(true)} />
+              {popupTrigger && (
+                <NewCompetitionPopup
+                  trigger={popupTrigger}
+                  setTrigger={setPopupTrigger}
+                  competitionData={competition} // Pass the data for editing
+                />
+              )}
+            </div>
+            Participating Users
+            <ul>
+              {competition.users_in_competitions.map((uic) => (
+                <li key={uic.user_id}>{uic.user_id}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
       <div>Previous Competition Winners</div>
@@ -232,6 +247,13 @@ function Competition() {
               <li key={event.id}>
                 Date: {event.date.toLocaleDateString()}; Winner:{" "}
                 {event.winner ? event.winner.username : "None"}
+                <ul>
+                  {event.submissions.map((submission) => (
+                    <li key={submission.id}>
+                      {submission.id}: {submission.content}
+                    </li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ul>

@@ -14,7 +14,6 @@ router.get(
   isAuth,
   isCompetitionAuth,
   asyncHandler(async (req, res, next) => {
-    console.log("Received");
     const { competitionId } = req.params;
     const competitionIdNumber = parseInt(competitionId, 10);
 
@@ -34,6 +33,7 @@ router.get(
             username: true,
           },
         },
+        submissions: true,
       },
       orderBy: {
         date: "desc",
@@ -167,7 +167,7 @@ router.post(
 // simply mark a upcoming event as finished add the repeating
 // interval as a event. But if policy changes, previous event
 // can't be used for calculation
-function upcomingEvent(competition: competitions) {
+export function upcomingEvent(competition: competitions) {
   const now = new Date();
   let time = competition.start_time;
   if (competition.repeats_every === 0) {

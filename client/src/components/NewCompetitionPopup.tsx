@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import DateTimePicker from "./DateTimePicker";
 import "react-day-picker/style.css";
 import { format } from "date-fns";
-import { PopupProps, Priority, Policy } from "../../types";
+import { PopupProps, Priority, Policy, ICompetition } from "../../types";
 
 interface newCompetitionError {
   name: string;
@@ -23,8 +23,15 @@ interface newCompetitionError {
   endDate: string;
 }
 
-function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
-  const [name, setName] = useState("");
+interface NewCompetitionPopupProps extends PopupProps {
+  competitionData?: ICompetition;
+}
+
+function NewCompetitionPopup({
+  trigger,
+  setTrigger,
+  competitionData,
+}: NewCompetitionPopupProps) {
   const [errors, setErrors] = useState<newCompetitionError>({
     name: "",
     apiError: "",
@@ -33,19 +40,55 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
     endDate: "",
   });
   const [success, setSuccess] = useState<boolean>(false);
+  const [name, setName] = useState(competitionData?.name || "");
+  const [invites, setInvites] = useState<string[]>(
+    competitionData?.invites || []
+  );
+  const [startDate, setStartDate] = useState<Date | undefined>(
+    competitionData?.start_time
+  );
+  const [endDate, setEndDate] = useState<Date | undefined>(
+    competitionData?.end_time
+  );
+  const [repeat, setRepeat] = useState(
+    (competitionData?.repeats_every ?? 0) > 0 || false
+  );
+  const [repeatEvery, setRepeatEvery] = useState<number>(
+    competitionData?.repeats_every || 0
+  );
+  const [repeatInterval, setRepeatInterval] = useState<string>(
+    competitionData?.frequency || "daily"
+  );
+  const [priority, setPriority] = useState<string>(
+    competitionData?.priority || Priority.HIGHEST
+  );
+  const [policy, setPolicy] = useState<string>(
+    competitionData?.policy || Policy.FLAT
+  );
   const [inviteInput, setInviteInput] = useState<string>("");
-  const [inviteList, setInviteList] = useState<string[]>([]);
   const [startDateFocus, setStartDateFocus] = useState<boolean>(false);
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [startTime, setStartTime] = useState<string>("00:00");
-  const [repeat, setRepeat] = useState(false);
+  const [startTime, setStartTime] = useState<string>(
+    competitionData?.start_time
+      ? convertTo24Hour(
+          new Date(competitionData.start_time).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        )
+      : "00:00"
+  );
   const [endDateFocus, setEndDateFocus] = useState<boolean>(false);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [endTime, setEndTime] = useState<string>("00:00");
-  const [repeatInterval, setRepeatInterval] = useState<string>("daily");
-  const [repeatEvery, setRepeatEvery] = useState<number>(1);
-  const [priority, setPriority] = useState<string>(Priority.HIGHEST);
-  const [policy, setPolicy] = useState<string>(Policy.FLAT);
+  const [endTime, setEndTime] = useState<string>(
+    competitionData?.end_time
+      ? convertTo24Hour(
+          new Date(competitionData.end_time).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        )
+      : "00:00"
+  );
+
   // https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
   const validateEmail = (email: string) => {
     return String(email)
@@ -55,9 +98,24 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
       );
   };
 
+  function convertTo24Hour(time: string) {
+    const [timePart, modifier] = time.split(" "); // Split into "7:25" and "PM"
+    let [hours, minutes] = timePart.split(":").map(Number); // Split "7:25" into hours and minutes
+
+    if (modifier === "PM" && hours < 12) {
+      hours += 12;
+    }
+    if (modifier === "AM" && hours === 12) {
+      hours = 0;
+    }
+
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
+  }
   const formatDateTime = (date: Date | undefined, time: string) => {
     if (!date || !time) return "";
-
+    time = convertTo24Hour(time);
     const formattedDate = format(new Date(date), "MM/dd/yyyy");
     const formattedTime = format(new Date(`1970-01-01T${time}:00`), "hh:mm aa");
 
@@ -118,10 +176,10 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
       startDate: "",
       endDate: "",
     });
-    console.log(priority);
-    const competitionData = {
+
+    const jsonCompetitionData = {
       name,
-      inviteList,
+      invites,
       startDate: new Date(startDate!),
       repeat,
       repeatEvery,
@@ -130,19 +188,26 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
       priority,
       policy,
     };
-    console.log(competitionData);
 
-    await fetch("http://localhost:3000/api/competition/new", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(competitionData),
-    })
-      .then((response) => {
+    await fetch(
+      competitionData
+        ? `http://localhost:3000/api/competition/${competitionData.id}`
+        : "http://localhost:3000/api/competition/new",
+      {
+        method: competitionData ? "PUT" : "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(jsonCompetitionData),
+      }
+    )
+      .then(async (response) => {
         if (!response.ok) {
-          throw new Error("Something went wrong!");
+          const errorMessage = await response.text();
+          throw new Error(
+            `Error ${response.status}: ${response.statusText}. ${errorMessage}`
+          );
         }
         return response.json();
       })
@@ -176,7 +241,11 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
           }}
         >
           <CloseButton onClick={() => setTrigger(false)} />
-          <h1 className={styles.prompt}>Create a New Competition</h1>
+          <h1 className={styles.prompt}>
+            {competitionData
+              ? "Update Competition"
+              : "Create a New Competition"}
+          </h1>
           {errors.apiError && <Alert variant="danger">{errors.apiError}</Alert>}
           {success && (
             <Alert variant="success">
@@ -218,11 +287,11 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
                 onClick={(e) => {
                   e.preventDefault();
                   if (
-                    inviteList.indexOf(inviteInput) < 0 &&
+                    invites.indexOf(inviteInput) < 0 &&
                     inviteInput.length !== 0 &&
                     validateEmail(inviteInput)
                   ) {
-                    setInviteList([...inviteList, inviteInput]);
+                    setInvites([...invites, inviteInput]);
                   } else {
                     if (inviteInput.length !== 0) {
                       if (!validateEmail(inviteInput)) {
@@ -242,12 +311,12 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
                 {errors.emails}
               </Form.Control.Feedback>
               <ListGroup>
-                {inviteList.map((invite) => (
+                {invites.map((invite) => (
                   <div key={invite}>
                     <ListGroupItem>{invite}</ListGroupItem>
                     <CloseButton
                       onClick={() =>
-                        setInviteList(inviteList.filter((i) => i !== invite))
+                        setInvites(invites.filter((i) => i !== invite))
                       }
                     />
                   </div>
@@ -281,7 +350,7 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
             <Form.Group className="mb-3" controlId="formInterval">
               <Form.Label>Policy</Form.Label>
               <Form.Select
-                value={priority}
+                value={policy}
                 onChange={(e) => setPolicy(e.target.value)}
               >
                 <option value={Policy.FLAT}>Flat</option>
@@ -395,7 +464,7 @@ function NewCompetitionPopup({ trigger, setTrigger }: PopupProps) {
               }}
             >
               <Button variant="primary" type="submit">
-                Create Competition
+                {competitionData ? "Update Competition" : "Create Competition"}
               </Button>
             </div>
           </Form>
