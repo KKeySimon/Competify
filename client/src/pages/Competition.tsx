@@ -5,6 +5,7 @@ import SubmissionPopup from "../components/SubmissionPopup";
 import { ICompetition, Submission } from "../../types";
 import { Gear } from "react-bootstrap-icons";
 import NewCompetitionPopup from "../components/NewCompetitionPopup";
+import styles from "./Competition.module.css";
 
 function Competition() {
   interface Event {
@@ -191,10 +192,24 @@ function Competition() {
   }
 
   return (
-    <div>
+    <div className={styles.container}>
       {competition && (
         <div>
-          <h1>{competition.name}</h1>
+          <div className={styles.header}>
+            <h1>{competition.name}</h1>
+            <Gear
+              className={styles.gear}
+              size={25}
+              onClick={() => setPopupTrigger(true)}
+            />
+            {popupTrigger && (
+              <NewCompetitionPopup
+                trigger={popupTrigger}
+                setTrigger={setPopupTrigger}
+                competitionData={competition} // Pass the data for editing
+              />
+            )}
+          </div>
           {upcoming ? (
             <div>
               <ul>
@@ -204,10 +219,12 @@ function Competition() {
                   </li>
                 ))}
               </ul>
-              <p>Upcoming Deadline: {timeLeft}</p>
-              <Button onClick={() => setTrigger(true)}>
-                Create/Update Submission
-              </Button>
+              <div className={styles.deadline}>
+                <p>Upcoming Deadline: {timeLeft}</p>
+                <Button onClick={() => setTrigger(true)}>
+                  Create/Update Submission
+                </Button>
+              </div>
               <SubmissionPopup
                 trigger={trigger}
                 setTrigger={setTrigger}
@@ -220,16 +237,6 @@ function Competition() {
             <div>No more upcoming events!</div>
           )}
           <div>
-            <div>
-              <Gear onClick={() => setPopupTrigger(true)} />
-              {popupTrigger && (
-                <NewCompetitionPopup
-                  trigger={popupTrigger}
-                  setTrigger={setPopupTrigger}
-                  competitionData={competition} // Pass the data for editing
-                />
-              )}
-            </div>
             Participating Users
             <ul>
               {competition.users_in_competitions.map((uic) => (

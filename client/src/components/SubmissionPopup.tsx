@@ -2,6 +2,7 @@ import { CloseButton, Form, Button, Alert } from "react-bootstrap";
 import { PopupProps, Submission } from "../../types";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import styles from "./SubmissionPopup.module.css";
 
 interface SubmissionPopupProps extends PopupProps {
   isNumerical: boolean;
@@ -67,8 +68,10 @@ function SubmissionPopup({
 
   return trigger ? (
     <div>
-      <CloseButton onClick={() => setTrigger(false)} />
-      <h1>Create a submission</h1>
+      <div className={styles.header}>
+        <h3>Create a submission</h3>
+        <CloseButton onClick={() => setTrigger(false)} />
+      </div>
       {error && <Alert variant="danger">{error}</Alert>}
       {success && (
         <Alert variant="success">Submission successfully added!</Alert>
