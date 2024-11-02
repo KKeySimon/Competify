@@ -34,8 +34,17 @@ function Profile() {
           <Form.Control
             type="file"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              if (e.target.files && e.target.files.length > 0) {
-                setFile(e.target.files[0]);
+              const target = e.target;
+              if (target.files && target.files.length > 0) {
+                const selectedFile = target.files[0];
+                const validImageTypes = ["image/jpeg", "image/png"];
+
+                if (!validImageTypes.includes(selectedFile.type)) {
+                  alert("Please select a valid image file (JPEG, PNG).");
+                  return;
+                }
+
+                setFile(selectedFile);
               }
             }}
           />

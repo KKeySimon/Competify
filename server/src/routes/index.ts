@@ -63,4 +63,7 @@ router.use("/competition", competitionRoute);
 import invitesRoute from "./invites";
 router.use("/invites", invitesRoute);
 
+import profileRoute from "./profile";
+router.use("/profile", profileRoute);
+
 module.exports = router;
