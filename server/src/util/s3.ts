@@ -18,11 +18,11 @@ export const uploadProfilePicture = async (
       },
     });
 
-    const newFileName = `profile_${userId}.jpg`;
+    const key = `profile_pictures/profile_${userId}.jpg`;
 
     const params = {
       Bucket: bucketName,
-      Key: newFileName,
+      Key: key,
       Body: file,
       ContentType: "image/jpeg",
     };
@@ -31,7 +31,7 @@ export const uploadProfilePicture = async (
 
     const data = await s3.send(command);
 
-    return data;
+    return key;
   } catch (e) {
     console.error("Error uploading file:", e);
     throw e;

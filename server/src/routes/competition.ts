@@ -157,8 +157,7 @@ router.put(
   asyncHandler(
     async (
       req: AuthRequest<CreateCompetition>,
-      res: Response,
-      next
+      res: Response
     ): Promise<void> => {
       const { id } = req.params;
       const currUserId = req.user.id;

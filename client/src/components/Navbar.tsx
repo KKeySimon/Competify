@@ -2,16 +2,38 @@ import { Link, useNavigate } from "react-router-dom";
 import { LoginProps, Invite } from "../../types";
 import styles from "./Navbar.module.css";
 import { Bell } from "react-bootstrap-icons";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Image } from "react-bootstrap";
 
 function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   const [bellClicked, setBellClicked] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Invite[]>([]);
+  const [profilePicture, setProfilePicture] = useState<string>("");
   // No need to set all keys to false, since if key doesn't exist,
   // it returns undefined. !undefined == True. And is set that way
   const [expandedNotfications, setExpandedNotifications] = useState<
     Record<string, boolean>
   >({});
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setBellClicked(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setBellClicked]);
+
   async function handleLogout() {
     await fetch("http://localhost:3000/api/logout", {
       credentials: "include",
@@ -21,6 +43,8 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
           throw new Error("Something went wrong!");
         }
         setIsLoggedIn(false);
+        localStorage.removeItem("userId");
+        window.location.reload();
       })
       .catch((error) => {
         console.log(error.message);
@@ -64,7 +88,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Something went wrong!");
+          throw new Error("Something went wrong while grabbing invites!");
         }
         return response.json();
       })
@@ -74,6 +98,22 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
       .catch((error) => {
         console.log(error.message);
       });
+
+    fetch("http://localhost:3000/api/profile/me", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            "Something went wrong while grabbing profile picture"
+          );
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setProfilePicture(data.url);
+      });
   }, []);
 
   return (
@@ -81,13 +121,18 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
       <Link to="/">Home</Link>
       <Link to="/competition">Competitions</Link>
       {isLoggedIn ? (
-        <div className={styles.logoutNotif}>
+        <div ref={dropdownRef} className={styles.logoutNotif}>
           <Bell
             onClick={() => {
               setBellClicked(!bellClicked);
               setExpandedNotifications({});
             }}
           />
+          {notifications.length > 0 && (
+            <span className={styles.notificationCount}>
+              {notifications.length}
+            </span>
+          )}
           {bellClicked && (
             <ul className={styles.notificationBar}>
               {notifications.length !== 0 ? (
@@ -148,6 +193,9 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
               )}
             </ul>
           )}
+          <Link to={`/profile/${localStorage.getItem("userId")}`}>
+            <Image className={styles.profilePicture} src={profilePicture} />
+          </Link>
 
           <a onClick={handleLogout}>Logout</a>
         </div>
