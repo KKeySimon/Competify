@@ -14,6 +14,7 @@ import DateTimePicker from "./DateTimePicker";
 import "react-day-picker/style.css";
 import { format } from "date-fns";
 import { PopupProps, Priority, Policy, ICompetition } from "../../types";
+import { PlusSquare } from "react-bootstrap-icons";
 
 interface newCompetitionError {
   name: string;
@@ -100,6 +101,7 @@ function NewCompetitionPopup({
 
   function convertTo24Hour(time: string) {
     const [timePart, modifier] = time.split(" "); // Split into "7:25" and "PM"
+    // eslint-disable-next-line prefer-const
     let [hours, minutes] = timePart.split(":").map(Number); // Split "7:25" into hours and minutes
 
     if (modifier === "PM" && hours < 12) {
@@ -226,6 +228,26 @@ function NewCompetitionPopup({
         setErrors({ ...errors, apiError: error.message });
       });
   }
+
+  const handleInvite = () => {
+    if (
+      invites.indexOf(inviteInput) < 0 &&
+      inviteInput.length !== 0 &&
+      validateEmail(inviteInput)
+    ) {
+      setInvites([...invites, inviteInput]);
+    } else {
+      if (inviteInput.length !== 0) {
+        if (!validateEmail(inviteInput)) {
+          setErrors({
+            ...errors,
+            emails: "Not a valid email address!",
+          });
+        }
+      }
+    }
+    setInviteInput("");
+  };
   return trigger ? (
     <div className={styles.overlay} onClick={() => setTrigger(false)}>
       <div
@@ -235,7 +257,6 @@ function NewCompetitionPopup({
         }}
       >
         <div
-          className={styles.forms}
           onClick={(e) => {
             e.stopPropagation();
           }}
@@ -270,51 +291,46 @@ function NewCompetitionPopup({
                 {errors.name}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formInvitePeople">
+            <Form.Group controlId="formInvitePeople">
               <Form.Label>Invite People</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Invite emails"
-                value={inviteInput}
-                onChange={(e) => {
-                  setInviteInput(e.target.value);
-                  setErrors({ ...errors, emails: "" });
-                }}
-                isInvalid={!!errors.emails}
-              />
-              <Button
-                variant="primary"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (
-                    invites.indexOf(inviteInput) < 0 &&
-                    inviteInput.length !== 0 &&
-                    validateEmail(inviteInput)
-                  ) {
-                    setInvites([...invites, inviteInput]);
-                  } else {
-                    if (inviteInput.length !== 0) {
-                      if (!validateEmail(inviteInput)) {
-                        setErrors({
-                          ...errors,
-                          emails: "Not a valid email address!",
-                        });
-                      }
+              <div className={styles.inviteContainer}>
+                <Form.Control
+                  type="email"
+                  placeholder="Invite emails"
+                  value={inviteInput}
+                  onChange={(e) => {
+                    setInviteInput(e.target.value);
+                    setErrors({ ...errors, emails: "" });
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleInvite();
                     }
-                  }
-                  setInviteInput("");
-                }}
-              >
-                Invite
-              </Button>
+                  }}
+                  isInvalid={!!errors.emails}
+                />
+                <PlusSquare
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleInvite();
+                  }}
+                  className={styles.plusButton}
+                >
+                  Invite
+                </PlusSquare>
+              </div>
               <Form.Control.Feedback type="invalid">
                 {errors.emails}
               </Form.Control.Feedback>
               <ListGroup>
                 {invites.map((invite) => (
-                  <div key={invite}>
-                    <ListGroupItem>{invite}</ListGroupItem>
+                  <div className={styles.inviteeContainer} key={invite}>
+                    <ListGroupItem className={styles.listGroupItem}>
+                      {invite}
+                    </ListGroupItem>
                     <CloseButton
+                      className={styles.closeButton}
                       onClick={() =>
                         setInvites(invites.filter((i) => i !== invite))
                       }

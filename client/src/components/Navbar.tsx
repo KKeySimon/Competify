@@ -33,7 +33,6 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [setBellClicked]);
-
   async function handleLogout() {
     await fetch("http://localhost:3000/api/logout", {
       credentials: "include",
@@ -127,6 +126,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
               setBellClicked(!bellClicked);
               setExpandedNotifications({});
             }}
+            className={styles.bell}
           />
           {notifications.length > 0 && (
             <span className={styles.notificationCount}>

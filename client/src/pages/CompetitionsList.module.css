@@ -1,7 +1,9 @@
-/* Overriding default bootstrap(?) css */
 .list {
-  margin: 3em;
-  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style-type: none;
+  padding: 0;
 }
 
 .link:hover {
@@ -11,7 +13,8 @@
 .header {
   display: flex;
   justify-content: space-between;
-  margin: 0 1rem;
+  margin: 1rem;
+  padding: 0 1rem;
   width: 100%;
 }
 

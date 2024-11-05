@@ -18,7 +18,9 @@
   background-color: white;
   padding: 2rem;
   border-radius: 1em;
-  width: clamp(45ch, 50%, 50ch);
+  width: clamp(45ch, 50%, 60ch);
+  max-height: 80%;
+  overflow-y: auto;
 }
 .prompt {
   text-align: center;
@@ -28,4 +30,47 @@
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
+}
+
+.plusButton {
+  justify-content: center;
+  align-items: center;
+}
+
+.plusButton:hover {
+  cursor: pointer;
+  color: blue;
+}
+
+.inviteContainer {
+  display: flex;
+  align-items: center;
+}
+
+.inviteContainer input {
+  margin-right: 10px;
+}
+
+.inviteeContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px 0;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.inviteeContainer:hover {
+  background-color: #e2e6ea;
+}
+
+.listGroupItem {
+  flex: 1;
+  font-size: 16px;
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+.closeButton {
+  margin: 0 5px;
 }
