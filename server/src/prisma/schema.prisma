@@ -21,7 +21,7 @@ model users {
   password             String                  @db.VarChar(255)
   created_at           DateTime?               @default(now()) @db.Timestamp(6)
   email                String?                 @unique @db.VarChar(255)
-  profile_picture_url  String?
+  profile_picture_url  String                  @default("https://${process.env.AWS_S3_BUCKET}.s3.amazonaws.com/profile_pictures/profile_default.jpg")
   created_competitions competitions[]          @relation("CreatedCompetitions")
   joined_competitions  users_in_competitions[]
 
@@ -85,6 +85,7 @@ model events {
   previous       Boolean       @default(false)
   // We add priority and policy to events as well as we want to preserve previous
   // priorities and policies if they're changed at some point in the future
+  is_numerical   Boolean
   priority       Priority
   policy         Policy
   submissions    submissions[]

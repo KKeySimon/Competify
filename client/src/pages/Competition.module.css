@@ -1,6 +1,6 @@
 .container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 4fr 1fr;
 }
 
 .header {
@@ -18,5 +18,34 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: auto 1em;
+  margin: 0 1em;
+}
+
+.profilePicture {
+  height: 4vh;
+  width: auto;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.countdown {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.timeUnit {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.label {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.participants ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }

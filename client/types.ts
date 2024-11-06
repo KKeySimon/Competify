@@ -28,6 +28,11 @@ export interface ICompetition {
     competition_id: number;
     joined_at: Date;
     user_id: number;
+    user: {
+      id: number;
+      username: string;
+      profile_picture_url: string;
+    };
   }[];
   priority: string;
   policy: string;
@@ -50,10 +55,12 @@ export interface Submission {
   id: number;
   event_id: number;
   user_id: number;
+  created_at: string;
   belongs_to: {
     username: string;
   };
-  content: string | number;
+  content: string;
+  content_number: number;
 }
 
 export enum Priority {

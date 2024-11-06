@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Image } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import SubmissionPopup from "../components/SubmissionPopup";
 import { ICompetition, Submission } from "../../types";
 import { Gear } from "react-bootstrap-icons";
 import NewCompetitionPopup from "../components/NewCompetitionPopup";
 import styles from "./Competition.module.css";
+import { formatDistanceToNow } from "date-fns";
 
 function Competition() {
   interface Event {
@@ -15,6 +16,8 @@ function Competition() {
     upcoming: boolean;
     winner_id: number | undefined;
     submissions: Submission[];
+    priority: string;
+    is_numerical: boolean;
   }
 
   interface PreviousEvent extends Event {
@@ -23,13 +26,20 @@ function Competition() {
     };
   }
 
+  interface TimeLeft {
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }
+
   const { id } = useParams();
   const [competition, setCompetition] = useState<ICompetition | undefined>(
     undefined
   );
   const [upcoming, setUpcoming] = useState<Event | undefined>();
   const [error, setError] = useState<string>("");
-  const [timeLeft, setTimeLeft] = useState<string>("");
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
   const [trigger, setTrigger] = useState<boolean>(false);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [previousEvents, setPreviousEvents] = useState<PreviousEvent[]>([]);
@@ -118,7 +128,6 @@ function Competition() {
           console.log(err.message);
           setError(err.message);
         } else {
-          console.log("An unknown error occurred");
           setError("An unknown error occurred");
         }
       }
@@ -142,9 +151,13 @@ function Competition() {
             (timeDiff % (1000 * 60 * 60)) / (1000 * 60)
           );
           const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-          setTimeLeft(
-            `${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds remaining`
-          );
+
+          setTimeLeft({
+            days,
+            hours,
+            minutes,
+            seconds,
+          });
         }
       }
     }, 1000);
@@ -192,78 +205,172 @@ function Competition() {
   }
 
   return (
-    <div className={styles.container}>
+    <div>
       {competition && (
-        <div>
-          <div className={styles.header}>
-            <h1>{competition.name}</h1>
-            <Gear
-              className={styles.gear}
-              size={25}
-              onClick={() => setPopupTrigger(true)}
-            />
-            {popupTrigger && (
-              <NewCompetitionPopup
-                trigger={popupTrigger}
-                setTrigger={setPopupTrigger}
-                competitionData={competition} // Pass the data for editing
-              />
-            )}
-          </div>
-          {upcoming ? (
-            <div>
-              <ul>
-                {submissions.map((submission) => (
-                  <li key={submission.user_id}>
-                    {submission.id} Submitted: {submission.content}
-                  </li>
-                ))}
-              </ul>
-              <div className={styles.deadline}>
-                <p>Upcoming Deadline: {timeLeft}</p>
-                <Button onClick={() => setTrigger(true)}>
-                  Create/Update Submission
-                </Button>
-              </div>
-              <SubmissionPopup
-                trigger={trigger}
-                setTrigger={setTrigger}
-                isNumerical={competition.is_numerical}
-                eventId={upcoming?.id}
-                handleSubmitSubmission={handleSubmitSubmission}
-              />
-            </div>
-          ) : (
-            <div>No more upcoming events!</div>
-          )}
+        <div className={styles.container}>
           <div>
-            Participating Users
-            <ul>
-              {competition.users_in_competitions.map((uic) => (
-                <li key={uic.user_id}>{uic.user_id}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
-      <div>Previous Competition Winners</div>
-      {previousEvents && (
-        <div>
-          <ul>
-            {previousEvents.map((event) => (
-              <li key={event.id}>
-                Date: {event.date.toLocaleDateString()}; Winner:{" "}
-                {event.winner ? event.winner.username : "None"}
+            <div className={styles.header}>
+              <h1>{competition.name}</h1>
+              <Gear
+                className={styles.gear}
+                size={25}
+                onClick={() => setPopupTrigger(true)}
+              />
+              {popupTrigger && (
+                <NewCompetitionPopup
+                  trigger={popupTrigger}
+                  setTrigger={setPopupTrigger}
+                  competitionData={competition}
+                />
+              )}
+            </div>
+            {upcoming ? (
+              <div>
                 <ul>
-                  {event.submissions.map((submission) => (
-                    <li key={submission.id}>
-                      {submission.id}: {submission.content}
+                  {submissions.map((submission) => (
+                    <li key={submission.user_id}>
+                      {upcoming.is_numerical
+                        ? submissions
+                            .sort((a, b) => {
+                              if (upcoming.priority === "HIGHEST") {
+                                return b.content_number - a.content_number; // Sort descending
+                              } else {
+                                return a.content_number - b.content_number; // Sort ascending
+                              }
+                            })
+                            .map((submission) => (
+                              <li key={submission.id}>
+                                {submission.belongs_to.username}:{" "}
+                                {submission.content_number}
+                              </li>
+                            ))
+                        : submissions.map((submission) => (
+                            <li key={submission.id}>
+                              {submission.belongs_to.username}:{" "}
+                              {submission.content}
+                            </li>
+                          ))}
                     </li>
                   ))}
                 </ul>
-              </li>
-            ))}
-          </ul>
+                <div className={styles.deadline}>
+                  <p className={styles.countdown}>
+                    Upcoming Deadline:
+                    <span className={styles.timeUnit}>
+                      {timeLeft && (
+                        <>
+                          {timeLeft.days}
+                          <span className={styles.label}>days</span>
+                          {timeLeft.hours}
+                          <span className={styles.label}>hours</span>
+                          {timeLeft.minutes}
+                          <span className={styles.label}>minutes</span>
+                          {timeLeft.seconds}
+                          <span className={styles.label}>seconds</span>
+                        </>
+                      )}
+                    </span>
+                  </p>
+                </div>
+                <Button onClick={() => setTrigger(true)}>
+                  Create/Update Submission
+                </Button>
+                <SubmissionPopup
+                  trigger={trigger}
+                  setTrigger={setTrigger}
+                  isNumerical={competition.is_numerical}
+                  eventId={upcoming?.id}
+                  handleSubmitSubmission={handleSubmitSubmission}
+                />
+              </div>
+            ) : (
+              <div>No more upcoming events!</div>
+            )}
+
+            <div>Previous Competition Winners</div>
+            {previousEvents && (
+              <div>
+                <ul>
+                  {previousEvents.map((event) => (
+                    <li key={event.id}>
+                      Date: {event.date.toLocaleDateString()}; Winner:{" "}
+                      {event.winner ? event.winner.username : "None"}
+                      <ul>
+                        {event.submissions.map((submission) => (
+                          <li key={submission.id}>
+                            {submission.id}: {submission.content}
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+          <div className={styles.participants}>
+            <h3>Users</h3>
+            <ul>
+              {competition.users_in_competitions
+                .filter((uic) =>
+                  submissions.some(
+                    (submission) => submission.user_id === uic.user.id
+                  )
+                ) // Users with submissions
+                .map((uic) => {
+                  const userSubmissions = submissions.filter(
+                    (submission) => submission.user_id === uic.user.id
+                  );
+                  return (
+                    <li key={uic.user.id}>
+                      <span
+                        style={{
+                          color: "green", // Always green for users with submissions
+                        }}
+                      >
+                        {uic.user.username}
+                      </span>
+                      <Image
+                        className={styles.profilePicture}
+                        src={uic.user.profile_picture_url}
+                      />
+                      <span>
+                        {userSubmissions.map((submission) => (
+                          <span key={submission.id}>
+                            {` - Submitted ${formatDistanceToNow(
+                              new Date(submission.created_at),
+                              { addSuffix: true }
+                            )}`}
+                          </span>
+                        ))}
+                      </span>
+                    </li>
+                  );
+                })}
+              {competition.users_in_competitions
+                .filter(
+                  (uic) =>
+                    !submissions.some(
+                      (submission) => submission.user_id === uic.user.id
+                    )
+                )
+                .map((uic) => (
+                  <li key={uic.user.id}>
+                    <span
+                      style={{
+                        color: "black",
+                      }}
+                    >
+                      {uic.user.username}
+                    </span>
+                    <Image
+                      className={styles.profilePicture}
+                      src={uic.user.profile_picture_url}
+                    />
+                  </li>
+                ))}
+            </ul>
+          </div>
         </div>
       )}
     </div>

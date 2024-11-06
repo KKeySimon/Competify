@@ -260,7 +260,17 @@ router.get(
       const competition = await prisma.competitions.findFirst({
         where: { id: parseInt(id) },
         include: {
-          users_in_competitions: true,
+          users_in_competitions: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  profile_picture_url: true,
+                },
+              },
+            },
+          },
         },
       });
       if (!competition) {

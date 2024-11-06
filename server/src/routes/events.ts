@@ -87,6 +87,7 @@ router.get(
         event_id: true,
         user_id: true,
         content: true,
+        created_at: true,
         belongs_to: {
           select: {
             username: true,
@@ -130,6 +131,7 @@ router.post(
           event_id: true,
           user_id: true,
           content: true,
+          created_at: true,
           belongs_to: {
             select: {
               username: true,
@@ -150,6 +152,7 @@ router.post(
           event_id: true,
           user_id: true,
           content: true,
+          created_at: true,
           belongs_to: {
             select: {
               username: true,
