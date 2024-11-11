@@ -44,6 +44,7 @@ router.get(
           repeatsEvery: entry.competition.repeats_every,
         }))
       );
+      return;
     }
   )
 );
@@ -60,11 +61,13 @@ router.post(
       const startDate = new Date(req.body.startDate);
       if (startDate <= new Date()) {
         res.status(403).send({ message: "Start date must be in the future" });
+        return;
       }
 
       const priority = req.body.priority;
       if (![Priority.HIGHEST, Priority.LOWEST].includes(priority)) {
         res.status(400).send({ message: "Invalid priority" });
+        return;
       }
 
       const policy = req.body.policy;
@@ -74,6 +77,7 @@ router.post(
         )
       ) {
         res.status(400).send({ message: "Invalid policy" });
+        return;
       }
 
       let frequency: Frequency;
@@ -147,6 +151,7 @@ router.post(
       inviteAllUsers.filter(Boolean);
 
       res.status(201).json(createCompetition);
+      return;
     }
   )
 );
@@ -169,22 +174,26 @@ router.put(
 
       if (!competition) {
         res.status(404).send({ message: "Competition not found" });
+        return;
       }
 
       if (competition.created_by.id !== currUserId) {
         res
           .status(403)
           .send({ message: "Not authorized to update this competition" });
+        return;
       }
 
       const startDate = new Date(req.body.startDate);
       if (startDate <= new Date()) {
         res.status(403).send({ message: "Start date must be in the future" });
+        return;
       }
 
       const priority = req.body.priority;
       if (![Priority.HIGHEST, Priority.LOWEST].includes(priority)) {
         res.status(400).send({ message: "Invalid priority" });
+        return;
       }
 
       const policy = req.body.policy;
@@ -194,6 +203,7 @@ router.put(
         )
       ) {
         res.status(400).send({ message: "Invalid policy" });
+        return;
       }
 
       let frequency: Frequency;
@@ -209,6 +219,7 @@ router.put(
           break;
         default:
           res.status(400).send({ message: "Invalid frequency type" });
+          return;
       }
 
       const endDate =
@@ -246,6 +257,7 @@ router.put(
       });
 
       res.status(200).send(updatedCompetition);
+      return;
     }
   )
 );
@@ -275,6 +287,7 @@ router.get(
       });
       if (!competition) {
         res.status(404).send({ message: "Competition not found" });
+        return;
       }
       const isUserInCompetition = competition.users_in_competitions.some(
         (uc) => uc.user_id === currUserId
@@ -283,8 +296,10 @@ router.get(
         res
           .status(401)
           .send({ message: "No permission to view competition users" });
+        return;
       }
       res.status(200).send(competition);
+      return;
     }
   )
 );

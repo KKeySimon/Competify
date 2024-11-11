@@ -41,6 +41,7 @@ router.get(
         sentAt: entry.sent_at,
       }))
     );
+    return;
   })
 );
 
@@ -60,6 +61,7 @@ router.post(
 
     if (!invite) {
       res.status(404).send({ message: "Invite not found" });
+      return;
     }
 
     await prisma.invites.delete({
@@ -79,6 +81,7 @@ router.post(
       },
     });
     res.status(200).send({ message: "Successfully joined competition" });
+    return;
   })
 );
 
@@ -98,6 +101,7 @@ router.delete(
 
     if (!invite) {
       res.status(404).send({ message: "Invite not found" });
+      return;
     }
 
     await prisma.invites.delete({
@@ -111,6 +115,7 @@ router.delete(
     });
 
     res.status(200).send({ message: "Successfully rejected invite" });
+    return;
   })
 );
 

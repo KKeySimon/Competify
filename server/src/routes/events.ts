@@ -40,6 +40,7 @@ router.get(
       },
     });
     res.status(200).json(events);
+    return;
   })
 );
 
@@ -66,6 +67,7 @@ router.get(
       },
     });
     res.status(200).json(events);
+    return;
   })
 );
 
@@ -96,6 +98,7 @@ router.get(
       },
     });
     res.status(200).json(submissions);
+    return;
   })
 );
 
@@ -140,6 +143,7 @@ router.post(
         },
       });
       res.status(200).json(updatedSubmission);
+      return;
     } else {
       const submission = await prisma.submissions.create({
         data: {
@@ -161,6 +165,7 @@ router.post(
         },
       });
       res.status(201).json(submission);
+      return;
     }
   })
 );

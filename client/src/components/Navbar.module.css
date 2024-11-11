@@ -24,9 +24,12 @@
 }
 
 .bell {
-  cursor: pointer; /* Pointer cursor for the bell icon */
-  transition: color 0.3s; /* Smooth background transition */
-  border-radius: 5px; /* Optional: rounds the corners */
+  cursor: pointer;
+  transition: color 0.3s;
+  border-radius: 5px;
+  width: auto;
+  height: 100%;
+  padding: 10px 0;
 }
 
 .bell:hover {
@@ -38,6 +41,7 @@ a:hover {
 }
 
 .logoutNotif {
+  position: relative;
   flex-direction: row;
 }
 
@@ -65,12 +69,17 @@ a:hover {
 }
 
 .notificationCount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: absolute;
-  top: -5px;
-  right: -10px;
   background-color: red;
   color: white;
   border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
+  aspect-ratio: 1 / 1;
+  height: 50%;
+  font-size: 10px;
+  top: 5%;
+  /* No idea why setting this to left 5% moves the number to the right... */
+  left: 5%;
 }

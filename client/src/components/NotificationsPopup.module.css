@@ -1,0 +1,47 @@
+.popup {
+  position: fixed;
+  top: 0;
+  right: -20rem;
+  width: 20rem;
+  height: 100%;
+  background-color: white;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+  z-index: 1000;
+  padding: 20px;
+  transition: right 0.3s ease;
+}
+
+.popup.visible {
+  right: 0;
+}
+
+.notificationList {
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  list-style-type: none;
+}
+
+ul {
+  padding-left: 0;
+}
+
+.notificationList div {
+  display: flex;
+  gap: 10px;
+}
+
+.notification {
+  display: flex;
+  flex-direction: column;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.feedback {
+  font-weight: bold;
+}

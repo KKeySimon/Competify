@@ -56,6 +56,7 @@ router.get(
     const currUserId = req.user.id;
     const profile = await getProfile(currUserId);
     res.status(200).json(profile);
+    return;
   })
 );
 
@@ -71,6 +72,7 @@ router.get(
       ...profile,
       isSelf: currUserId === parseInt(id),
     });
+    return;
   })
 );
 router.post(
@@ -80,6 +82,7 @@ router.post(
   asyncHandler(async (req: any, res: Response) => {
     if (!req.file) {
       res.status(400).json({ message: "No file uploaded." });
+      return;
     }
 
     const resizedImageBuffer = await sharp(req.file.buffer)
@@ -109,6 +112,7 @@ router.post(
     res.status(200).json({
       message: "File uploaded successfully!",
     });
+    return;
   })
 );
 

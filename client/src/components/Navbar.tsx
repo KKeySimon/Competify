@@ -1,9 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { LoginProps, Invite } from "../../types";
 import styles from "./Navbar.module.css";
 import { Bell } from "react-bootstrap-icons";
 import { useEffect, useRef, useState } from "react";
 import { Image } from "react-bootstrap";
+import NotificationsPopup from "./NotificationsPopup";
 
 function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   const [bellClicked, setBellClicked] = useState<boolean>(false);
@@ -11,9 +12,6 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   const [profilePicture, setProfilePicture] = useState<string>("");
   // No need to set all keys to false, since if key doesn't exist,
   // it returns undefined. !undefined == True. And is set that way
-  const [expandedNotfications, setExpandedNotifications] = useState<
-    Record<string, boolean>
-  >({});
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -44,37 +42,6 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
         setIsLoggedIn(false);
         localStorage.removeItem("userId");
         window.location.reload();
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-  }
-  const navigate = useNavigate();
-  async function handleInvite(
-    inviterId: number,
-    competitionId: number,
-    accept: boolean
-  ) {
-    const method = accept ? "POST" : "DELETE";
-    await fetch("http://localhost:3000/api/invites/handle", {
-      method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        inviter_id: inviterId,
-        competition_id: competitionId,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Something went wrong!");
-        }
-        // TODO: Show feedback invite was accepted
-        if (accept) {
-          navigate("/competition/" + competitionId);
-        }
       })
       .catch((error) => {
         console.log(error.message);
@@ -115,6 +82,16 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
       });
   }, []);
 
+  const removeNotification = (key: string) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notification) => {
+        const notificationKey =
+          notification.inviteeId + ";" + notification.competitionId;
+        return notificationKey !== key;
+      })
+    );
+  };
+
   return (
     <div className={styles.navbar}>
       <Link to="/">Home</Link>
@@ -124,7 +101,6 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
           <Bell
             onClick={() => {
               setBellClicked(!bellClicked);
-              setExpandedNotifications({});
             }}
             className={styles.bell}
           />
@@ -133,66 +109,13 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
               {notifications.length}
             </span>
           )}
-          {bellClicked && (
-            <ul className={styles.notificationBar}>
-              {notifications.length !== 0 ? (
-                <>
-                  {notifications.map((notification) => {
-                    const key =
-                      notification.inviteeId + ";" + notification.competitionId;
-                    const isExpanded = expandedNotfications[key];
-                    return (
-                      <li
-                        key={key}
-                        className={styles.notification}
-                        onClick={() =>
-                          setExpandedNotifications((prev) => ({
-                            ...prev,
-                            [key]: !prev[key],
-                          }))
-                        }
-                      >
-                        {isExpanded ? (
-                          <div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleInvite(
-                                  notification.inviterId,
-                                  notification.competitionId,
-                                  true
-                                );
-                              }}
-                            >
-                              Accept
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleInvite(
-                                  notification.inviterId,
-                                  notification.competitionId,
-                                  false
-                                );
-                              }}
-                            >
-                              Decline
-                            </button>
-                          </div>
-                        ) : (
-                          notification.inviterName +
-                          " sent you an invite to room " +
-                          notification.competitionName
-                        )}
-                      </li>
-                    );
-                  })}
-                </>
-              ) : (
-                <li className={styles.notification}>No notifications!</li>
-              )}
-            </ul>
-          )}
+
+          <NotificationsPopup
+            notifications={notifications}
+            bellClicked={bellClicked}
+            removeNotification={removeNotification}
+          />
+
           <Link to={`/profile/${localStorage.getItem("userId")}`}>
             <Image className={styles.profilePicture} src={profilePicture} />
           </Link>
