@@ -87,7 +87,7 @@ function SubmissionPopup({
           />
         </Form.Group>
         <Button variant="primary" type="submit">
-          Create Submission
+          Submit
         </Button>
       </Form>
     </div>

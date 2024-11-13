@@ -60,6 +60,9 @@ function NewCompetitionPopup({
   const [repeatInterval, setRepeatInterval] = useState<string>(
     competitionData?.frequency || "daily"
   );
+  const [isNumerical, setIsNumerical] = useState<boolean>(
+    competitionData?.is_numerical || true
+  );
   const [priority, setPriority] = useState<string>(
     competitionData?.priority || Priority.HIGHEST
   );
@@ -189,6 +192,7 @@ function NewCompetitionPopup({
       endDate,
       priority,
       policy,
+      is_numerical: isNumerical,
     };
 
     await fetch(
@@ -401,6 +405,15 @@ function NewCompetitionPopup({
                 </Button>
               </Modal.Footer>
             </Modal>
+
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                label="Numerical"
+                checked={isNumerical}
+                onChange={() => setIsNumerical(!isNumerical)}
+              />
+            </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Check

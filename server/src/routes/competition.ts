@@ -107,7 +107,7 @@ router.post(
           frequency: frequency,
           priority: priority,
           policy: policy,
-          is_numerical: true, // TODO
+          is_numerical: req.body.is_numerical,
           created_by: { connect: { id: req.user.id } },
         },
       });
@@ -119,6 +119,7 @@ router.post(
           priority: priority,
           date: startDate,
           upcoming: true,
+          is_numerical: req.body.is_numerical,
         },
       });
 
@@ -235,7 +236,7 @@ router.put(
           frequency: frequency,
           priority: priority,
           policy: policy,
-          // is_numerical: true,
+          is_numerical: req.body.is_numerical,
         },
       });
 
@@ -246,6 +247,7 @@ router.put(
           priority: priority,
           date: upcomingEvent(updatedCompetition),
           upcoming: true,
+          is_numerical: req.body.is_numerical,
         },
         create: {
           competition_id: updatedCompetition.id,
@@ -253,6 +255,7 @@ router.put(
           priority: priority,
           date: startDate,
           upcoming: true,
+          is_numerical: req.body.is_numerical,
         },
       });
 
