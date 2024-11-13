@@ -49,3 +49,18 @@
   margin: 0;
   padding: 0;
 }
+
+.participants ul {
+  position: relative;
+  padding-left: 10px;
+}
+
+.participants ul::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 5%;
+  bottom: 5%;
+  width: 1px;
+  background-color: black;
+}
