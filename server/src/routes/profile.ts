@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 import express, { NextFunction, Response } from "express";
 import asyncHandler from "express-async-handler";
 import multer from "multer";
