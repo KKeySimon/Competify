@@ -29,6 +29,7 @@ model users {
   invites_received invites[]     @relation("InviteeRelation")
   submissions      submissions[]
   events           events[]
+  votes            votes[]
 }
 
 model users_in_competitions {
@@ -89,6 +90,7 @@ model events {
   priority       Priority
   policy         Policy
   submissions    submissions[]
+  votes          votes[]
 }
 
 model submissions {
@@ -100,8 +102,22 @@ model submissions {
   created_at     DateTime @default(now())
   content        String?
   content_number Float?
+  votes          votes[]
 
   @@unique([event_id, user_id])
+}
+
+model votes {
+  id            Int         @id @default(autoincrement())
+  submission    submissions @relation(fields: [submission_id], references: [id], onDelete: Cascade)
+  submission_id Int
+  user          users       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id       Int
+  created_at    DateTime    @default(now())
+  events        events?     @relation(fields: [eventsId], references: [id])
+  eventsId      Int?
+
+  @@unique([submission_id, user_id])
 }
 
 enum Frequency {

@@ -224,7 +224,11 @@ function NewCompetitionPopup({
           setTrigger(false);
           setSuccess(false);
           setName("");
-          navigate("/competition/" + data.id);
+          if (competitionData) {
+            window.location.reload();
+          } else {
+            navigate("/competition/" + data.id);
+          }
         }, 2000);
       })
       .catch((error) => {

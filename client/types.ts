@@ -61,6 +61,13 @@ export interface Submission {
   };
   content: string;
   content_number: number;
+  vote_count: number;
+}
+
+export interface Vote {
+  id: number;
+  submission_id: number;
+  created_at: string;
 }
 
 export enum Priority {

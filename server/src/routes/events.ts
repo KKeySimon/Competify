@@ -33,7 +33,18 @@ router.get(
             username: true,
           },
         },
-        submissions: true,
+        submissions: {
+          select: {
+            user_id: true,
+            content: true,
+            content_number: true,
+            belongs_to: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         date: "desc",
@@ -89,16 +100,54 @@ router.get(
         event_id: true,
         user_id: true,
         content: true,
+        content_number: true,
         created_at: true,
         belongs_to: {
           select: {
             username: true,
           },
         },
+        _count: {
+          select: {
+            votes: true,
+          },
+        },
       },
     });
-    res.status(200).json(submissions);
+
+    const formattedSubmissions = submissions.map((submission) => ({
+      ...submission,
+      vote_count: submission._count.votes,
+    }));
+
+    res.status(200).json(formattedSubmissions);
     return;
+  })
+);
+
+router.get(
+  "/:eventId/votes",
+  isAuth,
+  isCompetitionAuth,
+  asyncHandler(async (req: AuthRequest<any>, res, next) => {
+    const currUserId = req.user.id;
+    const { eventId } = req.params;
+    const eventIdNumber = parseInt(eventId, 10);
+    const userVotes = await prisma.votes.findMany({
+      where: {
+        user_id: currUserId,
+        submission: {
+          event_id: eventIdNumber,
+        },
+      },
+      select: {
+        id: true,
+        submission_id: true,
+        created_at: true,
+      },
+    });
+
+    res.status(200).json(userVotes);
   })
 );
 
@@ -111,6 +160,16 @@ router.post(
     const { eventId } = req.params;
     const eventIdNumber = parseInt(eventId, 10);
     const content = req.body.content;
+
+    const event = await prisma.events.findFirst({
+      where: {
+        id: eventIdNumber,
+      },
+    });
+    let contentNumber;
+    if (event.is_numerical) {
+      contentNumber = parseInt(content, 10);
+    }
 
     const existingSubmission = await prisma.submissions.findUnique({
       where: {
@@ -126,15 +185,16 @@ router.post(
         where: {
           id: existingSubmission.id,
         },
-        data: {
-          content,
-        },
+        data: event.is_numerical
+          ? { content_number: contentNumber }
+          : { content: req.body.content },
         select: {
           id: true,
           event_id: true,
           user_id: true,
           content: true,
           created_at: true,
+          content_number: true,
           belongs_to: {
             select: {
               username: true,
@@ -149,13 +209,16 @@ router.post(
         data: {
           event_id: eventIdNumber,
           user_id: currUserId,
-          content: req.body.content,
+          ...(event.is_numerical
+            ? { content_number: contentNumber }
+            : { content: req.body.content }),
         },
         select: {
           id: true,
           event_id: true,
           user_id: true,
           content: true,
+          content_number: true,
           created_at: true,
           belongs_to: {
             select: {
@@ -204,5 +267,8 @@ export function upcomingEvent(competition: competitions) {
 
   return time;
 }
+
+import submissionRoute from "./submissions";
+router.use("/:eventId/submissions", submissionRoute);
 
 export default router;

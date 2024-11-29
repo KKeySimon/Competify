@@ -240,20 +240,19 @@ router.put(
         },
       });
 
-      await prisma.events.upsert({
-        where: { id: updatedCompetition.id, upcoming: true },
-        update: {
+      const firstUpcomingEvent = await prisma.events.findFirst({
+        where: {
+          competition_id: updatedCompetition.id,
+          upcoming: true,
+        },
+      });
+
+      await prisma.events.update({
+        where: { id: firstUpcomingEvent.id },
+        data: {
           policy: policy,
           priority: priority,
           date: upcomingEvent(updatedCompetition),
-          upcoming: true,
-          is_numerical: req.body.is_numerical,
-        },
-        create: {
-          competition_id: updatedCompetition.id,
-          policy: policy,
-          priority: priority,
-          date: startDate,
           upcoming: true,
           is_numerical: req.body.is_numerical,
         },

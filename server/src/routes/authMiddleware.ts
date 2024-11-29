@@ -11,7 +11,7 @@ module.exports.isAuth = (req, res, next) => {
 
 module.exports.isCompetitionAuth = async (req, res, next) => {
   const currUserId = req.user.id;
-  const { competitionId } = req.params;
+  const { competitionId, eventId, submissionId } = req.params;
   const competitionIdNumber = parseInt(competitionId, 10);
   if (isNaN(competitionIdNumber)) {
     res.status(400).send({ message: "Competition ID is not a number!" });

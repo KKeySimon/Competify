@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Button, Image } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import SubmissionPopup from "../components/SubmissionPopup";
-import { ICompetition, Submission } from "../../types";
-import { Gear } from "react-bootstrap-icons";
+import { ICompetition, Submission, Vote } from "../../types";
+import { Gear, HandThumbsUp, HandThumbsUpFill } from "react-bootstrap-icons";
 import NewCompetitionPopup from "../components/NewCompetitionPopup";
 import styles from "./Competition.module.css";
 import { formatDistanceToNow } from "date-fns";
@@ -44,6 +44,7 @@ function Competition() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [previousEvents, setPreviousEvents] = useState<PreviousEvent[]>([]);
   const [popupTrigger, setPopupTrigger] = useState(false);
+  const [hasVoted, setHasVoted] = useState<Record<number, boolean>>({});
 
   const handleSubmitSubmission = (newSubmission: Submission) => {
     setSubmissions((prevSubmissions) => {
@@ -103,6 +104,7 @@ function Competition() {
           throw new Error("Error getting upcoming event");
         }
         const eventsData: Event = await eventsResponse.json();
+
         if (eventsData) {
           const parsedEvents = {
             ...eventsData,
@@ -122,6 +124,25 @@ function Competition() {
           const submissionsData: Submission[] =
             await submissionsResponse.json();
           setSubmissions(submissionsData);
+
+          const voteResponse = await fetch(
+            `http://localhost:3000/api/competition/${id}/events/${eventsData.id}/votes`,
+            {
+              credentials: "include",
+            }
+          );
+          if (!voteResponse.ok) {
+            throw new Error("Error retrieving user's votes!");
+          }
+          const voteData: Vote[] = await voteResponse.json();
+          console.log(voteData);
+          setHasVoted((prevHasVoted) => {
+            const updatedVotes = { ...prevHasVoted };
+            voteData.forEach((vote) => {
+              updatedVotes[vote.submission_id] = true;
+            });
+            return updatedVotes;
+          });
         }
       } catch (err) {
         if (err instanceof Error) {
@@ -200,6 +221,49 @@ function Competition() {
     fetchAllEvents();
   }, [id]);
 
+  const handleUpvote = async (submissionId: number) => {
+    const voted = hasVoted[submissionId];
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/competition/${id}/events/${upcoming?.id}/submissions/${submissionId}/vote/submit`,
+        {
+          method: voted ? "DELETE" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            submissionId,
+            competitionId: id,
+            eventId: upcoming?.id,
+          }),
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+
+      setSubmissions((prevSubmissions) =>
+        prevSubmissions.map((submission) =>
+          submission.id === submissionId
+            ? {
+                ...submission,
+                vote_count: submission.vote_count + (voted ? -1 : 1),
+              }
+            : submission
+        )
+      );
+      setHasVoted((prev) => ({
+        ...prev,
+        [submissionId]: !voted,
+      }));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -227,32 +291,39 @@ function Competition() {
             {upcoming ? (
               <div>
                 <ul>
-                  {submissions.map((submission) => (
-                    <li key={submission.user_id}>
-                      {upcoming.is_numerical
-                        ? submissions
-                            .sort((a, b) => {
-                              if (upcoming.priority === "HIGHEST") {
-                                return b.content_number - a.content_number; // Sort descending
-                              } else {
-                                return a.content_number - b.content_number; // Sort ascending
-                              }
-                            })
-                            .map((submission) => (
-                              <li key={submission.id}>
-                                {submission.belongs_to.username}:{" "}
-                                {submission.content_number}
-                              </li>
-                            ))
-                        : submissions.map((submission) => (
-                            <li key={submission.id}>
-                              {submission.belongs_to.username}:{" "}
-                              {submission.content}
-                            </li>
-                          ))}
-                    </li>
-                  ))}
+                  {upcoming.is_numerical
+                    ? submissions
+                        .sort((a, b) => {
+                          if (upcoming.priority === "HIGHEST") {
+                            return b.content_number - a.content_number; // Sort descending
+                          } else {
+                            return a.content_number - b.content_number; // Sort ascending
+                          }
+                        })
+                        .map((sortedSubmission) => (
+                          <li key={sortedSubmission.id}>
+                            {sortedSubmission.belongs_to.username}:{" "}
+                            {sortedSubmission.content_number}
+                          </li>
+                        ))
+                    : submissions.map((textSubmission) => (
+                        <li key={textSubmission.id}>
+                          {textSubmission.belongs_to.username}:{" "}
+                          {textSubmission.content}
+                          <button
+                            onClick={() => handleUpvote(textSubmission.id)}
+                          >
+                            {hasVoted[textSubmission.id] ? (
+                              <HandThumbsUpFill />
+                            ) : (
+                              <HandThumbsUp />
+                            )}
+                          </button>
+                          <span>{textSubmission.vote_count}</span>
+                        </li>
+                      ))}
                 </ul>
+
                 <div className={styles.deadline}>
                   <p className={styles.countdown}>
                     Upcoming Deadline:
@@ -298,7 +369,8 @@ function Competition() {
                       <ul>
                         {event.submissions.map((submission) => (
                           <li key={submission.id}>
-                            {submission.id}: {submission.content}
+                            {submission.belongs_to.username}:{" "}
+                            {submission.content}
                           </li>
                         ))}
                       </ul>
@@ -376,5 +448,4 @@ function Competition() {
     </div>
   );
 }
-
 export default Competition;

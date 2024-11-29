@@ -23,6 +23,7 @@ CREATE TABLE "users" (
     "password" VARCHAR(255) NOT NULL,
     "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "email" VARCHAR(255),
+    "profile_picture_url" TEXT NOT NULL DEFAULT 'https://kkey-competify.s3.amazonaws.com/profile_pictures/profile_default.jpg',
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -72,6 +73,7 @@ CREATE TABLE "events" (
     "winner_id" INTEGER,
     "upcoming" BOOLEAN NOT NULL,
     "previous" BOOLEAN NOT NULL DEFAULT false,
+    "is_numerical" BOOLEAN NOT NULL,
     "priority" "Priority" NOT NULL,
     "policy" "Policy" NOT NULL,
 
@@ -90,6 +92,17 @@ CREATE TABLE "submissions" (
     CONSTRAINT "submissions_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "votes" (
+    "id" SERIAL NOT NULL,
+    "submission_id" INTEGER NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "event_id" INTEGER NOT NULL,
+
+    CONSTRAINT "votes_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE INDEX "IDX_session_expire" ON "session"("expire");
 
@@ -101,6 +114,9 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "submissions_event_id_user_id_key" ON "submissions"("event_id", "user_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "votes_submission_id_user_id_key" ON "votes"("submission_id", "user_id");
 
 -- AddForeignKey
 ALTER TABLE "users_in_competitions" ADD CONSTRAINT "users_in_competitions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -131,3 +147,12 @@ ALTER TABLE "submissions" ADD CONSTRAINT "submissions_event_id_fkey" FOREIGN KEY
 
 -- AddForeignKey
 ALTER TABLE "submissions" ADD CONSTRAINT "submissions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "votes" ADD CONSTRAINT "votes_submission_id_fkey" FOREIGN KEY ("submission_id") REFERENCES "submissions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "votes" ADD CONSTRAINT "votes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "votes" ADD CONSTRAINT "votes_event_id_fkey" FOREIGN KEY ("event_id") REFERENCES "events"("id") ON DELETE CASCADE ON UPDATE CASCADE;

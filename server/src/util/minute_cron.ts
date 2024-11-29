@@ -12,8 +12,6 @@ import { addDays, addMonths, addWeeks } from "date-fns";
 import { sendEmail } from "./mailgun";
 
 export const startCronJob = () => {
-  // TODO: See if there are any upcoming events we missed and process
-
   CronJob.from({
     cronTime: "* * * * *", // every minute
     onTick: async () => {
@@ -121,8 +119,7 @@ const getCurrentEventCompetitions = async () => {
     where: {
       upcoming: true,
       date: {
-        gte: startOfMinute,
-        lt: endOfMinute,
+        lte: startOfMinute,
       },
     },
     select: {
@@ -137,6 +134,7 @@ const getCurrentEventCompetitions = async () => {
       },
       priority: true,
       policy: true,
+      is_numerical: true,
     },
   });
 
@@ -156,6 +154,7 @@ interface OldUpcomingEvent {
   belongs_to: { repeats_every: number; frequency: $Enums.Frequency };
   policy: Policy;
   priority: Priority;
+  is_numerical: boolean;
 }
 
 const updateUpcoming = (upcomingEvents: OldUpcomingEvent[]) => {
@@ -201,6 +200,7 @@ const updateUpcoming = (upcomingEvents: OldUpcomingEvent[]) => {
           upcoming: true,
           policy: event.policy,
           priority: event.priority,
+          is_numerical: event.is_numerical,
         },
       });
     }
