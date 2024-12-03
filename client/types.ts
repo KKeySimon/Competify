@@ -80,3 +80,9 @@ export enum Policy {
   FLAT_CHANGE = "FLAT_CHANGE",
   PERCENTAGE_CHANGE = "PERCENTAGE_CHANGE",
 }
+
+export enum SubmissionType {
+  TEXT = "TEXT",
+  URL = "URL",
+  IMAGE_URL = "IMAGE_URL",
+}
