@@ -61,7 +61,7 @@ const sendNotification = async (
   const subject = `Competition ${competition_name} has just finished!`;
   const text = `Hello, ${username}. To see the results of ${competition_name}, visit http://localhost:5173/competition/${competition_id}`;
   const html = `<p>Hello, ${username}. To see the results of <strong>${competition_name}</strong>, visit <a href="http://localhost:5173/competition/${competition_id}">this link</a>.</p>`;
-  sendEmail(user_email, subject, text, html);
+  // sendEmail(user_email, subject, text, html);
 };
 
 const getUsersInCompetitions = async (competitionIds: Set<number>) => {
@@ -215,6 +215,11 @@ const determineWinner = async (event: OldUpcomingEvent) => {
     orderBy: {
       created_at: "asc",
     },
+    include: {
+      _count: {
+        select: { votes: true },
+      },
+    },
   });
   let previousSubmissions: submissions[];
   if (
@@ -243,44 +248,52 @@ const determineWinner = async (event: OldUpcomingEvent) => {
     content_number: number;
   };
   let bestComparison = 0;
+  let currBestVotes = 0;
   submissions.forEach((submission) => {
     // TODO: Insert priority algo (should it be largest/smallest? Biggest Percentage/Flat Increase?, etc)
-    if (event.policy === Policy.FLAT) {
-      if (event.priority === Priority.HIGHEST) {
-        if (!best || submission.content_number > best.content_number) {
-          best = submission;
-        }
-      } else if (event.priority === Priority.LOWEST) {
-        if (!best || submission.content_number < best.content_number) {
-          best = submission;
-        }
-      }
-    } else if (
-      event.policy === Policy.FLAT_CHANGE ||
-      event.policy === Policy.PERCENTAGE_CHANGE
-    ) {
-      previousSubmissions.forEach((prevSubmission) => {
-        if (prevSubmission.user_id === submission.user_id) {
-          let diff: number;
-          if (event.policy === Policy.FLAT_CHANGE) {
-            diff = submission.content_number - prevSubmission.content_number;
-          } else if (event.policy === Policy.PERCENTAGE_CHANGE) {
-            diff = submission.content_number / prevSubmission.content_number;
+    if (event.is_numerical) {
+      if (event.policy === Policy.FLAT) {
+        if (event.priority === Priority.HIGHEST) {
+          if (!best || submission.content_number > best.content_number) {
+            best = submission;
           }
+        } else if (event.priority === Priority.LOWEST) {
+          if (!best || submission.content_number < best.content_number) {
+            best = submission;
+          }
+        }
+      } else if (
+        event.policy === Policy.FLAT_CHANGE ||
+        event.policy === Policy.PERCENTAGE_CHANGE
+      ) {
+        previousSubmissions.forEach((prevSubmission) => {
+          if (prevSubmission.user_id === submission.user_id) {
+            let diff: number;
+            if (event.policy === Policy.FLAT_CHANGE) {
+              diff = submission.content_number - prevSubmission.content_number;
+            } else if (event.policy === Policy.PERCENTAGE_CHANGE) {
+              diff = submission.content_number / prevSubmission.content_number;
+            }
 
-          if (event.priority === Priority.HIGHEST) {
-            if (!best || diff > bestComparison) {
-              best = submission;
-              bestComparison = diff;
-            }
-          } else if (event.priority === Priority.LOWEST) {
-            if (!best || diff < bestComparison) {
-              best = submission;
-              bestComparison = diff;
+            if (event.priority === Priority.HIGHEST) {
+              if (!best || diff > bestComparison) {
+                best = submission;
+                bestComparison = diff;
+              }
+            } else if (event.priority === Priority.LOWEST) {
+              if (!best || diff < bestComparison) {
+                best = submission;
+                bestComparison = diff;
+              }
             }
           }
-        }
-      });
+        });
+      }
+    } else {
+      if (!best || submission._count.votes > currBestVotes) {
+        best = submission;
+        currBestVotes = submission._count.votes;
+      }
     }
   });
   if (best) {

@@ -21,9 +21,11 @@ function SubmissionPopup({
   const [submission, setSubmission] = useState<string | number>("");
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [inputType, setInputType] = useState("text");
   // TODO: NOT COMPELTED
   async function handleCreateSubmission(e: React.FormEvent) {
     e.preventDefault();
+    console.log(submission);
 
     await fetch(
       "http://localhost:3000/api/competition/" +
@@ -37,7 +39,7 @@ function SubmissionPopup({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ content: submission }),
+        body: JSON.stringify({ content: { submission, inputType } }),
       }
     )
       .then((response) => {
@@ -66,6 +68,11 @@ function SubmissionPopup({
       });
   }
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSubmission(value);
+  };
+
   return trigger ? (
     <div>
       <div className={styles.header}>
@@ -77,15 +84,55 @@ function SubmissionPopup({
         <Alert variant="success">Submission successfully added!</Alert>
       )}
       <Form onSubmit={handleCreateSubmission}>
+        {!isNumerical && (
+          <Form.Group className="mb-3">
+            <Form.Label>Select Input Type</Form.Label>
+            <div>
+              <Form.Check
+                type="radio"
+                label="Text"
+                name="inputType"
+                value="text"
+                checked={inputType === "text"}
+                onChange={(e) => setInputType(e.target.value)}
+              />
+              <Form.Check
+                type="radio"
+                label="URL"
+                name="inputType"
+                value="url"
+                checked={inputType === "url"}
+                onChange={(e) => setInputType(e.target.value)}
+              />
+              <Form.Check
+                type="radio"
+                label="Image URL"
+                name="inputType"
+                value="image"
+                checked={inputType === "image"}
+                onChange={(e) => setInputType(e.target.value)}
+              />
+            </div>
+          </Form.Group>
+        )}
         <Form.Group className="mb-3" controlId="formSubmission">
           <Form.Label>Enter Progress</Form.Label>
           <Form.Control
             type={isNumerical ? "number" : "text"}
-            onChange={(e) => {
-              setSubmission(e.target.value);
-            }}
+            onChange={handleInputChange}
           />
         </Form.Group>
+
+        {!isNumerical && inputType === "image" && (
+          <div>
+            <h5>Image Preview:</h5>
+            <img
+              src={submission as string}
+              alt="Preview"
+              style={{ maxWidth: "100%", height: "auto" }}
+            />
+          </div>
+        )}
         <Button variant="primary" type="submit">
           Submit
         </Button>

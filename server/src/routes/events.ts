@@ -2,7 +2,7 @@ import express from "express";
 import asyncHandler from "express-async-handler";
 import prisma from "../prisma/client";
 import { AuthRequest, CreateSubmissions } from "../types/types";
-import { competitions, Frequency } from "@prisma/client";
+import { competitions, Frequency, SubmissionType } from "@prisma/client";
 import { addDays, addMonths, addWeeks, isBefore, isEqual } from "date-fns";
 
 const router = express.Router({ mergeParams: true });
@@ -155,20 +155,34 @@ router.post(
   "/:eventId/submit",
   isAuth,
   isCompetitionAuth,
-  asyncHandler(async (req: AuthRequest<CreateSubmissions>, res, next) => {
+  asyncHandler(async (req: AuthRequest<any>, res, next) => {
     const currUserId = req.user.id;
     const { eventId } = req.params;
     const eventIdNumber = parseInt(eventId, 10);
-    const content = req.body.content;
+    const submissionText = req.body.content.submission;
+    let inputType: SubmissionType;
+    switch (req.body.content.inputType.toLowerCase()) {
+      case "text":
+        inputType = SubmissionType.TEXT;
+        break;
+      case "url":
+        inputType = SubmissionType.URL;
+        break;
+      case "image":
+        inputType = SubmissionType.IMAGE_URL;
+        break;
+      default:
+        throw new Error("Invalid input type");
+    }
 
     const event = await prisma.events.findFirst({
       where: {
         id: eventIdNumber,
       },
     });
-    let contentNumber;
+    let submissionNumber;
     if (event.is_numerical) {
-      contentNumber = parseInt(content, 10);
+      submissionNumber = parseInt(submissionText, 10);
     }
 
     const existingSubmission = await prisma.submissions.findUnique({
@@ -181,13 +195,16 @@ router.post(
     });
 
     if (existingSubmission) {
-      const updatedSubmission = await prisma.submissions.update({
+      let updatedSubmission = await prisma.submissions.update({
         where: {
           id: existingSubmission.id,
         },
         data: event.is_numerical
-          ? { content_number: contentNumber }
-          : { content: req.body.content },
+          ? { content_number: submissionNumber }
+          : {
+              content: submissionText,
+              submission_type: inputType,
+            },
         select: {
           id: true,
           event_id: true,
@@ -200,19 +217,34 @@ router.post(
               username: true,
             },
           },
+          _count: {
+            select: {
+              votes: true,
+            },
+          },
         },
       });
-      res.status(200).json(updatedSubmission);
+
+      const formattedSubmissions = {
+        ...updatedSubmission,
+        vote_count: updatedSubmission._count.votes,
+      };
+      res.status(200).json(formattedSubmissions);
       return;
     } else {
       const submission = await prisma.submissions.create({
-        data: {
-          event_id: eventIdNumber,
-          user_id: currUserId,
-          ...(event.is_numerical
-            ? { content_number: contentNumber }
-            : { content: req.body.content }),
-        },
+        data: event.is_numerical
+          ? {
+              event_id: eventIdNumber,
+              user_id: currUserId,
+              content_number: submissionNumber,
+            }
+          : {
+              event_id: eventIdNumber,
+              user_id: currUserId,
+              content: submissionText,
+              submission_type: inputType,
+            },
         select: {
           id: true,
           event_id: true,
@@ -225,9 +257,18 @@ router.post(
               username: true,
             },
           },
+          _count: {
+            select: {
+              votes: true,
+            },
+          },
         },
       });
-      res.status(201).json(submission);
+      const formattedSubmissions = {
+        ...submission,
+        vote_count: submission._count.votes,
+      };
+      res.status(201).json(formattedSubmissions);
       return;
     }
   })

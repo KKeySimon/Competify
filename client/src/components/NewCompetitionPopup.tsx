@@ -40,6 +40,7 @@ function NewCompetitionPopup({
     startDate: "",
     endDate: "",
   });
+  console.log(competitionData?.is_numerical);
   const [success, setSuccess] = useState<boolean>(false);
   const [name, setName] = useState(competitionData?.name || "");
   const [invites, setInvites] = useState<string[]>(
@@ -61,7 +62,7 @@ function NewCompetitionPopup({
     competitionData?.frequency || "daily"
   );
   const [isNumerical, setIsNumerical] = useState<boolean>(
-    competitionData?.is_numerical || true
+    competitionData?.is_numerical ?? true
   );
   const [priority, setPriority] = useState<string>(
     competitionData?.priority || Priority.HIGHEST
@@ -361,64 +362,6 @@ function NewCompetitionPopup({
                 {errors.startDate}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formInterval">
-              <Form.Label>Priority</Form.Label>
-              <Form.Select
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-              >
-                <option value={Priority.HIGHEST}>Highest</option>
-                <option value={Priority.LOWEST}>Lowest</option>
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formInterval">
-              <Form.Label>Policy</Form.Label>
-              <Form.Select
-                value={policy}
-                onChange={(e) => setPolicy(e.target.value)}
-              >
-                <option value={Policy.FLAT}>Flat</option>
-                <option value={Policy.FLAT_CHANGE}>Flat Change</option>
-                <option value={Policy.PERCENTAGE_CHANGE}>
-                  Percentage Change
-                </option>
-              </Form.Select>
-            </Form.Group>
-
-            <Modal
-              show={startDateFocus}
-              onHide={() => setStartDateFocus(false)}
-            >
-              <Modal.Header closeButton>
-                <Modal.Title>Select Date and Time</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <DateTimePicker
-                  dateValue={startDate}
-                  setDateValue={setStartDate}
-                  timeValue={startTime}
-                  setTimeValue={setStartTime}
-                />
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  variant="secondary"
-                  onClick={() => setStartDateFocus(false)}
-                >
-                  Close
-                </Button>
-              </Modal.Footer>
-            </Modal>
-
-            <Form.Group className="mb-3">
-              <Form.Check
-                type="checkbox"
-                label="Numerical"
-                checked={isNumerical}
-                onChange={() => setIsNumerical(!isNumerical)}
-              />
-            </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Check
                 type="checkbox"
@@ -467,6 +410,66 @@ function NewCompetitionPopup({
                 </Form.Group>
               </>
             )}
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                label="Numerical"
+                checked={isNumerical}
+                onChange={() => setIsNumerical(!isNumerical)}
+              />
+            </Form.Group>
+            {isNumerical && (
+              <>
+                <Form.Group className="mb-3" controlId="formInterval">
+                  <Form.Label>Priority</Form.Label>
+                  <Form.Select
+                    value={priority}
+                    onChange={(e) => setPriority(e.target.value)}
+                  >
+                    <option value={Priority.HIGHEST}>Highest</option>
+                    <option value={Priority.LOWEST}>Lowest</option>
+                  </Form.Select>
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formInterval">
+                  <Form.Label>Policy</Form.Label>
+                  <Form.Select
+                    value={policy}
+                    onChange={(e) => setPolicy(e.target.value)}
+                  >
+                    <option value={Policy.FLAT}>Flat</option>
+                    <option value={Policy.FLAT_CHANGE}>Flat Change</option>
+                    <option value={Policy.PERCENTAGE_CHANGE}>
+                      Percentage Change
+                    </option>
+                  </Form.Select>
+                </Form.Group>
+              </>
+            )}
+
+            <Modal
+              show={startDateFocus}
+              onHide={() => setStartDateFocus(false)}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Select Date and Time</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <DateTimePicker
+                  dateValue={startDate}
+                  setDateValue={setStartDate}
+                  timeValue={startTime}
+                  setTimeValue={setStartTime}
+                />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  onClick={() => setStartDateFocus(false)}
+                >
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
 
             <Modal show={endDateFocus} onHide={() => setEndDateFocus(false)}>
               <Modal.Header closeButton>

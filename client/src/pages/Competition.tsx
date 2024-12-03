@@ -368,7 +368,7 @@ function Competition() {
                       {event.winner ? event.winner.username : "None"}
                       <ul>
                         {event.submissions.map((submission) => (
-                          <li key={submission.id}>
+                          <li key={submission.belongs_to.username}>
                             {submission.belongs_to.username}:{" "}
                             {submission.content}
                           </li>

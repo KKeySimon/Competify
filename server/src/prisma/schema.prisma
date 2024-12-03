@@ -94,15 +94,16 @@ model events {
 }
 
 model submissions {
-  id             Int      @id @default(autoincrement())
-  event          events   @relation(fields: [event_id], references: [id], onDelete: Cascade)
-  event_id       Int
-  belongs_to     users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id        Int
-  created_at     DateTime @default(now())
-  content        String?
-  content_number Float?
-  votes          votes[]
+  id              Int             @id @default(autoincrement())
+  event           events          @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  event_id        Int
+  belongs_to      users           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id         Int
+  created_at      DateTime        @default(now())
+  content         String?
+  content_number  Float?
+  submission_type SubmissionType?
+  votes           votes[]
 
   @@unique([event_id, user_id])
 }
@@ -125,6 +126,12 @@ enum Frequency {
   DAILY
   WEEKLY
   MONTHLY
+}
+
+enum SubmissionType {
+  TEXT
+  URL
+  IMAGE_URL
 }
 
 enum Priority {

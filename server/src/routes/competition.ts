@@ -247,16 +247,29 @@ router.put(
         },
       });
 
-      await prisma.events.update({
-        where: { id: firstUpcomingEvent.id },
-        data: {
-          policy: policy,
-          priority: priority,
-          date: upcomingEvent(updatedCompetition),
-          upcoming: true,
-          is_numerical: req.body.is_numerical,
-        },
-      });
+      if (firstUpcomingEvent) {
+        await prisma.events.update({
+          where: { id: firstUpcomingEvent.id },
+          data: {
+            policy: policy,
+            priority: priority,
+            date: upcomingEvent(updatedCompetition),
+            upcoming: true,
+            is_numerical: req.body.is_numerical,
+          },
+        });
+      } else {
+        await prisma.events.create({
+          data: {
+            competition_id: updatedCompetition.id,
+            policy: policy,
+            priority: priority,
+            date: upcomingEvent(updatedCompetition),
+            upcoming: true,
+            is_numerical: req.body.is_numerical,
+          },
+        });
+      }
 
       res.status(200).send(updatedCompetition);
       return;
