@@ -2,7 +2,7 @@
   /* Height is set to 95vh as navbar should take up 5vh */
   height: 95vh;
   width: 100vw;
-  background-color: cornflowerblue;
+  background-color: rgb(248, 250, 252);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,6 +12,7 @@
   text-align: left;
   flex-direction: column;
   background-color: white;
+  border: 1px solid rgb(225, 225, 225);
   padding: 2rem;
   border-radius: 1em;
   width: clamp(45ch, 50%, 50ch);

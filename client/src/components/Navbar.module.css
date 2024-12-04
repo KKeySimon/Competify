@@ -10,17 +10,15 @@
   top: 0;
   left: 0;
   z-index: 1000;
+  border-bottom: 2px solid rgb(225, 225, 225);
   cursor: default;
 }
 
 .navbar a {
   padding: 1vh;
   cursor: pointer;
-}
-
-.navbar a {
-  cursor: pointer;
   transition: background-color 0.3s;
+  border-radius: 0.5em;
 }
 
 .bell {
@@ -36,8 +34,8 @@
   color: red;
 }
 
-a:hover {
-  background-color: #e7e7e7;
+.navbar a:hover {
+  background-color: rgb(214, 242, 241);
 }
 
 .logoutNotif {

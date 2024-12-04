@@ -7,15 +7,29 @@ function CompetitionCard({
   competitionId,
   name,
   createdBy,
+  profilePictureUrl,
+  createdAt,
 }: Competition) {
+  const joinDate = new Date(joinedAt);
+  const localJoinDate = joinDate.toLocaleDateString();
+  const localCreateDate = new Date(createdAt).toLocaleDateString();
+
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <h2>{name}</h2>
-        <h2>Created By: {createdBy}</h2>
+        <h3>{name}</h3>
+        <div className={styles.createdBy}>
+          <h4>{createdBy}</h4>
+          <img src={profilePictureUrl} />
+        </div>
       </div>
-      <div>
-        <h4>Joined At: {joinedAt}</h4>
+      <div className={styles.joinCreateTag}>
+        <h4>Joined At:</h4>
+        <h4>Created At:</h4>
+      </div>
+      <div className={styles.joinCreateDate}>
+        <h4>{localJoinDate}</h4>
+        <h4>{localCreateDate}</h4>
       </div>
     </div>
   );

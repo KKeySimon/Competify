@@ -27,8 +27,10 @@ router.get(
               created_by: {
                 select: {
                   username: true,
+                  profile_picture_url: true,
                 },
               },
+              created_at: true,
               repeats_every: true,
             },
           },
@@ -42,6 +44,8 @@ router.get(
           name: entry.competition.name,
           createdBy: entry.competition.created_by.username,
           repeatsEvery: entry.competition.repeats_every,
+          profilePictureUrl: entry.competition.created_by.profile_picture_url,
+          createdAt: entry.competition.created_at,
         }))
       );
       return;

@@ -9,6 +9,8 @@ export interface Competition {
   competitionId: number;
   name: string;
   createdBy: string;
+  profilePictureUrl: string;
+  createdAt: string;
 }
 
 export interface ICompetition {

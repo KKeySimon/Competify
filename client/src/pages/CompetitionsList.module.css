@@ -1,13 +1,12 @@
 .list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  gap: 20px;
   list-style-type: none;
   padding: 0;
-}
-
-.link:hover {
-  background-color: transparent;
+  width: 80%;
+  padding: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-rows: repeat(auto-fill, fit-content);
 }
 
 .header {
@@ -16,12 +15,22 @@
   margin: 1rem;
   padding: 0 1rem;
   width: 100%;
+  gap: 20px;
 }
 
 .container {
   display: flex;
-  justify-content: center;
   align-items: center;
   flex-direction: column;
   width: 100vw;
+  background-color: rgb(248, 250, 252);
+  height: 100%;
+}
+.link {
+  text-decoration: none; /* Removes the underline */
+  color: inherit; /* Inherits the text color from the parent element */
+}
+
+.link:hover {
+  color: rgb(132, 132, 255);
 }

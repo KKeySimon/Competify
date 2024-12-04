@@ -1,16 +1,60 @@
 .header {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.header h3 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.header h4 {
+  font-size: 20px;
+}
+
+.joinCreateTag {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.joinCreateTag h4 {
+  font-size: 15px;
+}
+
+.joinCreateDate {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.joinCreateDate h4 {
+  font-size: 20px;
 }
 
 .card {
-  background-color: bisque;
+  background-color: white;
   border-radius: 1em;
   padding: 1em;
-  border: solid transparent;
+  height: 100%;
+  border: 2px solid rgb(225, 225, 225);
   transition: border-color 0.3s;
 }
 
 .card:hover {
   border-color: steelblue;
+}
+
+.createdBy {
+  display: flex;
+  align-items: center;
+}
+
+.createdBy img {
+  height: 2em;
+  width: auto;
+  border-radius: 50%;
 }

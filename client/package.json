@@ -19,7 +19,8 @@
     "react-bootstrap-icons": "^1.11.4",
     "react-day-picker": "^9.0.8",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.1"
+    "react-router-dom": "^6.26.1",
+    "typed.js": "^2.1.0"
   },
   "devDependencies": {
     "@babel/types": "^7.25.2",

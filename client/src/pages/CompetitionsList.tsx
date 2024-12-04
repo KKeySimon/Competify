@@ -59,6 +59,8 @@ function CompetitionsList({ isLoggedIn }: CompetitionsListProps) {
               competitionId={competition.competitionId}
               name={competition.name}
               createdBy={competition.createdBy}
+              profilePictureUrl={competition.profilePictureUrl}
+              createdAt={competition.createdAt}
             />
           </Link>
         ))}
