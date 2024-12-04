@@ -302,6 +302,13 @@ router.get(
               },
             },
           },
+          created_by: {
+            select: {
+              username: true,
+              id: true,
+              profile_picture_url: true,
+            },
+          },
         },
       });
       if (!competition) {

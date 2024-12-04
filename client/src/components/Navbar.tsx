@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LoginProps, Invite } from "../../types";
 import styles from "./Navbar.module.css";
 import { Bell } from "react-bootstrap-icons";
@@ -14,6 +14,8 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   // it returns undefined. !undefined == True. And is set that way
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const location = useLocation();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -94,8 +96,15 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
 
   return (
     <div className={styles.navbar}>
-      <Link to="/">Home</Link>
-      <Link to="/competition">Competitions</Link>
+      <Link to="/" className={location.pathname === "/" ? styles.active : ""}>
+        Home
+      </Link>
+      <Link
+        to="/competition"
+        className={location.pathname === "/competition" ? styles.active : ""}
+      >
+        Competitions
+      </Link>
       {isLoggedIn ? (
         <div ref={dropdownRef} className={styles.logoutNotif}>
           <Bell

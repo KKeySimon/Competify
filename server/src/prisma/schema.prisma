@@ -73,6 +73,7 @@ model competitions {
   events                events[]
   priority              Priority
   policy                Policy
+  description           String?
 }
 
 model events {

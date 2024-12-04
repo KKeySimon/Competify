@@ -19,6 +19,14 @@
   cursor: pointer;
   transition: background-color 0.3s;
   border-radius: 0.5em;
+  text-decoration: none;
+  color: black;
+}
+
+.active {
+  background-color: rgb(214, 242, 241);
+  font-weight: bold;
+  color: #646cff !important;
 }
 
 .bell {
@@ -60,7 +68,7 @@
 }
 
 .profilePicture {
-  height: 4vh;
+  height: 3vh;
   width: auto;
   border-radius: 50%;
   object-fit: cover;

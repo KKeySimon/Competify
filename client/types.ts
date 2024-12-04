@@ -38,6 +38,11 @@ export interface ICompetition {
   }[];
   priority: string;
   policy: string;
+  created_by: {
+    id: number;
+    username: string;
+    profile_picture_url: string;
+  };
 }
 
 export interface Invite {

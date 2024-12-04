@@ -288,8 +288,18 @@ function Competition() {
                 />
               )}
             </div>
+            <div className={styles.created}>
+              <img src={competition.created_by.profile_picture_url} />
+              <div>
+                <h5>{competition.created_by.username}</h5>
+                <h6>
+                  Created: {new Date(competition.created_at).toLocaleString()}
+                </h6>
+              </div>
+            </div>
             {upcoming ? (
               <div>
+                <h4>Leaderboard</h4>
                 <ul>
                   {upcoming.is_numerical
                     ? submissions
@@ -355,7 +365,10 @@ function Competition() {
                 />
               </div>
             ) : (
-              <div>No more upcoming events!</div>
+              <div>
+                Competition Over! Contact the competition creator if you believe
+                this is incorrect.
+              </div>
             )}
 
             <div>Previous Competition Winners</div>
