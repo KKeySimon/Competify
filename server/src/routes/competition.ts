@@ -112,6 +112,7 @@ router.post(
           priority: priority,
           policy: policy,
           is_numerical: req.body.is_numerical,
+          description: req.body.description,
           created_by: { connect: { id: req.user.id } },
         },
       });
@@ -240,6 +241,7 @@ router.put(
           frequency: frequency,
           priority: priority,
           policy: policy,
+          description: req.body.description,
           is_numerical: req.body.is_numerical,
         },
       });

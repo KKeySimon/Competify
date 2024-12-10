@@ -40,9 +40,11 @@ function NewCompetitionPopup({
     startDate: "",
     endDate: "",
   });
-  console.log(competitionData?.is_numerical);
   const [success, setSuccess] = useState<boolean>(false);
   const [name, setName] = useState(competitionData?.name || "");
+  const [description, setDescription] = useState(
+    competitionData?.description || ""
+  );
   const [invites, setInvites] = useState<string[]>(
     competitionData?.invites || []
   );
@@ -193,6 +195,7 @@ function NewCompetitionPopup({
       endDate,
       priority,
       policy,
+      description,
       is_numerical: isNumerical,
     };
 
@@ -299,6 +302,18 @@ function NewCompetitionPopup({
               <Form.Control.Feedback type="invalid">
                 {errors.name}
               </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                type="text"
+                placeholder="Description"
+                value={description}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                }}
+              />
             </Form.Group>
             <Form.Group controlId="formInvitePeople">
               <Form.Label>Invite People</Form.Label>

@@ -16,6 +16,7 @@ export interface Competition {
 export interface ICompetition {
   id: number;
   name: string;
+  description: string;
   start_time: Date;
   end_time: Date | undefined;
   days_of_week: number | undefined;
@@ -65,7 +66,9 @@ export interface Submission {
   created_at: string;
   belongs_to: {
     username: string;
+    profile_picture_url: string;
   };
+  submission_type: string;
   content: string;
   content_number: number;
   vote_count: number;

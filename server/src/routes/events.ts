@@ -102,9 +102,11 @@ router.get(
         content: true,
         content_number: true,
         created_at: true,
+        submission_type: true,
         belongs_to: {
           select: {
             username: true,
+            profile_picture_url: true,
           },
         },
         _count: {

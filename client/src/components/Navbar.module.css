@@ -21,6 +21,7 @@
   border-radius: 0.5em;
   text-decoration: none;
   color: black;
+  margin: 0 10px;
 }
 
 .active {

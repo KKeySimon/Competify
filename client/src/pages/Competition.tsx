@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Button, Image } from "react-bootstrap";
+import { Image } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import SubmissionPopup from "../components/SubmissionPopup";
 import { ICompetition, Submission, Vote } from "../../types";
-import { Gear, HandThumbsUp, HandThumbsUpFill } from "react-bootstrap-icons";
 import NewCompetitionPopup from "../components/NewCompetitionPopup";
 import styles from "./Competition.module.css";
 import { formatDistanceToNow } from "date-fns";
@@ -269,17 +268,18 @@ function Competition() {
   }
 
   return (
-    <div>
+    <div className={styles.window}>
       {competition && (
         <div className={styles.container}>
-          <div>
+          <div className={styles.contents}>
             <div className={styles.header}>
               <h1>{competition.name}</h1>
-              <Gear
+              <button
                 className={styles.gear}
-                size={25}
                 onClick={() => setPopupTrigger(true)}
-              />
+              >
+                ⚙️
+              </button>
               {popupTrigger && (
                 <NewCompetitionPopup
                   trigger={popupTrigger}
@@ -288,52 +288,17 @@ function Competition() {
                 />
               )}
             </div>
-            <div className={styles.created}>
-              <img src={competition.created_by.profile_picture_url} />
-              <div>
-                <h5>{competition.created_by.username}</h5>
-                <h6>
-                  Created: {new Date(competition.created_at).toLocaleString()}
-                </h6>
-              </div>
+            <div className={styles.description}>
+              <h6>Description</h6>
+              <p>
+                {competition.description
+                  ? competition.description
+                  : "No description"}
+              </p>
             </div>
-            {upcoming ? (
-              <div>
-                <h4>Leaderboard</h4>
-                <ul>
-                  {upcoming.is_numerical
-                    ? submissions
-                        .sort((a, b) => {
-                          if (upcoming.priority === "HIGHEST") {
-                            return b.content_number - a.content_number; // Sort descending
-                          } else {
-                            return a.content_number - b.content_number; // Sort ascending
-                          }
-                        })
-                        .map((sortedSubmission) => (
-                          <li key={sortedSubmission.id}>
-                            {sortedSubmission.belongs_to.username}:{" "}
-                            {sortedSubmission.content_number}
-                          </li>
-                        ))
-                    : submissions.map((textSubmission) => (
-                        <li key={textSubmission.id}>
-                          {textSubmission.belongs_to.username}:{" "}
-                          {textSubmission.content}
-                          <button
-                            onClick={() => handleUpvote(textSubmission.id)}
-                          >
-                            {hasVoted[textSubmission.id] ? (
-                              <HandThumbsUpFill />
-                            ) : (
-                              <HandThumbsUp />
-                            )}
-                          </button>
-                          <span>{textSubmission.vote_count}</span>
-                        </li>
-                      ))}
-                </ul>
 
+            {upcoming ? (
+              <div className={styles.leaderboard}>
                 <div className={styles.deadline}>
                   <p className={styles.countdown}>
                     Upcoming Deadline:
@@ -353,9 +318,12 @@ function Competition() {
                     </span>
                   </p>
                 </div>
-                <Button onClick={() => setTrigger(true)}>
+                <button
+                  className={styles.submitButton}
+                  onClick={() => setTrigger(true)}
+                >
                   Create/Update Submission
-                </Button>
+                </button>
                 <SubmissionPopup
                   trigger={trigger}
                   setTrigger={setTrigger}
@@ -363,6 +331,142 @@ function Competition() {
                   eventId={upcoming?.id}
                   handleSubmitSubmission={handleSubmitSubmission}
                 />
+                <h4>Leaderboard</h4>
+                <ul>
+                  {upcoming.is_numerical
+                    ? submissions
+                        .sort((a, b) => {
+                          if (upcoming.priority === "HIGHEST") {
+                            return b.content_number - a.content_number; // Sort descending
+                          } else {
+                            return a.content_number - b.content_number; // Sort ascending
+                          }
+                        })
+                        .map((sortedSubmission, index) => {
+                          let rankColor;
+                          switch (index) {
+                            case 0:
+                              rankColor = "gold";
+                              break;
+                            case 1:
+                              rankColor = "silver";
+                              break;
+                            case 2:
+                              rankColor = "bronze";
+                              break;
+                            default:
+                              rankColor = "default";
+                          }
+                          return (
+                            <li
+                              key={sortedSubmission.id}
+                              className={styles.submission}
+                            >
+                              <span
+                                className={`${styles.rankNumber} ${rankColor}`}
+                              >
+                                {index + 1}
+                              </span>
+                              {sortedSubmission.belongs_to.username}:{" "}
+                              {sortedSubmission.content_number}
+                            </li>
+                          );
+                        })
+                    : submissions.map((textSubmission, index) => {
+                        let rankColor;
+                        switch (index) {
+                          case 0:
+                            rankColor = styles.gold;
+                            break;
+                          case 1:
+                            rankColor = styles.silver;
+                            break;
+                          case 2:
+                            rankColor = styles.bronze;
+                            break;
+                          default:
+                            rankColor = styles.defaultRank;
+                        }
+                        return (
+                          <li
+                            key={textSubmission.id}
+                            className={`${styles.submission} ${styles.separator}`}
+                          >
+                            <div className={styles.submissionHeader}>
+                              <span
+                                className={`${styles.rankNumber} ${rankColor}`}
+                              >
+                                {index + 1}
+                              </span>
+                              <div className={styles.created}>
+                                <img
+                                  src={
+                                    textSubmission.belongs_to
+                                      .profile_picture_url
+                                  }
+                                />
+                                <div>
+                                  <h5>{textSubmission.belongs_to.username}</h5>
+                                  <h6>
+                                    Created:{" "}
+                                    {new Date(
+                                      textSubmission.created_at
+                                    ).toLocaleString()}
+                                  </h6>
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => handleUpvote(textSubmission.id)}
+                                className={`${styles.thumbsUp} ${
+                                  hasVoted[textSubmission.id]
+                                    ? styles.highlighted
+                                    : styles.regular
+                                }`}
+                              >
+                                <span>👍 {textSubmission.vote_count}</span>
+                              </button>
+                            </div>
+                            <div>
+                              {textSubmission.submission_type === "TEXT" && (
+                                <>
+                                  <span className={styles.submissionBadge}>
+                                    📰 Text Submission
+                                  </span>
+                                  <p>{textSubmission.content}</p>
+                                </>
+                              )}
+                              {textSubmission.submission_type === "URL" && (
+                                <>
+                                  <span className={styles.submissionBadge}>
+                                    🔗 URL Submission
+                                  </span>
+                                  <a
+                                    href={textSubmission.content}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {textSubmission.content}
+                                  </a>
+                                </>
+                              )}
+                              {textSubmission.submission_type ===
+                                "IMAGE_URL" && (
+                                <>
+                                  <span className={styles.submissionBadge}>
+                                    🖼️ Image Submission
+                                  </span>
+                                  <img
+                                    src={textSubmission.content}
+                                    alt="Submitted content"
+                                    className={styles.imageContent}
+                                  />
+                                </>
+                              )}
+                            </div>
+                          </li>
+                        );
+                      })}
+                </ul>
               </div>
             ) : (
               <div>
@@ -414,6 +518,16 @@ function Competition() {
                         }}
                       >
                         {uic.user.username}
+                        {competition.created_by.username ===
+                          uic.user.username && (
+                          <span
+                            role="img"
+                            aria-label="crown"
+                            style={{ marginLeft: "5px" }}
+                          >
+                            👑
+                          </span>
+                        )}
                       </span>
                       <Image
                         className={styles.profilePicture}
