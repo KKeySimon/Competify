@@ -22,6 +22,9 @@ router.get(
         competition_id: competitionIdNumber,
         upcoming: false,
       },
+      orderBy: {
+        date: "desc",
+      },
       select: {
         competition_id: true,
         id: true,
@@ -43,14 +46,40 @@ router.get(
                 username: true,
               },
             },
+            created_at: true,
+            votes: {
+              select: {
+                id: true,
+              },
+            },
           },
         },
       },
-      orderBy: {
-        date: "desc",
-      },
     });
-    res.status(200).json(events);
+
+    const formattedEvents = events.map((event) => {
+      const submissionsSorted = event.submissions.sort((a, b) => {
+        const aVotes = a.votes.length;
+        const bVotes = b.votes.length;
+
+        // Sort primarily by votes (descending)
+        if (bVotes !== aVotes) {
+          return bVotes - aVotes;
+        }
+
+        // If tied by votes, sort by created_at (earlier first)
+        const aDate = new Date(a.created_at).getTime();
+        const bDate = new Date(b.created_at).getTime();
+        return aDate - bDate;
+      });
+
+      return {
+        ...event,
+        submissions: submissionsSorted,
+      };
+    });
+
+    res.status(200).json(formattedEvents);
     return;
   })
 );
@@ -219,6 +248,7 @@ router.post(
               username: true,
             },
           },
+          submission_type: true,
           _count: {
             select: {
               votes: true,

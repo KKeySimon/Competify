@@ -35,11 +35,27 @@ const upload = multer({
 const getProfile = async (userId: number) => {
   const profile = await prisma.users.findFirst({
     where: { id: userId },
-    select: { profile_picture_url: true, username: true },
+    select: {
+      profile_picture_url: true,
+      username: true,
+      submissions: {
+        select: {
+          id: true,
+          content: true,
+          content_number: true,
+          submission_type: true,
+          created_at: true,
+          event_id: true,
+        },
+        orderBy: {
+          created_at: "desc",
+        },
+      },
+    },
   });
 
   if (!profile) {
-    // Handle case where user is not found (optional)
+    // Handle case where user is not found
     throw new Error("User not found");
   }
 
@@ -48,7 +64,17 @@ const getProfile = async (userId: number) => {
       profile.profile_picture_url ||
       `https://${process.env.AWS_S3_BUCKET}.s3.amazonaws.com/profile_pictures/profile_default.jpg`,
     username: profile.username,
+    submissions: profile.submissions || [],
   };
+};
+
+const getNumberOfWins = async (userId: number) => {
+  const wins = await prisma.events.count({
+    where: {
+      winner_id: userId, // Count events where the user is the winner
+    },
+  });
+  return wins;
 };
 
 router.get(
@@ -57,7 +83,8 @@ router.get(
   asyncHandler(async (req: AuthRequest<any>, res) => {
     const currUserId = req.user.id;
     const profile = await getProfile(currUserId);
-    res.status(200).json(profile);
+    const numberOfWins = await getNumberOfWins(currUserId);
+    res.status(200).json({ ...profile, wins: numberOfWins });
     return;
   })
 );
@@ -69,14 +96,17 @@ router.get(
 
     const currUserId = req.user.id;
     const profile = await getProfile(parseInt(id));
+    const numberOfWins = await getNumberOfWins(parseInt(id));
 
     res.status(200).json({
       ...profile,
       isSelf: currUserId === parseInt(id),
+      wins: numberOfWins,
     });
     return;
   })
 );
+
 router.post(
   "/upload",
   isAuth,
