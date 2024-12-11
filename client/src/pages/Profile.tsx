@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { useParams } from "react-router-dom";
+import styles from "./Profile.module.css";
+import { Submission } from "../../types";
 
 function Profile() {
   const { id } = useParams();
@@ -11,6 +13,9 @@ function Profile() {
   );
   const [isSelf, setIsSelf] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
+  const [submissions, setSubmissions] = useState<Submission[]>([]); // To hold the submissions data
+  const [wins, setWins] = useState<number>(0);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
@@ -51,6 +56,8 @@ function Profile() {
         setProfilePictureUrl(data.url);
         setIsSelf(data.isSelf);
         setUsername(data.username);
+        setSubmissions(data.submissions);
+        setWins(data.wins);
       } catch (error) {
         console.error(error);
       }
@@ -58,22 +65,30 @@ function Profile() {
 
     fetchProfile();
   }, [id]);
+
   return (
-    <div>
+    <div className={styles.profilePage}>
       {profilePictureUrl && (
-        <div>
-          <h1>{username}</h1>
-          <img
-            src={profilePictureUrl}
-            alt="Profile"
-            style={{ maxWidth: "300px", maxHeight: "300px" }}
-          />
+        <div className={styles.profileContainer}>
+          <div className={styles.profileInfo}>
+            <img
+              src={profilePictureUrl}
+              alt="Profile"
+              className={styles.profilePicture}
+            />
+            <h1 className={styles.username}>{username}</h1>
+            <div className={styles.winsBox}>
+              <span className={styles.trophyEmoji}>🏆</span>
+              <span className={styles.winsNumber}>{wins}</span>
+            </div>
+          </div>
         </div>
       )}
+
       {isSelf && (
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formFile" className="mb-3">
-            <Form.Label>Upload a new profile picture! (2MB Limit)</Form.Label>
+        <Form onSubmit={handleSubmit} className={styles.uploadForm}>
+          <Form.Group controlId="formFile" className={styles.formGroup}>
+            <Form.Label>Upload a new profile picture</Form.Label>
             <Form.Control
               type="file"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,12 +106,45 @@ function Profile() {
                 }
               }}
             />
-            <Button variant="primary" type="submit">
-              Submit
+            <Button
+              variant="primary"
+              type="submit"
+              className={styles.submitButton}
+            >
+              Upload
             </Button>
           </Form.Group>
         </Form>
       )}
+      <div className={styles.submissionsContainer}>
+        <h2 className={styles.submissionsTitle}>
+          Submissions ({submissions.length})
+        </h2>
+        {submissions.length > 0 ? (
+          <ul className={styles.submissionsList}>
+            {submissions.map((submission, index) => (
+              <li key={index} className={styles.submissionItem}>
+                <div className={styles.submissionContent}>
+                  <p>
+                    <strong>Content:</strong>{" "}
+                    {submission.content || "No content"}
+                  </p>
+                  <p>
+                    <strong>Submission Type:</strong>{" "}
+                    {submission.submission_type || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Created At:</strong>{" "}
+                    {new Date(submission.created_at).toLocaleString()}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No submissions available.</p>
+        )}
+      </div>
     </div>
   );
 }

@@ -4,3 +4,96 @@
   margin: 0 1rem;
   align-items: center;
 }
+
+.inputTypeGroup {
+  margin-bottom: 1rem;
+}
+
+.inputTypeLabel {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.radioButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.radioButton {
+  display: inline-block;
+  cursor: pointer;
+  text-align: center;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  width: 10%;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.radioButton:hover {
+  border-color: #888;
+}
+
+.radioBox {
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.radioButton.selected {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.radioButton.selected .radioBox {
+  color: white;
+}
+
+.inputGroup {
+  margin-bottom: 1rem;
+}
+
+.inputLabel {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.inputControl {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.inputControl:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.textAreaControl {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  resize: both; /* Makes the textarea resizable */
+  min-height: 100px; /* Ensures a minimum height for the textarea */
+  overflow: auto;
+}
+
+.textAreaControl:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.submitButton {
+  margin-bottom: 15px;
+}

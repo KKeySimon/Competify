@@ -122,6 +122,7 @@ function Competition() {
           }
           const submissionsData: Submission[] =
             await submissionsResponse.json();
+          console.log(submissionsData);
           setSubmissions(submissionsData);
 
           const voteResponse = await fetch(
@@ -211,6 +212,7 @@ function Competition() {
           ...event,
           date: new Date(event.date),
         }));
+        console.log(parsedData);
         setPreviousEvents(parsedData);
       } catch (error) {
         console.error(error);

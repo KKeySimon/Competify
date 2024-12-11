@@ -68,11 +68,6 @@ function SubmissionPopup({
       });
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSubmission(value);
-  };
-
   return trigger ? (
     <div>
       <div className={styles.header}>
@@ -85,43 +80,61 @@ function SubmissionPopup({
       )}
       <Form onSubmit={handleCreateSubmission}>
         {!isNumerical && (
-          <Form.Group className="mb-3">
-            <Form.Label>Select Input Type</Form.Label>
-            <div>
-              <Form.Check
-                type="radio"
-                label="Text"
-                name="inputType"
-                value="text"
-                checked={inputType === "text"}
-                onChange={(e) => setInputType(e.target.value)}
-              />
-              <Form.Check
-                type="radio"
-                label="URL"
-                name="inputType"
-                value="url"
-                checked={inputType === "url"}
-                onChange={(e) => setInputType(e.target.value)}
-              />
-              <Form.Check
-                type="radio"
-                label="Image URL"
-                name="inputType"
-                value="image"
-                checked={inputType === "image"}
-                onChange={(e) => setInputType(e.target.value)}
-              />
+          <div className={styles.inputTypeGroup}>
+            <label className={styles.inputTypeLabel}>Select Input Type</label>
+            <div className={styles.radioButtons}>
+              <div
+                className={`${styles.radioButton} ${
+                  inputType === "text" ? styles.selected : ""
+                }`}
+                onClick={() => setInputType("text")}
+              >
+                <span className={styles.radioBox}>Text</span>
+              </div>
+              <div
+                className={`${styles.radioButton} ${
+                  inputType === "url" ? styles.selected : ""
+                }`}
+                onClick={() => setInputType("url")}
+              >
+                <span className={styles.radioBox}>URL</span>
+              </div>
+              <div
+                className={`${styles.radioButton} ${
+                  inputType === "image" ? styles.selected : ""
+                }`}
+                onClick={() => setInputType("image")}
+              >
+                <span className={styles.radioBox}>Image URL</span>
+              </div>
             </div>
-          </Form.Group>
+          </div>
         )}
-        <Form.Group className="mb-3" controlId="formSubmission">
-          <Form.Label>Enter Progress</Form.Label>
-          <Form.Control
-            type={isNumerical ? "number" : "text"}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
+        <div className={styles.inputGroup}>
+          <label className={styles.inputLabel} htmlFor="progressInput">
+            Enter Progress
+          </label>
+          {isNumerical ? (
+            <input
+              id="progressInput"
+              className={styles.inputControl}
+              type="number"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const value = e.target.value;
+                setSubmission(value);
+              }}
+            />
+          ) : (
+            <textarea
+              id="progressInput"
+              className={styles.textAreaControl}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                const value = e.target.value;
+                setSubmission(value);
+              }}
+            />
+          )}
+        </div>
 
         {!isNumerical && inputType === "image" && (
           <div>
@@ -133,7 +146,7 @@ function SubmissionPopup({
             />
           </div>
         )}
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" className={styles.submitButton}>
           Submit
         </Button>
       </Form>
