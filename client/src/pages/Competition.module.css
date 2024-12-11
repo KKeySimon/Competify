@@ -211,3 +211,68 @@
 .submitButton:hover {
   background-color: #0056b3;
 }
+
+.competitionOver {
+  margin-bottom: 10px;
+}
+
+.previousEvents {
+  margin-top: 20px;
+}
+
+.eventList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-rows: repeat(auto-fill, fit-content);
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.eventCard {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.eventHeader {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.winnerName {
+  color: #2d7a2d;
+  font-weight: bold;
+}
+.submissionsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.submissionItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.submissionInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.submissionContent {
+  margin-left: auto;
+  text-align: right;
+}
+
+.imageContent {
+  max-width: 100%;
+  border-radius: 4px;
+}

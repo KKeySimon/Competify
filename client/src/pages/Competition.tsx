@@ -469,33 +469,101 @@ function Competition() {
                 </ul>
               </div>
             ) : (
-              <div>
+              <div className={styles.competitionOver}>
                 Competition Over! Contact the competition creator if you believe
                 this is incorrect.
               </div>
             )}
 
-            <div>Previous Competition Winners</div>
-            {previousEvents && (
-              <div>
-                <ul>
+            <div className={styles.previousEvents}>
+              <h3>Previous Competitions</h3>
+              {previousEvents.length > 0 ? (
+                <div className={styles.eventList}>
                   {previousEvents.map((event) => (
-                    <li key={event.id}>
-                      Date: {event.date.toLocaleDateString()}; Winner:{" "}
-                      {event.winner ? event.winner.username : "None"}
-                      <ul>
-                        {event.submissions.map((submission) => (
-                          <li key={submission.belongs_to.username}>
-                            {submission.belongs_to.username}:{" "}
-                            {submission.content}
-                          </li>
-                        ))}
+                    <div key={event.id} className={styles.eventCard}>
+                      <div className={styles.eventHeader}>
+                        <h4>{event.date.toLocaleDateString()}</h4>
+                        <span>
+                          Winner:{" "}
+                          {event.winner ? (
+                            <strong className={styles.winnerName}>
+                              {event.winner.username} 🎉
+                            </strong>
+                          ) : (
+                            <span>No winner</span>
+                          )}
+                        </span>
+                      </div>
+                      <ul className={styles.submissionsList}>
+                        {event.submissions
+                          .slice(0, 3)
+                          .map((submission, index) => {
+                            let rankColor;
+                            switch (index) {
+                              case 0:
+                                rankColor = styles.gold;
+                                break;
+                              case 1:
+                                rankColor = styles.silver;
+                                break;
+                              case 2:
+                                rankColor = styles.bronze;
+                                break;
+                              default:
+                                rankColor = styles.defaultRank;
+                            }
+                            return (
+                              <li
+                                key={submission.id}
+                                className={styles.submissionItem}
+                              >
+                                <span
+                                  className={`${styles.rankNumber} ${rankColor}`}
+                                >
+                                  {index + 1}
+                                </span>
+                                <div className={styles.submissionInfo}>
+                                  <Image
+                                    className={styles.profilePicture}
+                                    src={
+                                      submission.belongs_to.profile_picture_url
+                                    }
+                                  />
+                                  <span>{submission.belongs_to.username}</span>
+                                </div>
+                                <div className={styles.submissionContent}>
+                                  {submission.submission_type === "TEXT" && (
+                                    <p>{submission.content}</p>
+                                  )}
+                                  {submission.submission_type === "URL" && (
+                                    <a
+                                      href={submission.content}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {submission.content}
+                                    </a>
+                                  )}
+                                  {submission.submission_type ===
+                                    "IMAGE_URL" && (
+                                    <img
+                                      src={submission.content}
+                                      alt="Submitted content"
+                                      className={styles.imageContent}
+                                    />
+                                  )}
+                                </div>
+                              </li>
+                            );
+                          })}
                       </ul>
-                    </li>
+                    </div>
                   ))}
-                </ul>
-              </div>
-            )}
+                </div>
+              ) : (
+                <p>No previous competitions available.</p>
+              )}
+            </div>
           </div>
           <div className={styles.participants}>
             <h3>Users</h3>
@@ -561,6 +629,16 @@ function Competition() {
                       }}
                     >
                       {uic.user.username}
+                      {competition.created_by.username ===
+                        uic.user.username && (
+                        <span
+                          role="img"
+                          aria-label="crown"
+                          style={{ marginLeft: "5px" }}
+                        >
+                          👑
+                        </span>
+                      )}
                     </span>
                     <Image
                       className={styles.profilePicture}
