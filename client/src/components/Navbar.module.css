@@ -36,7 +36,7 @@
   border-radius: 5px;
   width: auto;
   height: 100%;
-  padding: 10px 0;
+  padding: 0 10px;
 }
 
 .bell:hover {
@@ -69,10 +69,18 @@
 }
 
 .profilePicture {
-  height: 3vh;
+  height: 4vh;
   width: auto;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.profileButton {
+  margin: 0;
+  padding: 0; /* Remove padding */
+  background: none; /* Remove default background */
+  border: none; /* Remove default border */
+  cursor: pointer; /* Ensure the button still has a pointer cursor */
 }
 
 .notificationCount {

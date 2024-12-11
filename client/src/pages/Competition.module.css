@@ -1,12 +1,42 @@
 .container {
   display: grid;
-  grid-template-columns: 4fr 1fr;
+  grid-template-columns: minmax(75%, 1fr) 20vw; /* Default layout */
   max-width: 100vw;
   box-sizing: border-box;
 }
 
 .contents {
-  max-width: 75vw;
+  max-width: 1200px; /* Fixed maximum width */
+  min-width: 75%; /* Minimum width is 75% of the container */
+  margin-left: auto; /* Center in the available space */
+  margin-right: auto; /* Center in the available space */
+  box-sizing: border-box; /* Includes padding/border in width */
+  overflow-wrap: break-word; /* Ensures long words or content wrap */
+}
+
+.participants {
+  width: 20vw; /* Fixed width for participants */
+  margin-top: 1em;
+  margin-right: 0.5em;
+}
+
+/* Media Query for Small Screens */
+@media (max-width: 768px) {
+  .container {
+    display: flex; /* Switch to a flexbox layout */
+    flex-direction: column; /* Stack items vertically */
+  }
+
+  .contents {
+    max-width: 100%; /* Take up full width of the container */
+    min-width: 0; /* Remove the minimum width constraint */
+    padding: 0 1em; /* Add padding to prevent content from touching edges */
+  }
+
+  .participants {
+    width: auto; /* Adjust to content */
+    margin-right: 0; /* No extra margin on small screens */
+  }
 }
 
 .window {
@@ -81,12 +111,6 @@
 .label {
   font-size: 0.8rem;
   color: #666;
-}
-
-.participants {
-  width: 20vw;
-  margin-top: 1em;
-  margin-right: 0.5em;
 }
 
 .participants ul {
@@ -224,7 +248,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   grid-template-rows: repeat(auto-fill, fit-content);
-  gap: 20px;
+  column-gap: 0; /* Controls horizontal gap */
+  row-gap: 30px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -235,7 +260,10 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 16px;
+  box-sizing: border-box;
+  max-width: 85%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow-wrap: break-word;
 }
 
 .eventHeader {

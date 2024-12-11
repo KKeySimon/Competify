@@ -3,7 +3,7 @@ import { LoginProps, Invite } from "../../types";
 import styles from "./Navbar.module.css";
 import { Bell } from "react-bootstrap-icons";
 import { useEffect, useRef, useState } from "react";
-import { Image } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import NotificationsPopup from "./NotificationsPopup";
 
 function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
@@ -14,7 +14,8 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   // it returns undefined. !undefined == True. And is set that way
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const navigate = useNavigate();
+  const userId = localStorage.getItem("userId");
   const location = useLocation();
 
   useEffect(() => {
@@ -125,9 +126,18 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
             removeNotification={removeNotification}
           />
 
-          <Link to={`/profile/${localStorage.getItem("userId")}`}>
-            <Image className={styles.profilePicture} src={profilePicture} />
-          </Link>
+          <button
+            onClick={() => {
+              navigate(`/profile/${userId}`);
+            }}
+            className={styles.profileButton}
+          >
+            <img
+              className={styles.profilePicture}
+              src={profilePicture}
+              alt="Profile"
+            />
+          </button>
 
           <a onClick={handleLogout}>Logout</a>
         </div>

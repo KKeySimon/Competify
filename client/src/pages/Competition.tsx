@@ -487,7 +487,7 @@ function Competition() {
                           Winner:{" "}
                           {event.winner ? (
                             <strong className={styles.winnerName}>
-                              {event.winner.username} 🎉
+                              {event.winner.username}
                             </strong>
                           ) : (
                             <span>No winner</span>
