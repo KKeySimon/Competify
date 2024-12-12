@@ -72,7 +72,7 @@ model competitions {
   invites               invites[]
   events                events[]
   priority              Priority
-  policy                Policy
+  // policy                Policy
   description           String?
 }
 
@@ -89,7 +89,6 @@ model events {
   // priorities and policies if they're changed at some point in the future
   is_numerical   Boolean
   priority       Priority
-  policy         Policy
   submissions    submissions[]
   votes          votes[]
 }
@@ -140,8 +139,8 @@ enum Priority {
   LOWEST
 }
 
-enum Policy {
-  FLAT
-  FLAT_CHANGE
-  PERCENTAGE_CHANGE
-}
+// enum Policy {
+//   FLAT
+//   FLAT_CHANGE
+//   PERCENTAGE_CHANGE
+// }

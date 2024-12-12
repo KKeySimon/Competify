@@ -1,8 +1,7 @@
 import styles from "./HomePage.module.css";
 import Typed from "typed.js";
 import { useRef, useEffect } from "react";
-import { Button } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function HomePage() {
   const el = useRef(null);

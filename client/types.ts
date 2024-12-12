@@ -85,14 +85,41 @@ export enum Priority {
   LOWEST = "LOWEST",
 }
 
-export enum Policy {
-  FLAT = "FLAT",
-  FLAT_CHANGE = "FLAT_CHANGE",
-  PERCENTAGE_CHANGE = "PERCENTAGE_CHANGE",
-}
-
 export enum SubmissionType {
   TEXT = "TEXT",
   URL = "URL",
   IMAGE_URL = "IMAGE_URL",
+}
+
+export interface EventResponse {
+  event: Event;
+  submissions: Submission[];
+}
+
+export interface User {
+  id: number;
+  username: string;
+  profile_picture_url: string;
+}
+
+export interface UserInCompetition {
+  user_id: number;
+  competition_id: number;
+  joined_at: string;
+  user: User;
+}
+
+export interface Event {
+  date: string;
+  is_numerical: boolean;
+  priority: string;
+  upcoming: boolean;
+  winner: {
+    username: string;
+    profile_picture_url: string;
+  };
+  belongs_to: {
+    name: true;
+    id: true;
+  };
 }

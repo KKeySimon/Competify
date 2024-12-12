@@ -1,4 +1,4 @@
-import { Frequency, Policy, Priority, competitions } from "@prisma/client";
+import { Frequency, Priority, competitions } from "@prisma/client";
 import { Response, NextFunction } from "express";
 import express from "express";
 import asyncHandler from "express-async-handler";
@@ -74,15 +74,15 @@ router.post(
         return;
       }
 
-      const policy = req.body.policy;
-      if (
-        ![Policy.FLAT, Policy.FLAT_CHANGE, Policy.PERCENTAGE_CHANGE].includes(
-          policy
-        )
-      ) {
-        res.status(400).send({ message: "Invalid policy" });
-        return;
-      }
+      // const policy = req.body.policy;
+      // if (
+      //   ![Policy.FLAT, Policy.FLAT_CHANGE, Policy.PERCENTAGE_CHANGE].includes(
+      //     policy
+      //   )
+      // ) {
+      //   res.status(400).send({ message: "Invalid policy" });
+      //   return;
+      // }
 
       let frequency: Frequency;
       switch (req.body.repeatInterval.toLowerCase()) {
@@ -110,7 +110,7 @@ router.post(
           repeats_every: req.body.repeatEvery,
           frequency: frequency,
           priority: priority,
-          policy: policy,
+          // policy: policy,
           is_numerical: req.body.is_numerical,
           description: req.body.description,
           created_by: { connect: { id: req.user.id } },
@@ -120,7 +120,7 @@ router.post(
       await prisma.events.create({
         data: {
           competition_id: createCompetition.id,
-          policy: policy,
+          // policy: policy,
           priority: priority,
           date: startDate,
           upcoming: true,
@@ -202,15 +202,15 @@ router.put(
         return;
       }
 
-      const policy = req.body.policy;
-      if (
-        ![Policy.FLAT, Policy.FLAT_CHANGE, Policy.PERCENTAGE_CHANGE].includes(
-          policy
-        )
-      ) {
-        res.status(400).send({ message: "Invalid policy" });
-        return;
-      }
+      // const policy = req.body.policy;
+      // if (
+      //   ![Policy.FLAT, Policy.FLAT_CHANGE, Policy.PERCENTAGE_CHANGE].includes(
+      //     policy
+      //   )
+      // ) {
+      //   res.status(400).send({ message: "Invalid policy" });
+      //   return;
+      // }
 
       let frequency: Frequency;
       switch (req.body.repeatInterval.toLowerCase()) {
@@ -240,7 +240,7 @@ router.put(
           repeats_every: req.body.repeatEvery,
           frequency: frequency,
           priority: priority,
-          policy: policy,
+          // policy: policy,
           description: req.body.description,
           is_numerical: req.body.is_numerical,
         },
@@ -257,7 +257,7 @@ router.put(
         await prisma.events.update({
           where: { id: firstUpcomingEvent.id },
           data: {
-            policy: policy,
+            // policy: policy,
             priority: priority,
             date: upcomingEvent(updatedCompetition),
             upcoming: true,
@@ -268,7 +268,7 @@ router.put(
         await prisma.events.create({
           data: {
             competition_id: updatedCompetition.id,
-            policy: policy,
+            // policy: policy,
             priority: priority,
             date: upcomingEvent(updatedCompetition),
             upcoming: true,

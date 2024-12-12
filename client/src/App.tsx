@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import Competition from "./pages/Competition";
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
+import EventPage from "./pages/EventPage";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -66,6 +67,10 @@ function App() {
           <Route path="/competition/:id" element={<Competition />} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="*" element={<PageNotFound />} />
+          <Route
+            path="/competition/:competitionId/events/:eventId"
+            element={<EventPage />}
+          />
         </Routes>
       </div>
     </>

@@ -1,13 +1,7 @@
 require("dotenv").config();
 import { CronJob } from "cron";
 import prisma from "../prisma/client";
-import {
-  $Enums,
-  Frequency,
-  Policy,
-  Priority,
-  submissions,
-} from "@prisma/client";
+import { $Enums, Frequency, Priority, submissions } from "@prisma/client";
 import { addDays, addMonths, addWeeks } from "date-fns";
 import { sendEmail } from "./mailgun";
 
@@ -133,7 +127,7 @@ const getCurrentEventCompetitions = async () => {
         },
       },
       priority: true,
-      policy: true,
+      // policy: true,
       is_numerical: true,
     },
   });
@@ -152,7 +146,7 @@ interface OldUpcomingEvent {
   competition_id: number;
   date: Date;
   belongs_to: { repeats_every: number; frequency: $Enums.Frequency };
-  policy: Policy;
+  // policy: Policy;
   priority: Priority;
   is_numerical: boolean;
 }
@@ -198,7 +192,7 @@ const updateUpcoming = (upcomingEvents: OldUpcomingEvent[]) => {
           competition_id: event.competition_id,
           date: newDate,
           upcoming: true,
-          policy: event.policy,
+          // policy: event.policy,
           priority: event.priority,
           is_numerical: event.is_numerical,
         },
@@ -221,24 +215,24 @@ const determineWinner = async (event: OldUpcomingEvent) => {
       },
     },
   });
-  let previousSubmissions: submissions[];
-  if (
-    event.policy === Policy.FLAT_CHANGE ||
-    event.policy === Policy.PERCENTAGE_CHANGE
-  ) {
-    // GRAB previous submissions
-    const previousEvent = await prisma.events.findFirst({
-      where: {
-        previous: true,
-      },
-    });
+  // let previousSubmissions: submissions[];
+  // if (
+  //   event.policy === Policy.FLAT_CHANGE ||
+  //   event.policy === Policy.PERCENTAGE_CHANGE
+  // ) {
+  //   // GRAB previous submissions
+  //   const previousEvent = await prisma.events.findFirst({
+  //     where: {
+  //       previous: true,
+  //     },
+  //   });
 
-    previousSubmissions = await prisma.submissions.findMany({
-      where: {
-        event_id: previousEvent.id,
-      },
-    });
-  }
+  //   previousSubmissions = await prisma.submissions.findMany({
+  //     where: {
+  //       event_id: previousEvent.id,
+  //     },
+  //   });
+  // }
 
   let best: {
     id: number;
@@ -252,43 +246,52 @@ const determineWinner = async (event: OldUpcomingEvent) => {
   submissions.forEach((submission) => {
     // TODO: Insert priority algo (should it be largest/smallest? Biggest Percentage/Flat Increase?, etc)
     if (event.is_numerical) {
-      if (event.policy === Policy.FLAT) {
-        if (event.priority === Priority.HIGHEST) {
-          if (!best || submission.content_number > best.content_number) {
-            best = submission;
-          }
-        } else if (event.priority === Priority.LOWEST) {
-          if (!best || submission.content_number < best.content_number) {
-            best = submission;
-          }
+      if (event.priority === Priority.HIGHEST) {
+        if (!best || submission.content_number > best.content_number) {
+          best = submission;
         }
-      } else if (
-        event.policy === Policy.FLAT_CHANGE ||
-        event.policy === Policy.PERCENTAGE_CHANGE
-      ) {
-        previousSubmissions.forEach((prevSubmission) => {
-          if (prevSubmission.user_id === submission.user_id) {
-            let diff: number;
-            if (event.policy === Policy.FLAT_CHANGE) {
-              diff = submission.content_number - prevSubmission.content_number;
-            } else if (event.policy === Policy.PERCENTAGE_CHANGE) {
-              diff = submission.content_number / prevSubmission.content_number;
-            }
-
-            if (event.priority === Priority.HIGHEST) {
-              if (!best || diff > bestComparison) {
-                best = submission;
-                bestComparison = diff;
-              }
-            } else if (event.priority === Priority.LOWEST) {
-              if (!best || diff < bestComparison) {
-                best = submission;
-                bestComparison = diff;
-              }
-            }
-          }
-        });
+      } else if (event.priority === Priority.LOWEST) {
+        if (!best || submission.content_number < best.content_number) {
+          best = submission;
+        }
       }
+      // if (event.policy === Policy.FLAT) {
+      //   if (event.priority === Priority.HIGHEST) {
+      //     if (!best || submission.content_number > best.content_number) {
+      //       best = submission;
+      //     }
+      //   } else if (event.priority === Priority.LOWEST) {
+      //     if (!best || submission.content_number < best.content_number) {
+      //       best = submission;
+      //     }
+      //   }
+      // } else if (
+      //   event.policy === Policy.FLAT_CHANGE ||
+      //   event.policy === Policy.PERCENTAGE_CHANGE
+      // ) {
+      //   previousSubmissions.forEach((prevSubmission) => {
+      //     if (prevSubmission.user_id === submission.user_id) {
+      //       let diff: number;
+      //       if (event.policy === Policy.FLAT_CHANGE) {
+      //         diff = submission.content_number - prevSubmission.content_number;
+      //       } else if (event.policy === Policy.PERCENTAGE_CHANGE) {
+      //         diff = submission.content_number / prevSubmission.content_number;
+      //       }
+
+      //       if (event.priority === Priority.HIGHEST) {
+      //         if (!best || diff > bestComparison) {
+      //           best = submission;
+      //           bestComparison = diff;
+      //         }
+      //       } else if (event.priority === Priority.LOWEST) {
+      //         if (!best || diff < bestComparison) {
+      //           best = submission;
+      //           bestComparison = diff;
+      //         }
+      //       }
+      //     }
+      //   });
+      // }
     } else {
       if (!best || submission._count.votes > currBestVotes) {
         best = submission;

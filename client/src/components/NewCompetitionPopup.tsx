@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import DateTimePicker from "./DateTimePicker";
 import "react-day-picker/style.css";
 import { format } from "date-fns";
-import { PopupProps, Priority, Policy, ICompetition } from "../../types";
+import { PopupProps, Priority, ICompetition } from "../../types";
 import { PlusSquare } from "react-bootstrap-icons";
 
 interface newCompetitionError {
@@ -68,9 +68,6 @@ function NewCompetitionPopup({
   );
   const [priority, setPriority] = useState<string>(
     competitionData?.priority || Priority.HIGHEST
-  );
-  const [policy, setPolicy] = useState<string>(
-    competitionData?.policy || Policy.FLAT
   );
   const [inviteInput, setInviteInput] = useState<string>("");
   const [startDateFocus, setStartDateFocus] = useState<boolean>(false);
@@ -194,7 +191,7 @@ function NewCompetitionPopup({
       repeatInterval,
       endDate,
       priority,
-      policy,
+      // policy,
       description,
       is_numerical: isNumerical,
     };
@@ -445,7 +442,7 @@ function NewCompetitionPopup({
                     <option value={Priority.LOWEST}>Lowest</option>
                   </Form.Select>
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="formInterval">
+                {/* <Form.Group className="mb-3" controlId="formInterval">
                   <Form.Label>Policy</Form.Label>
                   <Form.Select
                     value={policy}
@@ -457,7 +454,7 @@ function NewCompetitionPopup({
                       Percentage Change
                     </option>
                   </Form.Select>
-                </Form.Group>
+                </Form.Group> */}
               </>
             )}
 

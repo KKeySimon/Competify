@@ -120,6 +120,35 @@ router.get(
     const { eventId } = req.params;
     const eventIdNumber = parseInt(eventId, 10);
 
+    const eventData = await prisma.events.findFirst({
+      where: {
+        id: eventIdNumber,
+      },
+      select: {
+        date: true,
+        is_numerical: true,
+        priority: true,
+        upcoming: true,
+        winner: {
+          select: {
+            username: true,
+            profile_picture_url: true,
+          },
+        },
+        belongs_to: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (!eventData) {
+      res.status(404).json({ message: "Event not found" });
+      return;
+    }
+
     const submissions = await prisma.submissions.findMany({
       where: {
         event_id: eventIdNumber,
@@ -151,7 +180,11 @@ router.get(
       vote_count: submission._count.votes,
     }));
 
-    res.status(200).json(formattedSubmissions);
+    res.status(200).json({
+      event: eventData,
+      submissions: formattedSubmissions,
+    });
+
     return;
   })
 );

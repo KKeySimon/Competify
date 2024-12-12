@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Image } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SubmissionPopup from "../components/SubmissionPopup";
 import { ICompetition, Submission, Vote } from "../../types";
 import NewCompetitionPopup from "../components/NewCompetitionPopup";
@@ -19,6 +19,11 @@ function Competition() {
     is_numerical: boolean;
   }
 
+  interface EventResponse {
+    event: Event;
+    submissions: Submission[];
+  }
+
   interface PreviousEvent extends Event {
     winner: {
       username: string;
@@ -33,6 +38,7 @@ function Competition() {
   }
 
   const { id } = useParams();
+  const navigate = useNavigate();
   const [competition, setCompetition] = useState<ICompetition | undefined>(
     undefined
   );
@@ -120,10 +126,10 @@ function Competition() {
           if (!submissionsResponse.ok) {
             throw new Error("Error getting submissions");
           }
-          const submissionsData: Submission[] =
+          const submissionsData: EventResponse =
             await submissionsResponse.json();
           console.log(submissionsData);
-          setSubmissions(submissionsData);
+          setSubmissions(submissionsData.submissions);
 
           const voteResponse = await fetch(
             `http://localhost:3000/api/competition/${id}/events/${eventsData.id}/votes`,
@@ -306,16 +312,24 @@ function Competition() {
                     Upcoming Deadline:
                     <span className={styles.timeUnit}>
                       {timeLeft && (
-                        <>
-                          {timeLeft.days}
-                          <span className={styles.label}>days</span>
-                          {timeLeft.hours}
-                          <span className={styles.label}>hours</span>
-                          {timeLeft.minutes}
-                          <span className={styles.label}>minutes</span>
-                          {timeLeft.seconds}
-                          <span className={styles.label}>seconds</span>
-                        </>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <div>{new Date(upcoming.date).toLocaleString()}</div>
+                          <div>
+                            {timeLeft.days}
+                            <span className={styles.label}>days</span>
+                            {timeLeft.hours}
+                            <span className={styles.label}>hours</span>
+                            {timeLeft.minutes}
+                            <span className={styles.label}>minutes</span>
+                            {timeLeft.seconds}
+                            <span className={styles.label}>seconds</span>
+                          </div>
+                        </div>
                       )}
                     </span>
                   </p>
@@ -348,29 +362,54 @@ function Competition() {
                           let rankColor;
                           switch (index) {
                             case 0:
-                              rankColor = "gold";
+                              rankColor = styles.gold;
                               break;
                             case 1:
-                              rankColor = "silver";
+                              rankColor = styles.silver;
                               break;
                             case 2:
-                              rankColor = "bronze";
+                              rankColor = styles.bronze;
                               break;
                             default:
-                              rankColor = "default";
+                              rankColor = styles.defaultRank;
                           }
                           return (
                             <li
                               key={sortedSubmission.id}
-                              className={styles.submission}
+                              className={`${styles.submission} ${styles.separator}`}
                             >
-                              <span
-                                className={`${styles.rankNumber} ${rankColor}`}
-                              >
-                                {index + 1}
-                              </span>
-                              {sortedSubmission.belongs_to.username}:{" "}
-                              {sortedSubmission.content_number}
+                              <div className={styles.submissionHeader}>
+                                <span
+                                  className={`${styles.rankNumber} ${rankColor}`}
+                                >
+                                  {index + 1}
+                                </span>
+                                <div className={styles.created}>
+                                  <img
+                                    src={
+                                      sortedSubmission.belongs_to
+                                        .profile_picture_url
+                                    }
+                                  />
+                                  <div>
+                                    <h5>
+                                      {sortedSubmission.belongs_to.username}
+                                    </h5>
+                                    <h6>
+                                      Created:{" "}
+                                      {new Date(
+                                        sortedSubmission.created_at
+                                      ).toLocaleString()}
+                                    </h6>
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <span className={styles.submissionBadge}>
+                                  1️⃣ Numeric Submission
+                                </span>
+                                <p>{sortedSubmission.content_number}</p>
+                              </div>
                             </li>
                           );
                         })
@@ -482,84 +521,94 @@ function Competition() {
               {previousEvents.length > 0 ? (
                 <div className={styles.eventList}>
                   {previousEvents.map((event) => (
-                    <div key={event.id} className={styles.eventCard}>
-                      <div className={styles.eventHeader}>
-                        <h4>{event.date.toLocaleDateString()}</h4>
-                        <span>
-                          Winner:{" "}
-                          {event.winner ? (
-                            <strong className={styles.winnerName}>
-                              {event.winner.username}
-                            </strong>
-                          ) : (
-                            <span>No winner</span>
-                          )}
-                        </span>
-                      </div>
-                      <ul className={styles.submissionsList}>
-                        {event.submissions
-                          .slice(0, 3)
-                          .map((submission, index) => {
-                            let rankColor;
-                            switch (index) {
-                              case 0:
-                                rankColor = styles.gold;
-                                break;
-                              case 1:
-                                rankColor = styles.silver;
-                                break;
-                              case 2:
-                                rankColor = styles.bronze;
-                                break;
-                              default:
-                                rankColor = styles.defaultRank;
-                            }
-                            return (
-                              <li
-                                key={submission.id}
-                                className={styles.submissionItem}
-                              >
-                                <span
-                                  className={`${styles.rankNumber} ${rankColor}`}
+                    <button
+                      className={styles.eventButton}
+                      onClick={() => {
+                        navigate(`/competition/${id}/events/${event.id}`);
+                      }}
+                    >
+                      <div key={event.id} className={styles.eventCard}>
+                        <div className={styles.eventHeader}>
+                          <h4>{event.date.toLocaleDateString()}</h4>
+                          <span>
+                            Winner:{" "}
+                            {event.winner ? (
+                              <strong className={styles.winnerName}>
+                                {event.winner.username}
+                              </strong>
+                            ) : (
+                              <span>No winner</span>
+                            )}
+                          </span>
+                        </div>
+                        <ul className={styles.submissionsList}>
+                          {event.submissions
+                            .slice(0, 3)
+                            .map((submission, index) => {
+                              let rankColor;
+                              switch (index) {
+                                case 0:
+                                  rankColor = styles.gold;
+                                  break;
+                                case 1:
+                                  rankColor = styles.silver;
+                                  break;
+                                case 2:
+                                  rankColor = styles.bronze;
+                                  break;
+                                default:
+                                  rankColor = styles.defaultRank;
+                              }
+                              return (
+                                <li
+                                  key={submission.id}
+                                  className={styles.submissionItem}
                                 >
-                                  {index + 1}
-                                </span>
-                                <div className={styles.submissionInfo}>
-                                  <Image
-                                    className={styles.profilePicture}
-                                    src={
-                                      submission.belongs_to.profile_picture_url
-                                    }
-                                  />
-                                  <span>{submission.belongs_to.username}</span>
-                                </div>
-                                <div className={styles.submissionContent}>
-                                  {submission.submission_type === "TEXT" && (
-                                    <p>{submission.content}</p>
-                                  )}
-                                  {submission.submission_type === "URL" && (
-                                    <a
-                                      href={submission.content}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      {submission.content}
-                                    </a>
-                                  )}
-                                  {submission.submission_type ===
-                                    "IMAGE_URL" && (
-                                    <img
-                                      src={submission.content}
-                                      alt="Submitted content"
-                                      className={styles.imageContent}
+                                  <span
+                                    className={`${styles.rankNumber} ${rankColor}`}
+                                  >
+                                    {index + 1}
+                                  </span>
+                                  <div className={styles.submissionInfo}>
+                                    <Image
+                                      className={styles.profilePicture}
+                                      src={
+                                        submission.belongs_to
+                                          .profile_picture_url
+                                      }
                                     />
-                                  )}
-                                </div>
-                              </li>
-                            );
-                          })}
-                      </ul>
-                    </div>
+                                    <span>
+                                      {submission.belongs_to.username}
+                                    </span>
+                                  </div>
+                                  <div className={styles.submissionContent}>
+                                    {submission.submission_type === "TEXT" && (
+                                      <p>{submission.content}</p>
+                                    )}
+                                    {submission.submission_type === "URL" && (
+                                      <a
+                                        href={submission.content}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        {submission.content}
+                                      </a>
+                                    )}
+                                    {submission.submission_type ===
+                                      "IMAGE_URL" && (
+                                      <img
+                                        src={submission.content}
+                                        alt="Submitted content"
+                                        className={styles.imageContent}
+                                      />
+                                    )}
+                                  </div>
+                                </li>
+                              );
+                            })}
+                        </ul>
+                      </div>
+                    </button>
                   ))}
                 </div>
               ) : (
