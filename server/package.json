@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./dist/app.js",
     "build": "tsc",
-    "setup": "npm i && cd src && npx prisma generate && npm run build",
+    "setup": "npm i && npx prisma generate --schema=./src/prisma/schema.prisma && npx prisma migrate deploy --schema=./src/prisma/schema.prisma && npm run build",
     "dev": "ts-node-dev --respawn --pretty --transpile-only ./src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
