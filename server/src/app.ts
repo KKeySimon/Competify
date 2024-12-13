@@ -48,7 +48,7 @@ require("./config/passport");
 app.use(passport.initialize());
 app.use(passport.session());
 
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || "3000", 10);
 const indexRouter = require("./routes/index");
 app.use("/api", indexRouter);
 
