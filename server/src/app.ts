@@ -60,4 +60,4 @@ app.use((err: any, req, res, next) => {
 
 startCronJob();
 
-app.listen(PORT, () => console.log("Listening in on port " + PORT));
+app.listen(PORT, "0.0.0.0", () => console.log("Listening in on port " + PORT));
