@@ -13,6 +13,10 @@ router.get("/", (req, res, next) => {
   }
 });
 
+router.get("/ping", (req, res, next) => {
+  return res.status(200).json({message: "Server alive!"});
+})
+
 router.post("/login", function (req, res, next) {
   passport.authenticate("local", function (err, user, info) {
     if (err) {
