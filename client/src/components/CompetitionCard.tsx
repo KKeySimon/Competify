@@ -2,9 +2,7 @@ import { Competition } from "../../types";
 import styles from "./CompetitionCard.module.css";
 
 function CompetitionCard({
-  userId,
   joinedAt,
-  competitionId,
   name,
   createdBy,
   profilePictureUrl,
