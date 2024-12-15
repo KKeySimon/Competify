@@ -23,7 +23,7 @@ function CompetitionsList({ isLoggedIn }: CompetitionsListProps) {
   }, [isLoggedIn, navigate]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/competition", {
+    fetch(`${import.meta.env.VITE_SERVER_URL}/api/competition`, {
       credentials: "include",
     })
       .then((response) => {
