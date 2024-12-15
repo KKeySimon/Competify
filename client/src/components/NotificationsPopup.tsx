@@ -22,7 +22,7 @@ const NotificationsPopup = ({
     key: string
   ) {
     const method = accept ? "POST" : "DELETE";
-    await fetch("http://localhost:3000/api/invites/handle", {
+    await fetch(`${import.meta.env.VITE_SERVER_URL}/api/invites/handle`, {
       method: method,
       headers: {
         "Content-Type": "application/json",

@@ -14,7 +14,9 @@ function EventPage() {
     const fetchEventData = async () => {
       try {
         const eventResponse = await fetch(
-          `http://localhost:3000/api/competition/${competitionId}/events/${eventId}`,
+          `${
+            import.meta.env.VITE_SERVER_URL
+          }/api/competition/${competitionId}/events/${eventId}`,
           { credentials: "include" }
         );
 

@@ -35,7 +35,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
     };
   }, [setBellClicked]);
   async function handleLogout() {
-    await fetch("http://localhost:3000/api/logout", {
+    await fetch(`${import.meta.env.VITE_SERVER_URL}/api/logout`, {
       credentials: "include",
     })
       .then((response) => {
@@ -52,7 +52,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   }
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/invites", {
+    fetch(`${import.meta.env.VITE_SERVER_URL}/api/invites`, {
       credentials: "include",
     })
       .then((response) => {
@@ -68,7 +68,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
         console.log(error.message);
       });
 
-    fetch("http://localhost:3000/api/profile/me", {
+    fetch(`${import.meta.env.VITE_SERVER_URL}/api/profile/me`, {
       method: "GET",
       credentials: "include",
     })

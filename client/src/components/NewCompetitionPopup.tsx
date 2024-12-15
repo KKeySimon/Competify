@@ -198,8 +198,10 @@ function NewCompetitionPopup({
 
     await fetch(
       competitionData
-        ? `http://localhost:3000/api/competition/${competitionData.id}`
-        : "http://localhost:3000/api/competition/new",
+        ? `${import.meta.env.VITE_SERVER_URL}/api/competition/${
+            competitionData.id
+          }`
+        : `${import.meta.env.VITE_SERVER_URL}/api/competition/new`,
       {
         method: competitionData ? "PUT" : "POST",
         credentials: "include",

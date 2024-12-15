@@ -82,7 +82,7 @@ function SignUp({ isLoggedIn }: SignUpProps) {
     const userData = { username, password, email };
     console.log(password);
 
-    await fetch("http://localhost:3000/api/sign-up", {
+    await fetch(`${import.meta.env.VITE_SERVER_URL}/api/sign-up`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

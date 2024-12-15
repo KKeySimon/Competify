@@ -6,7 +6,7 @@ const pgSession = require("connect-pg-simple")(session);
 import cors from "cors";
 const corsOptions = {
   // Vite uses port 5173
-  origin: ["http://localhost:5173"],
+  origin: ["http://localhost:5173", "https://competify.vercel.app"],
   credentials: true,
 };
 import passport from "passport";

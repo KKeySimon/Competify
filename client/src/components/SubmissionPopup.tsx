@@ -28,7 +28,7 @@ function SubmissionPopup({
     console.log(submission);
 
     await fetch(
-      "http://localhost:3000/api/competition/" +
+      `${import.meta.env.VITE_SERVER_URL}/api/competition/ ` +
         id +
         "/events/" +
         eventId +

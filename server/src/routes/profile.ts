@@ -82,9 +82,14 @@ router.get(
   isAuth,
   asyncHandler(async (req: AuthRequest<any>, res) => {
     const currUserId = req.user.id;
-    const profile = await getProfile(currUserId);
-    const numberOfWins = await getNumberOfWins(currUserId);
-    res.status(200).json({ ...profile, wins: numberOfWins });
+    if (currUserId) {
+      const profile = await getProfile(currUserId);
+      const numberOfWins = await getNumberOfWins(currUserId);
+      res.status(200).json({ ...profile, wins: numberOfWins });
+    } else {
+      res.status(404).json({ message: "req.user.id not provided" });
+    }
+
     return;
   })
 );
@@ -95,14 +100,19 @@ router.get(
     const { id } = req.params;
 
     const currUserId = req.user.id;
-    const profile = await getProfile(parseInt(id));
-    const numberOfWins = await getNumberOfWins(parseInt(id));
+    if (currUserId) {
+      const profile = await getProfile(parseInt(id));
+      const numberOfWins = await getNumberOfWins(parseInt(id));
 
-    res.status(200).json({
-      ...profile,
-      isSelf: currUserId === parseInt(id),
-      wins: numberOfWins,
-    });
+      res.status(200).json({
+        ...profile,
+        isSelf: currUserId === parseInt(id),
+        wins: numberOfWins,
+      });
+    } else {
+      res.status(404).json({ message: "req.user.id not provided" });
+    }
+
     return;
   })
 );

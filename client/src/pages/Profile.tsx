@@ -25,7 +25,7 @@ function Profile() {
     const formData = new FormData();
     formData.append("file", file);
 
-    fetch("http://localhost:3000/api/profile/upload", {
+    fetch(`${import.meta.env.VITE_SERVER_URL}/api/profile/upload`, {
       method: "POST",
       credentials: "include",
       body: formData,
@@ -43,7 +43,7 @@ function Profile() {
     const fetchProfile = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/profile/${id}`,
+          `${import.meta.env.VITE_SERVER_URL}/api/profile/${id}`,
           {
             method: "GET",
             credentials: "include",

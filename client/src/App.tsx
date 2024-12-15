@@ -21,7 +21,7 @@ function App() {
   // need to use whether user is logged in. Shouldn't tighty couple the 2 together
   useEffect(() => {
     // If login status not in local storage make API call
-    fetch("http://localhost:3000/api", { credentials: "include" })
+    fetch(`${import.meta.env.VITE_SERVER_URL}/api`, { credentials: "include" })
       .then((response) => {
         if (response.status >= 400) {
           throw new Error("Unauthorized");

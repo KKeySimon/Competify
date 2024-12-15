@@ -73,7 +73,7 @@ function Competition() {
     const fetchCompetitionData = async () => {
       try {
         const competitionResponse = await fetch(
-          `http://localhost:3000/api/competition/${id}`,
+          `${import.meta.env.VITE_SERVER_URL}/api/competition/${id}`,
           {
             credentials: "include",
           }
@@ -100,7 +100,9 @@ function Competition() {
         setCompetition(parsedCompetition);
 
         const eventsResponse = await fetch(
-          `http://localhost:3000/api/competition/${id}/events/upcoming`,
+          `${
+            import.meta.env.VITE_SERVER_URL
+          }/api/competition/${id}/events/upcoming`,
           {
             credentials: "include",
           }
@@ -118,7 +120,9 @@ function Competition() {
           setUpcoming(parsedEvents);
 
           const submissionsResponse = await fetch(
-            `http://localhost:3000/api/competition/${id}/events/${eventsData.id}`,
+            `${import.meta.env.VITE_SERVER_URL}/api/competition/${id}/events/${
+              eventsData.id
+            }`,
             {
               credentials: "include",
             }
@@ -132,7 +136,9 @@ function Competition() {
           setSubmissions(submissionsData.submissions);
 
           const voteResponse = await fetch(
-            `http://localhost:3000/api/competition/${id}/events/${eventsData.id}/votes`,
+            `${import.meta.env.VITE_SERVER_URL}/api/competition/${id}/events/${
+              eventsData.id
+            }/votes`,
             {
               credentials: "include",
             }
@@ -201,7 +207,7 @@ function Competition() {
     const fetchAllEvents = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/competition/${id}/events/`,
+          `${import.meta.env.VITE_SERVER_URL}/api/competition/${id}/events/`,
           {
             credentials: "include",
           }
@@ -233,7 +239,9 @@ function Competition() {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/competition/${id}/events/${upcoming?.id}/submissions/${submissionId}/vote/submit`,
+        `${import.meta.env.VITE_SERVER_URL}/api/competition/${id}/events/${
+          upcoming?.id
+        }/submissions/${submissionId}/vote/submit`,
         {
           method: voted ? "DELETE" : "POST",
           headers: {
