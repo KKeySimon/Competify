@@ -82,7 +82,7 @@ router.get(
   isAuth,
   asyncHandler(async (req: AuthRequest<any>, res) => {
     const currUserId = req.user.id;
-    if (currUserId) {
+    if (req.user) {
       const profile = await getProfile(currUserId);
       const numberOfWins = await getNumberOfWins(currUserId);
       res.status(200).json({ ...profile, wins: numberOfWins });
@@ -100,7 +100,7 @@ router.get(
     const { id } = req.params;
 
     const currUserId = req.user.id;
-    if (currUserId) {
+    if (req.user) {
       const profile = await getProfile(parseInt(id));
       const numberOfWins = await getNumberOfWins(parseInt(id));
 
