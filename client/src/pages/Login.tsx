@@ -76,7 +76,6 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
         setIsLoggedIn(true);
         localStorage.removeItem("userId");
         localStorage.setItem("userId", data.id);
-        window.location.reload();
       })
       .catch((error) => {
         setErrors({ ...errors, apiError: error.message });
