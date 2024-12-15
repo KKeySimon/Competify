@@ -44,7 +44,6 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
         }
         setIsLoggedIn(false);
         localStorage.removeItem("userId");
-        window.location.reload();
       })
       .catch((error) => {
         console.log(error.message);
