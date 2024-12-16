@@ -22,25 +22,22 @@ const postgreStore = new pgSession({
   createTableIfMissing: true,
 });
 
+app.set("trust proxy", 1);
+
 app.use(
   session({
     store: postgreStore,
     secret: process.env.SESSION_SECRET,
-    // Turn resave off as login sessions don't frequently change
     resave: false,
-    // Recommended to be set to False for login to reduce server storage
     saveUninitialized: false,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24,
-      sameSite: "none",
-      secure: true,
-      domain: "competify.vercel.app",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production", // Must be true in production over HTTPS
     },
-    proxy: true,
   })
 );
 
-app.use(express.urlencoded({ extended: false }));
 // Read up on CORS if you don't know what it is
 // Server will only accept requests being sent from front-end
 app.use(cors(corsOptions));
