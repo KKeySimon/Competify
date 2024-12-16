@@ -33,8 +33,7 @@ app.use(
     cookie: {
       maxAge: 1000 * 60 * 60 * 24,
       sameSite: "none",
-      /* This strict was added from here. Look here for potential source of bugs if needed
-        https://stackoverflow.com/questions/61999068/how-do-i-use-cookies-in-express-session-connect-sid-will-soon-be-rejected */
+      secure: true,
     },
   })
 );
