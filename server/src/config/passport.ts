@@ -27,8 +27,6 @@ passport.use(
 );
 
 passport.serializeUser((user: any, done) => {
-  console.log(user);
-
   done(null, user.id);
 });
 
@@ -38,8 +36,6 @@ passport.deserializeUser(async (id, done) => {
       id,
     ]);
     const user = rows[0];
-
-    console.log(user);
 
     if (!user) {
       return done(null, false);

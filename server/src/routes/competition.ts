@@ -134,25 +134,23 @@ router.post(
           competition: { connect: { id: createCompetition.id } },
         },
       });
-      const invitePromises = req.body.invites.map(
-        async (inviteEmail: string) => {
-          const invitee = await prisma.users.findFirst({
-            where: { email: inviteEmail },
-          });
+      const invitePromises = req.body.invites.map(async (invite: string) => {
+        const invitee = await prisma.users.findFirst({
+          where: { username: invite },
+        });
 
-          if (!invitee || req.user.id === invitee.id) {
-            return null;
-          }
-
-          return prisma.invites.create({
-            data: {
-              inviter: { connect: { id: req.user.id } },
-              invitee: { connect: { id: invitee.id } },
-              competition: { connect: { id: createCompetition.id } },
-            },
-          });
+        if (!invitee || req.user.id === invitee.id) {
+          return null;
         }
-      );
+
+        return prisma.invites.create({
+          data: {
+            inviter: { connect: { id: req.user.id } },
+            invitee: { connect: { id: invitee.id } },
+            competition: { connect: { id: createCompetition.id } },
+          },
+        });
+      });
       const inviteAllUsers = await Promise.all(invitePromises);
       inviteAllUsers.filter(Boolean);
 

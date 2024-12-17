@@ -51,38 +51,43 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   }
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_SERVER_URL}/api/invites`, {
-      credentials: "include",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Something went wrong while grabbing invites!");
-        }
-        return response.json();
+    if (isLoggedIn) {
+      fetch(`${import.meta.env.VITE_SERVER_URL}/api/invites`, {
+        credentials: "include",
       })
-      .then((data) => {
-        setNotifications(data);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Something went wrong while grabbing invites!");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setNotifications(data);
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
 
-    fetch(`${import.meta.env.VITE_SERVER_URL}/api/profile/me`, {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(
-            "Something went wrong while grabbing profile picture"
-          );
-        }
-        return response.json();
+      fetch(`${import.meta.env.VITE_SERVER_URL}/api/profile/me`, {
+        method: "GET",
+        credentials: "include",
       })
-      .then((data) => {
-        setProfilePicture(data.url);
-      });
-  }, []);
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(
+              "Something went wrong while grabbing profile picture"
+            );
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setProfilePicture(data.url);
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    }
+  }, [isLoggedIn]);
 
   const removeNotification = (key: string) => {
     setNotifications((prevNotifications) =>

@@ -19,7 +19,7 @@ import { PlusSquare } from "react-bootstrap-icons";
 interface newCompetitionError {
   name: string;
   apiError: string;
-  emails: string;
+  usernames: string;
   startDate: string;
   endDate: string;
 }
@@ -36,7 +36,7 @@ function NewCompetitionPopup({
   const [errors, setErrors] = useState<newCompetitionError>({
     name: "",
     apiError: "",
-    emails: "",
+    usernames: "",
     startDate: "",
     endDate: "",
   });
@@ -93,19 +93,10 @@ function NewCompetitionPopup({
       : "00:00"
   );
 
-  // https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
-  const validateEmail = (email: string) => {
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  };
-
   function convertTo24Hour(time: string) {
-    const [timePart, modifier] = time.split(" "); // Split into "7:25" and "PM"
+    const [timePart, modifier] = time.split(" ");
     // eslint-disable-next-line prefer-const
-    let [hours, minutes] = timePart.split(":").map(Number); // Split "7:25" into hours and minutes
+    let [hours, minutes] = timePart.split(":").map(Number);
 
     if (modifier === "PM" && hours < 12) {
       hours += 12;
@@ -118,6 +109,7 @@ function NewCompetitionPopup({
       .toString()
       .padStart(2, "0")}`;
   }
+
   const formatDateTime = (date: Date | undefined, time: string) => {
     if (!date || !time) return "";
     time = convertTo24Hour(time);
@@ -136,7 +128,7 @@ function NewCompetitionPopup({
       case "monthly":
         return "Months";
       case "everyX":
-        return "Days"; // Default to Days since it's the most common
+        return "Days";
       default:
         return "";
     }
@@ -148,7 +140,7 @@ function NewCompetitionPopup({
     const newErrors: newCompetitionError = {
       name: "",
       apiError: "",
-      emails: "",
+      usernames: "",
       startDate: "",
       endDate: "",
     };
@@ -167,6 +159,7 @@ function NewCompetitionPopup({
     }
     return newErrors;
   };
+
   async function handleCreateCompetition(e: React.FormEvent) {
     e.preventDefault();
     const formErrors = validateForm();
@@ -177,21 +170,25 @@ function NewCompetitionPopup({
     setErrors({
       name: "",
       apiError: "",
-      emails: "",
+      usernames: "",
       startDate: "",
       endDate: "",
     });
 
+    const finalInvites = [...invites];
+    if (inviteInput && !finalInvites.includes(inviteInput)) {
+      finalInvites.push(inviteInput);
+    }
+
     const jsonCompetitionData = {
       name,
-      invites,
+      invites: finalInvites,
       startDate: new Date(startDate!),
       repeat,
       repeatEvery,
       repeatInterval,
       endDate,
       priority,
-      // policy,
       description,
       is_numerical: isNumerical,
     };
@@ -241,24 +238,19 @@ function NewCompetitionPopup({
   }
 
   const handleInvite = () => {
-    if (
-      invites.indexOf(inviteInput) < 0 &&
-      inviteInput.length !== 0 &&
-      validateEmail(inviteInput)
-    ) {
+    if (inviteInput && invites.indexOf(inviteInput) < 0) {
       setInvites([...invites, inviteInput]);
     } else {
-      if (inviteInput.length !== 0) {
-        if (!validateEmail(inviteInput)) {
-          setErrors({
-            ...errors,
-            emails: "Not a valid email address!",
-          });
-        }
+      if (inviteInput) {
+        setErrors({
+          ...errors,
+          usernames: "Username is either empty or already invited!",
+        });
       }
     }
     setInviteInput("");
   };
+
   return trigger ? (
     <div className={styles.overlay} onClick={() => setTrigger(false)}>
       <div
@@ -315,15 +307,15 @@ function NewCompetitionPopup({
               />
             </Form.Group>
             <Form.Group controlId="formInvitePeople">
-              <Form.Label>Invite People</Form.Label>
+              <Form.Label>Invite Usernames</Form.Label>
               <div className={styles.inviteContainer}>
                 <Form.Control
-                  type="email"
-                  placeholder="Invite emails"
+                  type="text"
+                  placeholder="Enter username"
                   value={inviteInput}
                   onChange={(e) => {
                     setInviteInput(e.target.value);
-                    setErrors({ ...errors, emails: "" });
+                    setErrors({ ...errors, usernames: "" });
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -331,7 +323,7 @@ function NewCompetitionPopup({
                       handleInvite();
                     }
                   }}
-                  isInvalid={!!errors.emails}
+                  isInvalid={!!errors.usernames}
                 />
                 <PlusSquare
                   onClick={(e) => {
@@ -344,7 +336,7 @@ function NewCompetitionPopup({
                 </PlusSquare>
               </div>
               <Form.Control.Feedback type="invalid">
-                {errors.emails}
+                {errors.usernames}
               </Form.Control.Feedback>
               <ListGroup>
                 {invites.map((invite) => (
@@ -444,19 +436,6 @@ function NewCompetitionPopup({
                     <option value={Priority.LOWEST}>Lowest</option>
                   </Form.Select>
                 </Form.Group>
-                {/* <Form.Group className="mb-3" controlId="formInterval">
-                  <Form.Label>Policy</Form.Label>
-                  <Form.Select
-                    value={policy}
-                    onChange={(e) => setPolicy(e.target.value)}
-                  >
-                    <option value={Policy.FLAT}>Flat</option>
-                    <option value={Policy.FLAT_CHANGE}>Flat Change</option>
-                    <option value={Policy.PERCENTAGE_CHANGE}>
-                      Percentage Change
-                    </option>
-                  </Form.Select>
-                </Form.Group> */}
               </>
             )}
 

@@ -36,7 +36,6 @@
   border-radius: 5px;
   width: auto;
   height: 100%;
-  padding: 15px;
 }
 
 .bell:hover {
@@ -71,6 +70,7 @@
 .profilePicture {
   height: 4vh;
   width: auto;
+  margin-left: 30px;
   border-radius: 50%;
   object-fit: cover;
 }
