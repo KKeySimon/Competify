@@ -7,6 +7,7 @@ import prisma from "../prisma/client";
 
 const router = express.Router();
 const isAuth = require("./authMiddleware").isAuth;
+const isCompetitionAuth = require("./authMiddleware").isCompetitionAuth;
 
 // returns all invites received from logged in user
 router.get(
@@ -41,6 +42,34 @@ router.get(
         sentAt: entry.sent_at,
       }))
     );
+    return;
+  })
+);
+
+router.get(
+  "/:competitionId",
+  isAuth,
+  isCompetitionAuth,
+  asyncHandler(async (req: AuthRequest<{}>, res, next) => {
+    const { competitionId } = req.params;
+    const competitionIdNumber = parseInt(competitionId, 10);
+    const invites = await prisma.invites.findMany({
+      where: {
+        competition_id: competitionIdNumber,
+      },
+      select: {
+        inviter_id: true,
+        invitee_id: true,
+        invitee: {
+          select: {
+            username: true,
+            profile_picture_url: true,
+            id: true,
+          },
+        },
+      },
+    });
+    res.status(200).json(invites);
     return;
   })
 );

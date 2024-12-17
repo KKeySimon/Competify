@@ -244,6 +244,26 @@ router.put(
         },
       });
 
+      const invitePromises = req.body.invites.map(async (invite: string) => {
+        const invitee = await prisma.users.findFirst({
+          where: { username: invite },
+        });
+
+        if (!invitee || req.user.id === invitee.id) {
+          return null;
+        }
+
+        return prisma.invites.create({
+          data: {
+            inviter: { connect: { id: req.user.id } },
+            invitee: { connect: { id: invitee.id } },
+            competition: { connect: { id: updatedCompetition.id } },
+          },
+        });
+      });
+
+      await Promise.all(invitePromises);
+
       const firstUpcomingEvent = await prisma.events.findFirst({
         where: {
           competition_id: updatedCompetition.id,
@@ -276,6 +296,39 @@ router.put(
       }
 
       res.status(200).send(updatedCompetition);
+      return;
+    }
+  )
+);
+
+router.delete(
+  "/:id",
+  isAuth,
+  asyncHandler(
+    async (req: AuthRequest<{}>, res: Response, next): Promise<void> => {
+      const { id } = req.params;
+      const competitionIdNumber = parseInt(id, 10);
+      if (isNaN(competitionIdNumber)) {
+        res.status(400).send({ message: "Competition ID is not a number!" });
+      }
+      console.log("helo");
+
+      const currUserId = req.user.id;
+      const competition = await prisma.competitions.findFirst({
+        where: { id: competitionIdNumber, user_id: currUserId },
+      });
+      if (!competition) {
+        res.status(404).json({
+          message: "Competition not found or not authorized to delete.",
+        });
+        return;
+      }
+
+      await prisma.competitions.delete({
+        where: { id: competitionIdNumber },
+      });
+
+      res.status(200).json({ message: "Competition deleted successfully!" });
       return;
     }
   )
