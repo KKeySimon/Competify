@@ -92,6 +92,8 @@ function NewCompetitionPopup({
         )
       : "00:00"
   );
+  const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   function convertTo24Hour(time: string) {
     const [timePart, modifier] = time.split(" ");
@@ -158,6 +160,41 @@ function NewCompetitionPopup({
       }
     }
     return newErrors;
+  };
+
+  const handleDeleteCompetition = async (competitionId: number) => {
+    try {
+      if (
+        !window.confirm(
+          "Are you sure you want to delete this competition? This action CANNOT BE UNDONE"
+        )
+      ) {
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/competition/${competitionId}`,
+        {
+          credentials: "include",
+          method: "DELETE",
+        }
+      );
+
+      if (response.status === 200) {
+        setDeleteSuccess("Competition deleted successfully!");
+        setDeleteError(null);
+        setTimeout(() => {
+          navigate("/competition");
+        }, 2000);
+      } else {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to delete competition: ${errorMessage}`);
+      }
+    } catch (error) {
+      console.error("Error deleting competition:", error);
+      setDeleteError("Failed to delete competition. Please try again.");
+      setDeleteSuccess(null);
+    }
   };
 
   async function handleCreateCompetition(e: React.FormEvent) {
@@ -277,6 +314,8 @@ function NewCompetitionPopup({
               competition...
             </Alert>
           )}
+          {deleteSuccess && <Alert variant="success">{deleteSuccess}</Alert>}
+          {deleteError && <Alert variant="danger">{deleteError}</Alert>}
           <Form onSubmit={handleCreateCompetition}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Name</Form.Label>
@@ -495,6 +534,17 @@ function NewCompetitionPopup({
               <Button variant="primary" type="submit">
                 {competitionData ? "Update Competition" : "Create Competition"}
               </Button>
+              {competitionData && (
+                <a
+                  className={styles.deleteCompetitionLink}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteCompetition(competitionData.id);
+                  }}
+                >
+                  Delete Competition
+                </a>
+              )}
             </div>
           </Form>
         </div>

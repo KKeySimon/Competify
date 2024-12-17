@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Image } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import SubmissionPopup from "../components/SubmissionPopup";
-import { ICompetition, Submission, Vote } from "../../types";
+import { ICompetition, Invite, Submission, Vote } from "../../types";
 import NewCompetitionPopup from "../components/NewCompetitionPopup";
 import styles from "./Competition.module.css";
 import { formatDistanceToNow } from "date-fns";
@@ -50,6 +50,7 @@ function Competition() {
   const [previousEvents, setPreviousEvents] = useState<PreviousEvent[]>([]);
   const [popupTrigger, setPopupTrigger] = useState(false);
   const [hasVoted, setHasVoted] = useState<Record<number, boolean>>({});
+  const [invites, setInvites] = useState<Invite[]>([]);
 
   const handleSubmitSubmission = (newSubmission: Submission) => {
     setSubmissions((prevSubmissions) => {
@@ -96,7 +97,6 @@ function Competition() {
             : undefined,
         };
 
-        console.log(parsedCompetition);
         setCompetition(parsedCompetition);
 
         const eventsResponse = await fetch(
@@ -132,7 +132,6 @@ function Competition() {
           }
           const submissionsData: EventResponse =
             await submissionsResponse.json();
-          console.log(submissionsData);
           setSubmissions(submissionsData.submissions);
 
           const voteResponse = await fetch(
@@ -147,7 +146,6 @@ function Competition() {
             throw new Error("Error retrieving user's votes!");
           }
           const voteData: Vote[] = await voteResponse.json();
-          console.log(voteData);
           setHasVoted((prevHasVoted) => {
             const updatedVotes = { ...prevHasVoted };
             voteData.forEach((vote) => {
@@ -155,6 +153,18 @@ function Competition() {
             });
             return updatedVotes;
           });
+
+          const invitesResponse = await fetch(
+            `${import.meta.env.VITE_SERVER_URL}/api/invites/${id}`,
+            {
+              credentials: "include",
+            }
+          );
+          if (!invitesResponse.ok) {
+            throw new Error("Error getting invting");
+          }
+          const invitesData: Invite[] = await invitesResponse.json();
+          setInvites(invitesData);
         }
       } catch (err) {
         if (err instanceof Error) {
@@ -224,7 +234,6 @@ function Competition() {
           ...event,
           date: new Date(event.date),
         }));
-        console.log(parsedData);
         setPreviousEvents(parsedData);
       } catch (error) {
         console.error(error);
@@ -290,20 +299,18 @@ function Competition() {
           <div className={styles.contents}>
             <div className={styles.header}>
               <h1>{competition.name}</h1>
-              <button
-                className={styles.gear}
-                onClick={() => setPopupTrigger(true)}
-              >
-                ⚙️
-              </button>
-              {popupTrigger && (
-                <NewCompetitionPopup
-                  trigger={popupTrigger}
-                  setTrigger={setPopupTrigger}
-                  competitionData={competition}
-                />
-              )}
+              {competition &&
+                competition.user_id ===
+                  parseInt(localStorage.getItem("userId")!) && (
+                  <button
+                    className={styles.gear}
+                    onClick={() => setPopupTrigger(true)}
+                  >
+                    ⚙️
+                  </button>
+                )}
             </div>
+
             <div className={styles.description}>
               <h6>Description</h6>
               <p>
@@ -311,6 +318,15 @@ function Competition() {
                   ? competition.description
                   : "No description"}
               </p>
+            </div>
+            <div className={styles.popupContainer}>
+              {popupTrigger && (
+                <NewCompetitionPopup
+                  trigger={popupTrigger}
+                  setTrigger={setPopupTrigger}
+                  competitionData={competition}
+                />
+              )}
             </div>
 
             {upcoming ? (
@@ -530,12 +546,13 @@ function Competition() {
                 <div className={styles.eventList}>
                   {previousEvents.map((event) => (
                     <button
+                      key={event.id}
                       className={styles.eventButton}
                       onClick={() => {
                         navigate(`/competition/${id}/events/${event.id}`);
                       }}
                     >
-                      <div key={event.id} className={styles.eventCard}>
+                      <div className={styles.eventCard}>
                         <div className={styles.eventHeader}>
                           <h4>{event.date.toLocaleDateString()}</h4>
                           <span>
@@ -627,84 +644,120 @@ function Competition() {
           <div className={styles.participants}>
             <h3>Users</h3>
             <ul>
-              {competition.users_in_competitions
-                .filter((uic) =>
-                  submissions.some(
-                    (submission) => submission.user_id === uic.user.id
-                  )
-                ) // Users with submissions
-                .map((uic) => {
-                  const userSubmissions = submissions.filter(
-                    (submission) => submission.user_id === uic.user.id
-                  );
-                  return (
-                    <li key={uic.user.id}>
-                      <span
-                        style={{
-                          color: "green", // Always green for users with submissions
-                        }}
-                      >
-                        {uic.user.username}
-                        {competition.created_by.username ===
-                          uic.user.username && (
-                          <span
-                            role="img"
-                            aria-label="crown"
-                            style={{ marginLeft: "5px" }}
-                          >
-                            👑
-                          </span>
-                        )}
-                      </span>
-                      <Image
-                        className={styles.profilePicture}
-                        src={uic.user.profile_picture_url}
-                      />
-                      <span>
-                        {userSubmissions.map((submission) => (
-                          <span key={submission.id}>
-                            {` - Submitted ${formatDistanceToNow(
-                              new Date(submission.created_at),
-                              { addSuffix: true }
-                            )}`}
-                          </span>
-                        ))}
-                      </span>
-                    </li>
-                  );
-                })}
-              {competition.users_in_competitions
-                .filter(
-                  (uic) =>
-                    !submissions.some(
+              <div className={styles.userList}>
+                {competition.users_in_competitions
+                  .filter((uic) =>
+                    submissions.some(
                       (submission) => submission.user_id === uic.user.id
                     )
-                )
-                .map((uic) => (
-                  <li key={uic.user.id}>
-                    <span
-                      style={{
-                        color: "black",
-                      }}
+                  ) // Users with submissions
+                  .map((uic) => {
+                    const userSubmissions = submissions.filter(
+                      (submission) => submission.user_id === uic.user.id
+                    );
+                    return (
+                      <div
+                        onClick={() => navigate(`/profile/${uic.user.id}`)}
+                        className={styles.userContainer}
+                      >
+                        <li key={uic.user.id}>
+                          <span
+                            style={{
+                              color: "green", // Always green for users with submissions
+                            }}
+                          >
+                            {uic.user.username}
+                            {competition.created_by.username ===
+                              uic.user.username && (
+                              <span
+                                role="img"
+                                aria-label="crown"
+                                style={{ marginLeft: "5px" }}
+                              >
+                                👑
+                              </span>
+                            )}
+                          </span>
+                          <img
+                            className={styles.profilePicture}
+                            src={uic.user.profile_picture_url}
+                          />
+                          <span>
+                            {userSubmissions.map((submission) => (
+                              <span key={submission.id}>
+                                {` - Submitted ${formatDistanceToNow(
+                                  new Date(submission.created_at),
+                                  { addSuffix: true }
+                                )}`}
+                              </span>
+                            ))}
+                          </span>
+                        </li>
+                      </div>
+                    );
+                  })}
+              </div>
+              <div className={styles.userList}>
+                {competition.users_in_competitions
+                  .filter(
+                    (uic) =>
+                      !submissions.some(
+                        (submission) => submission.user_id === uic.user.id
+                      )
+                  )
+                  .map((uic) => (
+                    <div
+                      onClick={() => navigate(`/profile/${uic.user.id}`)}
+                      className={styles.userContainer}
                     >
-                      {uic.user.username}
-                      {competition.created_by.username ===
-                        uic.user.username && (
+                      <li key={uic.user.id}>
                         <span
-                          role="img"
-                          aria-label="crown"
-                          style={{ marginLeft: "5px" }}
+                          style={{
+                            color: "black",
+                          }}
                         >
-                          👑
+                          {uic.user.username}
+                          {competition.created_by.username ===
+                            uic.user.username && (
+                            <span
+                              role="img"
+                              aria-label="crown"
+                              style={{ marginLeft: "5px" }}
+                            >
+                              👑
+                            </span>
+                          )}
                         </span>
-                      )}
+                        <img
+                          className={styles.profilePicture}
+                          src={uic.user.profile_picture_url}
+                        />
+                      </li>
+                    </div>
+                  ))}
+              </div>
+            </ul>
+            <h5 style={{ marginTop: "20px" }}>Pending Invites</h5>
+            <ul>
+              {invites.length > 0 ? (
+                invites.map((invite) => (
+                  <li
+                    key={invite.invitee.id}
+                    className={styles.inviteContainer}
+                  >
+                    <span style={{ color: "black" }}>
+                      {invite.invitee.username}
                     </span>
-                    <Image
+                    <img
                       className={styles.profilePicture}
-                      src={uic.user.profile_picture_url}
+                      src={invite.invitee.profile_picture_url}
+                      alt={`${invite.invitee.username}'s profile`}
                     />
                   </li>
-                ))}
+                ))
+              ) : (
+                <p>No pending invites</p>
+              )}
             </ul>
           </div>
         </div>

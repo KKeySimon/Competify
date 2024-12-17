@@ -123,3 +123,13 @@ export interface Event {
     id: true;
   };
 }
+
+export interface Invite {
+  inviter_id: number;
+  invitee_id: number;
+  invitee: {
+    username: string;
+    profile_picture_url: string;
+    id: number;
+  };
+}

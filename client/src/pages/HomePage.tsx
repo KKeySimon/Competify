@@ -47,6 +47,7 @@ function HomePage() {
               competitions.
             </a>
             <button
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               onClick={(_) => navigate("/sign-up")}
               className={styles.registerButton}
             >

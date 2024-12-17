@@ -92,8 +92,8 @@
   color: white;
   border-radius: 50%;
   aspect-ratio: 1 / 1;
-  height: 50%;
-  font-size: 10px;
+  height: 40%;
+  font-size: 12px;
   top: 5%;
   /* No idea why setting this to left 5% moves the number to the right... */
   left: 5%;
