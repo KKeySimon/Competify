@@ -5,7 +5,6 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { Alert } from "react-bootstrap";
 import styles from "./Login.module.css";
-
 interface LoginError {
   email: string;
   password: string;
@@ -24,7 +23,6 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("login", isLoggedIn);
     if (isLoggedIn) {
       navigate("/");
     }
@@ -74,8 +72,6 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
       })
       .then((data) => {
         setIsLoggedIn(true);
-        localStorage.removeItem("userId");
-        localStorage.setItem("userId", data.id);
       })
       .catch((error) => {
         setErrors({ ...errors, apiError: error.message });
@@ -128,6 +124,19 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
               <Button variant="primary" type="submit">
                 Login
               </Button>
+              <a
+                href={`${import.meta.env.VITE_SERVER_URL}/api/login/discord`}
+                className={styles.discordButton}
+              >
+                <button type="button" className={styles.discord}>
+                  <img
+                    src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/636e0a6ca814282eca7172c6_icon_clyde_white_RGB.svg"
+                    alt="Discord Logo"
+                    className={styles.discordLogo}
+                  />
+                  Login with Discord
+                </button>
+              </a>
               <Link to="/sign-up">Sign Up</Link>
             </div>
           </Form>

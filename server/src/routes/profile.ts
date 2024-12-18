@@ -38,6 +38,8 @@ const getProfile = async (userId: number) => {
     select: {
       profile_picture_url: true,
       username: true,
+      auth_type: true,
+      discord_id: true,
       submissions: {
         select: {
           id: true,
@@ -55,14 +57,15 @@ const getProfile = async (userId: number) => {
   });
 
   if (!profile) {
-    // Handle case where user is not found
     throw new Error("User not found");
   }
 
+  const url =
+    profile.profile_picture_url ||
+    `https://${process.env.AWS_S3_BUCKET}.s3.amazonaws.com/profile_pictures/profile_default.jpg`;
+
   return {
-    url:
-      profile.profile_picture_url ||
-      `https://${process.env.AWS_S3_BUCKET}.s3.amazonaws.com/profile_pictures/profile_default.jpg`,
+    url,
     username: profile.username,
     submissions: profile.submissions || [],
   };
@@ -85,7 +88,7 @@ router.get(
       const currUserId = req.user.id;
       const profile = await getProfile(currUserId);
       const numberOfWins = await getNumberOfWins(currUserId);
-      res.status(200).json({ ...profile, wins: numberOfWins });
+      res.status(200).json({ ...profile, wins: numberOfWins, id: currUserId });
     } else {
       res.status(404).json({ message: "req.user.id not provided" });
     }

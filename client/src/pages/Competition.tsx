@@ -51,6 +51,7 @@ function Competition() {
   const [popupTrigger, setPopupTrigger] = useState(false);
   const [hasVoted, setHasVoted] = useState<Record<number, boolean>>({});
   const [invites, setInvites] = useState<Invite[]>([]);
+  const [userId, setUserId] = useState<number | null>(null);
 
   const handleSubmitSubmission = (newSubmission: Submission) => {
     setSubmissions((prevSubmissions) => {
@@ -110,6 +111,26 @@ function Competition() {
         if (!eventsResponse.ok) {
           throw new Error("Error getting upcoming event");
         }
+
+        fetch(`${import.meta.env.VITE_SERVER_URL}/api/profile/me`, {
+          method: "GET",
+          credentials: "include",
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(
+                "Something went wrong while grabbing personal profile"
+              );
+            }
+            return response.json();
+          })
+          .then((data) => {
+            setUserId(data.id);
+          })
+          .catch((error) => {
+            console.log(error.message);
+          });
+
         const eventsData: Event = await eventsResponse.json();
 
         if (eventsData) {
@@ -299,16 +320,14 @@ function Competition() {
           <div className={styles.contents}>
             <div className={styles.header}>
               <h1>{competition.name}</h1>
-              {competition &&
-                competition.user_id ===
-                  parseInt(localStorage.getItem("userId")!) && (
-                  <button
-                    className={styles.gear}
-                    onClick={() => setPopupTrigger(true)}
-                  >
-                    ⚙️
-                  </button>
-                )}
+              {competition && competition.user_id === userId && (
+                <button
+                  className={styles.gear}
+                  onClick={() => setPopupTrigger(true)}
+                >
+                  ⚙️
+                </button>
+              )}
             </div>
 
             <div className={styles.description}>

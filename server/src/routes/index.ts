@@ -35,12 +35,38 @@ router.post("/login", function (req, res, next) {
   })(req, res, next);
 });
 
+router.get(
+  "/login/discord",
+  passport.authenticate("discord", { scope: ["identify", "email"] })
+);
+
+router.get(
+  "/login/discord/callback",
+  passport.authenticate("discord", {
+    failureRedirect: "/login",
+  }),
+  (req, res) => {
+    if (req.user) {
+      res.redirect(`${process.env.CLIENT_URL}/`);
+    } else {
+      res.redirect(`${process.env.CLIENT_URL}/login`);
+    }
+  }
+);
+
 router.post("/sign-up", async (req, res, next) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+      res
+        .status(400)
+        .json({ message: "All fields are required for local registration" });
+      return;
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
     await pool.query(
       "INSERT INTO users (username, password, email) VALUES ($1, $2, $3)",
-      [req.body.username, hashedPassword, req.body.email]
+      [username, hashedPassword, email]
     );
     return res.status(201).json({ message: "Sign up successful!" });
   } catch (err) {

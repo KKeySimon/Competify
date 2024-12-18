@@ -10,12 +10,12 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   const [bellClicked, setBellClicked] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Invite[]>([]);
   const [profilePicture, setProfilePicture] = useState<string>("");
+  const [userId, setUserId] = useState<number | null>(null);
   // No need to set all keys to false, since if key doesn't exist,
   // it returns undefined. !undefined == True. And is set that way
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const userId = localStorage.getItem("userId");
   const location = useLocation();
 
   useEffect(() => {
@@ -43,7 +43,6 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
           throw new Error("Something went wrong!");
         }
         setIsLoggedIn(false);
-        localStorage.removeItem("userId");
       })
       .catch((error) => {
         console.log(error.message);
@@ -75,13 +74,14 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
         .then((response) => {
           if (!response.ok) {
             throw new Error(
-              "Something went wrong while grabbing profile picture"
+              "Something went wrong while grabbing personal profile"
             );
           }
           return response.json();
         })
         .then((data) => {
           setProfilePicture(data.url);
+          setUserId(data.id);
         })
         .catch((error) => {
           console.log(error.message);

@@ -33,6 +33,7 @@ function HomePage() {
       typed.destroy();
     };
   }, []);
+
   return (
     <>
       <div className={styles.background}>
