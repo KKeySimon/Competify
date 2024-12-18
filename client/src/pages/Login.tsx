@@ -70,7 +70,7 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
         }
         return response.json();
       })
-      .then((data) => {
+      .then(() => {
         setIsLoggedIn(true);
       })
       .catch((error) => {
