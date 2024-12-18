@@ -43,6 +43,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
           throw new Error("Something went wrong!");
         }
         setIsLoggedIn(false);
+        navigate("/");
       })
       .catch((error) => {
         console.log(error.message);
