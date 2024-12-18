@@ -9,7 +9,7 @@ passport.use(
   new LocalStrategy(async (email, password, done) => {
     try {
       const { rows } = await pool.query(
-        "SELECT * FROM users WHERE email = $1 AND auth_type = EMAIL",
+        "SELECT * FROM users WHERE email = $1 AND auth_type::text = 'EMAIL'",
         [email]
       );
       const user = rows[0];

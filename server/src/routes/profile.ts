@@ -66,6 +66,7 @@ const getProfile = async (userId: number) => {
 
   return {
     url,
+    authType: profile.auth_type,
     username: profile.username,
     submissions: profile.submissions || [],
   };

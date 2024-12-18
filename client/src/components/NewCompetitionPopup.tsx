@@ -14,7 +14,6 @@ import DateTimePicker from "./DateTimePicker";
 import "react-day-picker/style.css";
 import { format } from "date-fns";
 import { PopupProps, Priority, ICompetition } from "../../types";
-import { PlusSquare } from "react-bootstrap-icons";
 
 interface newCompetitionError {
   name: string;
@@ -45,9 +44,9 @@ function NewCompetitionPopup({
   const [description, setDescription] = useState(
     competitionData?.description || ""
   );
-  const [invites, setInvites] = useState<string[]>(
-    competitionData?.invites || []
-  );
+  const [invites, setInvites] = useState<
+    { username: string; authType: string }[]
+  >([]);
   const [startDate, setStartDate] = useState<Date | undefined>(
     competitionData?.start_time
   );
@@ -69,6 +68,7 @@ function NewCompetitionPopup({
   const [priority, setPriority] = useState<string>(
     competitionData?.priority || Priority.HIGHEST
   );
+  const [authType, setAuthType] = useState<string>("EMAIL");
   const [inviteInput, setInviteInput] = useState<string>("");
   const [startDateFocus, setStartDateFocus] = useState<boolean>(false);
   const [startTime, setStartTime] = useState<string>(
@@ -213,8 +213,9 @@ function NewCompetitionPopup({
     });
 
     const finalInvites = [...invites];
-    if (inviteInput && !finalInvites.includes(inviteInput)) {
-      finalInvites.push(inviteInput);
+    const currInviteInput = { username: inviteInput, authType: authType };
+    if (inviteInput && !finalInvites.includes(currInviteInput)) {
+      finalInvites.push(currInviteInput);
     }
 
     const jsonCompetitionData = {
@@ -275,17 +276,31 @@ function NewCompetitionPopup({
   }
 
   const handleInvite = () => {
-    if (inviteInput && invites.indexOf(inviteInput) < 0) {
-      setInvites([...invites, inviteInput]);
-    } else {
-      if (inviteInput) {
-        setErrors({
-          ...errors,
-          usernames: "Username is either empty or already invited!",
-        });
-      }
+    if (!inviteInput.trim()) {
+      setErrors({
+        ...errors,
+        usernames: "Username cannot be empty!",
+      });
+      return;
     }
+
+    const isDuplicate = invites.some(
+      (invite) =>
+        invite.username === inviteInput.trim() && invite.authType === authType
+    );
+
+    if (isDuplicate) {
+      setErrors({
+        ...errors,
+        usernames:
+          "This user with the selected account type is already invited!",
+      });
+      return;
+    }
+
+    setInvites((prev) => [...prev, { username: inviteInput.trim(), authType }]);
     setInviteInput("");
+    setErrors({ ...errors, usernames: "" });
   };
 
   return trigger ? (
@@ -364,24 +379,38 @@ function NewCompetitionPopup({
                   }}
                   isInvalid={!!errors.usernames}
                 />
-                <PlusSquare
+                <Form.Select
+                  value={authType}
+                  onChange={(e) => setAuthType(e.target.value)}
+                  className={styles.authTypeSelect}
+                >
+                  <option value="EMAIL">Competify</option>
+                  <option value="DISCORD">Discord</option>
+                </Form.Select>
+                <div
                   onClick={(e) => {
                     e.preventDefault();
                     handleInvite();
                   }}
                   className={styles.plusButton}
                 >
-                  Invite
-                </PlusSquare>
+                  ➕
+                </div>
               </div>
               <Form.Control.Feedback type="invalid">
                 {errors.usernames}
               </Form.Control.Feedback>
               <ListGroup>
                 {invites.map((invite) => (
-                  <div className={styles.inviteeContainer} key={invite}>
+                  <div
+                    className={styles.inviteeContainer}
+                    key={`${invite.username}-${invite.authType}`}
+                  >
                     <ListGroupItem className={styles.listGroupItem}>
-                      {invite}
+                      {invite.username}
+                      {invite.authType === "DISCORD" && (
+                        <span className={styles.authType}>@DISCORD</span>
+                      )}
                     </ListGroupItem>
                     <CloseButton
                       className={styles.closeButton}

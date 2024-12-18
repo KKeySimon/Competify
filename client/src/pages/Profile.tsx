@@ -15,6 +15,7 @@ function Profile() {
   const [username, setUsername] = useState<string>("");
   const [submissions, setSubmissions] = useState<Submission[]>([]); // To hold the submissions data
   const [wins, setWins] = useState<number>(0);
+  const [authType, setAuthType] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +59,7 @@ function Profile() {
         setUsername(data.username);
         setSubmissions(data.submissions);
         setWins(data.wins);
+        setAuthType(data.authType);
       } catch (error) {
         console.error(error);
       }
@@ -76,7 +78,12 @@ function Profile() {
               alt="Profile"
               className={styles.profilePicture}
             />
-            <h1 className={styles.username}>{username}</h1>
+            <h1 className={styles.username}>
+              {username}
+              {authType && authType !== "EMAIL" && (
+                <span className={styles.authType}>@{authType}</span>
+              )}
+            </h1>
             <div className={styles.winsBox}>
               <span className={styles.trophyEmoji}>🏆</span>
               <span className={styles.winsNumber}>{wins}</span>

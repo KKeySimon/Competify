@@ -1,4 +1,4 @@
-import { Frequency, Priority, competitions } from "@prisma/client";
+import { Frequency, Priority, AuthType, competitions } from "@prisma/client";
 import { Response, NextFunction } from "express";
 import express from "express";
 import asyncHandler from "express-async-handler";
@@ -134,9 +134,17 @@ router.post(
           competition: { connect: { id: createCompetition.id } },
         },
       });
-      const invitePromises = req.body.invites.map(async (invite: string) => {
+      const invitePromises = req.body.invites.map(async (invite) => {
+        if (!Object.values(AuthType).includes(invite.authType as AuthType)) {
+          throw new Error(`Invalid authType: ${invite.authType}`);
+        }
+        const authType = invite.authType as AuthType;
+
         const invitee = await prisma.users.findFirst({
-          where: { username: invite },
+          where: {
+            username: invite.username,
+            auth_type: authType,
+          },
         });
 
         if (!invitee || req.user.id === invitee.id) {
@@ -151,6 +159,12 @@ router.post(
           },
         });
       });
+
+      try {
+        await Promise.all(invitePromises);
+      } catch (error) {
+        res.status(500).json({ message: error });
+      }
       const inviteAllUsers = await Promise.all(invitePromises);
       inviteAllUsers.filter(Boolean);
 
@@ -244,9 +258,17 @@ router.put(
         },
       });
 
-      const invitePromises = req.body.invites.map(async (invite: string) => {
+      const invitePromises = req.body.invites.map(async (invite) => {
+        if (!Object.values(AuthType).includes(invite.authType as AuthType)) {
+          throw new Error(`Invalid authType: ${invite.authType}`);
+        }
+        const authType = invite.authType as AuthType;
+
         const invitee = await prisma.users.findFirst({
-          where: { username: invite },
+          where: {
+            username: invite.username,
+            auth_type: authType,
+          },
         });
 
         if (!invitee || req.user.id === invitee.id) {
@@ -262,8 +284,11 @@ router.put(
         });
       });
 
-      await Promise.all(invitePromises);
-
+      try {
+        await Promise.all(invitePromises);
+      } catch (error) {
+        res.status(500).json({ message: error });
+      }
       const firstUpcomingEvent = await prisma.events.findFirst({
         where: {
           competition_id: updatedCompetition.id,

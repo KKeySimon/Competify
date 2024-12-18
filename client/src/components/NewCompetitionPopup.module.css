@@ -36,11 +36,17 @@
 .plusButton {
   justify-content: center;
   align-items: center;
+  height: 100%;
+  width: auto;
+  margin-left: 10px;
+  border-radius: 5px;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
 }
 
 .plusButton:hover {
   cursor: pointer;
-  color: blue;
+  border-color: rgb(165, 165, 244);
 }
 
 .inviteContainer {
@@ -85,4 +91,8 @@
 
 .deleteCompetitionLink:hover {
   text-decoration: underline;
+}
+
+.authTypeSelect {
+  width: fit-content !important;
 }

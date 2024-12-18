@@ -11,7 +11,7 @@ import { competitions } from "@prisma/client";
 
 export interface CreateCompetition
   extends Omit<competitions, "id" | "created_at" | "updated_at"> {
-  invites: string[];
+  invites: { username: string; authType: string }[];
   startDate: string;
   endDate: string;
   daysOfWeek: number[];

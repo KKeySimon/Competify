@@ -26,7 +26,6 @@ export interface ICompetition {
   created_at: string;
   updated_at: string;
   is_numerical: boolean;
-  invites: string[];
   users_in_competitions: {
     competition_id: number;
     joined_at: Date;
