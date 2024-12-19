@@ -109,10 +109,7 @@ function App() {
             path="/competition/:id"
             element={<Competition isDarkMode={isDarkMode} />}
           />
-          <Route
-            path="/profile/:id"
-            element={<Profile isDarkMode={isDarkMode} />}
-          />
+          <Route path="/profile/:id" element={<Profile />} />
           <Route path="*" element={<PageNotFound />} />
           <Route
             path="/competition/:competitionId/events/:eventId"
