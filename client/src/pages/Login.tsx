@@ -11,7 +11,11 @@ interface LoginError {
   apiError: string;
 }
 
-function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
+function Login({
+  isLoggedIn,
+  setIsLoggedIn,
+  isDarkMode,
+}: LoginProps & { isDarkMode: boolean }) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errors, setErrors] = useState<LoginError>({
@@ -80,13 +84,15 @@ function Login({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   }
 
   return (
-    <div className={styles.background}>
-      <div className={styles.container}>
+    <div className={`${styles.background}`}>
+      <div
+        className={`${styles.container} ${isDarkMode ? styles.darkMode : ""}`}
+      >
         <h1 className={styles.logo}>Competify</h1>
         <div className={styles.forms}>
           <h1 className={styles.login}>Login</h1>
           {errors.apiError && <Alert variant="danger">{errors.apiError}</Alert>}
-          <Form onSubmit={handleLogin}>
+          <Form onSubmit={handleLogin} data-bs-theme={isDarkMode && "dark"}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control

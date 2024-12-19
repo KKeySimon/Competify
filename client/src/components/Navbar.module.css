@@ -12,6 +12,8 @@
   z-index: 1000;
   border-bottom: 2px solid rgb(225, 225, 225);
   cursor: default;
+  transition: background-color 0.5s ease, color 0.5s ease,
+    border-bottom 0.5 ease;
 }
 
 .navbar a {
@@ -27,7 +29,7 @@
 .active {
   background-color: rgb(214, 242, 241);
   font-weight: bold;
-  color: #646cff !important;
+  color: #646cff;
 }
 
 .bell {
@@ -97,4 +99,24 @@
   top: 5%;
   /* No idea why setting this to left 5% moves the number to the right... */
   left: 5%;
+}
+
+.navbar.darkMode {
+  background-color: #333;
+  color: white;
+  border-bottom: 2px solid #444;
+}
+
+.navbar a.darkMode {
+  color: lightgray;
+}
+
+.navbar a.darkMode:hover {
+  background-color: #555;
+  color: white;
+}
+
+.navbar a.active.darkMode {
+  background-color: rgba(100, 100, 100, 0.5);
+  color: white;
 }

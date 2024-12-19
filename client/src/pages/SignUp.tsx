@@ -15,7 +15,10 @@ interface SignUpProps {
   isLoggedIn: boolean;
 }
 
-function SignUp({ isLoggedIn }: SignUpProps) {
+function SignUp({
+  isLoggedIn,
+  isDarkMode,
+}: SignUpProps & { isDarkMode: boolean }) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -115,7 +118,9 @@ function SignUp({ isLoggedIn }: SignUpProps) {
 
   return (
     <div className={styles.background}>
-      <div className={styles.container}>
+      <div
+        className={`${styles.container} ${isDarkMode ? styles.darkMode : ""}`}
+      >
         <h1 className={styles.logo}>Competify</h1>
         <div className={styles.forms}>
           <h1 className={styles.signup}>Sign Up</h1>
@@ -126,7 +131,7 @@ function SignUp({ isLoggedIn }: SignUpProps) {
             </Alert>
           )}
 
-          <Form onSubmit={handleSignUp}>
+          <Form onSubmit={handleSignUp} data-bs-theme={isDarkMode && "dark"}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control

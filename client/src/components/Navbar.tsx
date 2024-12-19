@@ -1,12 +1,17 @@
 import { Link, useLocation } from "react-router-dom";
-import { LoginProps, Invite } from "../../types";
+import { Invite, NavbarProps } from "../../types";
 import styles from "./Navbar.module.css";
-import { Bell } from "react-bootstrap-icons";
+import { Bell, Sun, Moon } from "react-bootstrap-icons";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NotificationsPopup from "./NotificationsPopup";
 
-function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
+function Navbar({
+  isLoggedIn,
+  setIsLoggedIn,
+  isDarkMode,
+  toggleDarkMode,
+}: NavbarProps) {
   const [bellClicked, setBellClicked] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Invite[]>([]);
   const [profilePicture, setProfilePicture] = useState<string>("");
@@ -101,54 +106,71 @@ function Navbar({ isLoggedIn, setIsLoggedIn }: LoginProps) {
   };
 
   return (
-    <div className={styles.navbar}>
-      <Link to="/" className={location.pathname === "/" ? styles.active : ""}>
+    <div className={`${styles.navbar} ${isDarkMode ? styles.darkMode : ""}`}>
+      <Link
+        to="/"
+        className={`${location.pathname === "/" ? styles.active : ""} ${
+          isDarkMode ? styles.darkMode : ""
+        }`}
+      >
         Home
       </Link>
       <Link
         to="/competition"
-        className={location.pathname === "/competition" ? styles.active : ""}
+        className={`${
+          location.pathname === "/competition" ? styles.active : ""
+        } ${isDarkMode ? styles.darkMode : ""}`}
       >
         Competitions
       </Link>
-      {isLoggedIn ? (
-        <div ref={dropdownRef} className={styles.logoutNotif}>
-          <Bell
-            onClick={() => {
-              setBellClicked(!bellClicked);
-            }}
-            className={styles.bell}
-          />
-          {notifications.length > 0 && (
-            <span className={styles.notificationCount}>
-              {notifications.length}
-            </span>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <button
+          onClick={toggleDarkMode}
+          style={{ backgroundColor: "transparent", border: "none" }}
+        >
+          {!isDarkMode ? <Sun /> : <Moon style={{ color: "white" }} />}
+        </button>
+        <div>
+          {isLoggedIn ? (
+            <div ref={dropdownRef} className={styles.logoutNotif}>
+              <Bell
+                onClick={() => {
+                  setBellClicked(!bellClicked);
+                }}
+                className={styles.bell}
+              />
+              {notifications.length > 0 && (
+                <span className={styles.notificationCount}>
+                  {notifications.length}
+                </span>
+              )}
+
+              <NotificationsPopup
+                notifications={notifications}
+                bellClicked={bellClicked}
+                removeNotification={removeNotification}
+              />
+
+              <button
+                onClick={() => {
+                  navigate(`/profile/${userId}`);
+                }}
+                className={styles.profileButton}
+              >
+                <img
+                  className={styles.profilePicture}
+                  src={profilePicture}
+                  alt="Profile"
+                />
+              </button>
+
+              <a onClick={handleLogout}>Logout</a>
+            </div>
+          ) : (
+            <a onClick={() => navigate("/login")}>Login</a>
           )}
-
-          <NotificationsPopup
-            notifications={notifications}
-            bellClicked={bellClicked}
-            removeNotification={removeNotification}
-          />
-
-          <button
-            onClick={() => {
-              navigate(`/profile/${userId}`);
-            }}
-            className={styles.profileButton}
-          >
-            <img
-              className={styles.profilePicture}
-              src={profilePicture}
-              alt="Profile"
-            />
-          </button>
-
-          <a onClick={handleLogout}>Logout</a>
         </div>
-      ) : (
-        <Link to="/login">Login</Link>
-      )}
+      </div>
     </div>
   );
 }

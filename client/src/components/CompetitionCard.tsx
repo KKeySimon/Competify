@@ -7,13 +7,18 @@ function CompetitionCard({
   createdBy,
   profilePictureUrl,
   createdAt,
-}: Competition) {
+  isDarkMode,
+}: Competition & { isDarkMode: boolean }) {
   const joinDate = new Date(joinedAt);
   const localJoinDate = joinDate.toLocaleDateString();
   const localCreateDate = new Date(createdAt).toLocaleDateString();
 
   return (
-    <div className={styles.card}>
+    <div
+      className={`${styles.card} ${
+        isDarkMode ? styles.darkCard : styles.lightCard
+      }`}
+    >
       <div className={styles.header}>
         <h3>{name}</h3>
         <div className={styles.createdBy}>

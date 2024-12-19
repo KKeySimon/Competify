@@ -1,7 +1,6 @@
 .background {
   /* Height is set to 95vh as navbar should take up 5vh */
   width: 100vw;
-  background-color: rgb(248, 250, 252);
   height: 100%;
   display: flex;
   justify-content: center;
@@ -36,9 +35,20 @@
 }
 
 .registerButton {
-  background-color: #6c56f9;
+  background-color: #6c56f9; /* Vibrant purple */
+  color: white; /* High contrast text */
+  padding: 0.75em 1.5em; /* Better spacing for readability */
+  border-radius: 12px; /* Softer corners */
+  font-weight: 600; /* Bold text */
+  font-size: 1rem; /* Readable text size */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  border: none; /* Clean look */
+  cursor: pointer; /* Interactive cursor */
   width: fit-content;
-  padding: 0.5em;
-  border-radius: 8px;
-  color: white;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+}
+
+.registerButton:hover {
+  background-color: #5a44d1; /* Slightly darker shade on hover */
+  transform: scale(1.05); /* Slight enlargement */
 }

@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import styles from "./Profile.module.css";
 import { Submission } from "../../types";
 
-function Profile() {
+function Profile({ isDarkMode }: { isDarkMode: boolean }) {
   const { id } = useParams();
   const [file, setFile] = useState<File | null>(null);
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(
@@ -69,7 +69,7 @@ function Profile() {
   }, [id]);
 
   return (
-    <div className={styles.profilePage}>
+    <div className={`${styles.profilePage}`}>
       {profilePictureUrl && (
         <div className={styles.profileContainer}>
           <div className={styles.profileInfo}>

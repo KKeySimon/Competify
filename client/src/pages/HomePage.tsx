@@ -2,6 +2,7 @@ import styles from "./HomePage.module.css";
 import Typed from "typed.js";
 import { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Trophy } from "react-bootstrap-icons";
 
 function HomePage() {
   const el = useRef(null);
@@ -55,11 +56,7 @@ function HomePage() {
               Register
             </button>
           </div>
-          <img
-            src={
-              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcreazilla-store.fra1.digitaloceanspaces.com%2Ficons%2F3430150%2Faward-trophy-icon-md.png&f=1&nofb=1&ipt=d03f1ae47a21087c12e6583be39810a91981cd2c14a7698387cc70a525a23bda&ipo=images"
-            }
-          />
+          <Trophy size={150} />
         </div>
         {/* <div>
           <h3>Competify Features</h3>

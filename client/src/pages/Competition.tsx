@@ -7,7 +7,7 @@ import NewCompetitionPopup from "../components/NewCompetitionPopup";
 import styles from "./Competition.module.css";
 import { formatDistanceToNow } from "date-fns";
 
-function Competition() {
+function Competition({ isDarkMode }: { isDarkMode: boolean }) {
   interface Event {
     competition_id: number;
     id: number;
@@ -314,94 +314,153 @@ function Competition() {
   }
 
   return (
-    <div className={styles.window}>
-      {competition && (
-        <div className={styles.container}>
-          <div className={styles.contents}>
-            <div className={styles.header}>
-              <h1>{competition.name}</h1>
-              {competition && competition.user_id === userId && (
-                <button
-                  className={styles.gear}
-                  onClick={() => setPopupTrigger(true)}
-                >
-                  ⚙️
-                </button>
-              )}
-            </div>
+    <div className={isDarkMode ? styles.darkMode : ""}>
+      <div className={styles.window}>
+        {competition && (
+          <div className={styles.container}>
+            <div className={styles.contents}>
+              <div className={styles.header}>
+                <h1>{competition.name}</h1>
+                {competition && competition.user_id === userId && (
+                  <button
+                    className={styles.gear}
+                    onClick={() => setPopupTrigger(true)}
+                  >
+                    ⚙️
+                  </button>
+                )}
+              </div>
 
-            <div className={styles.description}>
-              <h6>Description</h6>
-              <p>
-                {competition.description
-                  ? competition.description
-                  : "No description"}
-              </p>
-            </div>
-            <div className={styles.popupContainer}>
-              {popupTrigger && (
-                <NewCompetitionPopup
-                  trigger={popupTrigger}
-                  setTrigger={setPopupTrigger}
-                  competitionData={competition}
-                />
-              )}
-            </div>
+              <div className={styles.description}>
+                <h6>Description</h6>
+                <p>
+                  {competition.description
+                    ? competition.description
+                    : "No description"}
+                </p>
+              </div>
+              <div className={styles.popupContainer}>
+                {popupTrigger && (
+                  <NewCompetitionPopup
+                    trigger={popupTrigger}
+                    setTrigger={setPopupTrigger}
+                    competitionData={competition}
+                    isDarkMode={isDarkMode}
+                  />
+                )}
+              </div>
 
-            {upcoming ? (
-              <div className={styles.leaderboard}>
-                <div className={styles.deadline}>
-                  <p className={styles.countdown}>
-                    Upcoming Deadline:
-                    <span className={styles.timeUnit}>
-                      {timeLeft && (
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                          }}
-                        >
-                          <div>{new Date(upcoming.date).toLocaleString()}</div>
-                          <div>
-                            {timeLeft.days}
-                            <span className={styles.label}>days</span>
-                            {timeLeft.hours}
-                            <span className={styles.label}>hours</span>
-                            {timeLeft.minutes}
-                            <span className={styles.label}>minutes</span>
-                            {timeLeft.seconds}
-                            <span className={styles.label}>seconds</span>
+              {upcoming ? (
+                <div className={styles.leaderboard}>
+                  <div className={styles.deadline}>
+                    <p className={styles.countdown}>
+                      Upcoming Deadline:
+                      <span className={styles.timeUnit}>
+                        {timeLeft && (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
+                          >
+                            <div>
+                              {new Date(upcoming.date).toLocaleString()}
+                            </div>
+                            <div>
+                              {timeLeft.days}
+                              <span className={styles.label}>days</span>
+                              {timeLeft.hours}
+                              <span className={styles.label}>hours</span>
+                              {timeLeft.minutes}
+                              <span className={styles.label}>minutes</span>
+                              {timeLeft.seconds}
+                              <span className={styles.label}>seconds</span>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </span>
-                  </p>
-                </div>
-                <button
-                  className={styles.submitButton}
-                  onClick={() => setTrigger(true)}
-                >
-                  Create/Update Submission
-                </button>
-                <SubmissionPopup
-                  trigger={trigger}
-                  setTrigger={setTrigger}
-                  isNumerical={competition.is_numerical}
-                  eventId={upcoming?.id}
-                  handleSubmitSubmission={handleSubmitSubmission}
-                />
-                <h4>Leaderboard</h4>
-                <ul>
-                  {upcoming.is_numerical
-                    ? submissions
-                        .sort((a, b) => {
-                          if (upcoming.priority === "HIGHEST") {
-                            return b.content_number - a.content_number; // Sort descending
-                          } else {
-                            return a.content_number - b.content_number; // Sort ascending
-                          }
-                        })
-                        .map((sortedSubmission, index) => {
+                        )}
+                      </span>
+                    </p>
+                  </div>
+                  <button
+                    className={styles.submitButton}
+                    onClick={() => setTrigger(true)}
+                  >
+                    Create/Update Submission
+                  </button>
+                  <SubmissionPopup
+                    trigger={trigger}
+                    setTrigger={setTrigger}
+                    isNumerical={competition.is_numerical}
+                    eventId={upcoming?.id}
+                    handleSubmitSubmission={handleSubmitSubmission}
+                  />
+                  <h4>Leaderboard</h4>
+                  <ul>
+                    {upcoming.is_numerical
+                      ? submissions
+                          .sort((a, b) => {
+                            if (upcoming.priority === "HIGHEST") {
+                              return b.content_number - a.content_number; // Sort descending
+                            } else {
+                              return a.content_number - b.content_number; // Sort ascending
+                            }
+                          })
+                          .map((sortedSubmission, index) => {
+                            let rankColor;
+                            switch (index) {
+                              case 0:
+                                rankColor = styles.gold;
+                                break;
+                              case 1:
+                                rankColor = styles.silver;
+                                break;
+                              case 2:
+                                rankColor = styles.bronze;
+                                break;
+                              default:
+                                rankColor = styles.defaultRank;
+                            }
+                            return (
+                              <li
+                                key={sortedSubmission.id}
+                                className={`${styles.submission} ${styles.separator}`}
+                              >
+                                <div className={styles.submissionHeader}>
+                                  <span
+                                    className={`${styles.rankNumber} ${rankColor}`}
+                                  >
+                                    {index + 1}
+                                  </span>
+                                  <div className={styles.created}>
+                                    <img
+                                      src={
+                                        sortedSubmission.belongs_to
+                                          .profile_picture_url
+                                      }
+                                    />
+                                    <div>
+                                      <h5>
+                                        {sortedSubmission.belongs_to.username}
+                                      </h5>
+                                      <h6>
+                                        Created:{" "}
+                                        {new Date(
+                                          sortedSubmission.created_at
+                                        ).toLocaleString()}
+                                      </h6>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div>
+                                  <span className={styles.submissionBadge}>
+                                    1️⃣ Numeric Submission
+                                  </span>
+                                  <p>{sortedSubmission.content_number}</p>
+                                </div>
+                              </li>
+                            );
+                          })
+                      : submissions.map((textSubmission, index) => {
                           let rankColor;
                           switch (index) {
                             case 0:
@@ -418,7 +477,7 @@ function Competition() {
                           }
                           return (
                             <li
-                              key={sortedSubmission.id}
+                              key={textSubmission.id}
                               className={`${styles.submission} ${styles.separator}`}
                             >
                               <div className={styles.submissionHeader}>
@@ -430,261 +489,255 @@ function Competition() {
                                 <div className={styles.created}>
                                   <img
                                     src={
-                                      sortedSubmission.belongs_to
+                                      textSubmission.belongs_to
                                         .profile_picture_url
                                     }
                                   />
                                   <div>
                                     <h5>
-                                      {sortedSubmission.belongs_to.username}
+                                      {textSubmission.belongs_to.username}
                                     </h5>
                                     <h6>
                                       Created:{" "}
                                       {new Date(
-                                        sortedSubmission.created_at
+                                        textSubmission.created_at
                                       ).toLocaleString()}
                                     </h6>
                                   </div>
                                 </div>
+                                <button
+                                  onClick={() =>
+                                    handleUpvote(textSubmission.id)
+                                  }
+                                  className={`${styles.thumbsUp} ${
+                                    hasVoted[textSubmission.id]
+                                      ? styles.highlighted
+                                      : styles.regular
+                                  }`}
+                                >
+                                  <span>👍 {textSubmission.vote_count}</span>
+                                </button>
                               </div>
                               <div>
-                                <span className={styles.submissionBadge}>
-                                  1️⃣ Numeric Submission
-                                </span>
-                                <p>{sortedSubmission.content_number}</p>
+                                {textSubmission.submission_type === "TEXT" && (
+                                  <>
+                                    <span className={styles.submissionBadge}>
+                                      📰 Text Submission
+                                    </span>
+                                    <p>{textSubmission.content}</p>
+                                  </>
+                                )}
+                                {textSubmission.submission_type === "URL" && (
+                                  <>
+                                    <span className={styles.submissionBadge}>
+                                      🔗 URL Submission
+                                    </span>
+                                    <a
+                                      href={textSubmission.content}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {textSubmission.content}
+                                    </a>
+                                  </>
+                                )}
+                                {textSubmission.submission_type ===
+                                  "IMAGE_URL" && (
+                                  <>
+                                    <span className={styles.submissionBadge}>
+                                      🖼️ Image Submission
+                                    </span>
+                                    <img
+                                      src={textSubmission.content}
+                                      alt="Submitted content"
+                                      className={styles.imageContent}
+                                    />
+                                  </>
+                                )}
                               </div>
                             </li>
                           );
-                        })
-                    : submissions.map((textSubmission, index) => {
-                        let rankColor;
-                        switch (index) {
-                          case 0:
-                            rankColor = styles.gold;
-                            break;
-                          case 1:
-                            rankColor = styles.silver;
-                            break;
-                          case 2:
-                            rankColor = styles.bronze;
-                            break;
-                          default:
-                            rankColor = styles.defaultRank;
-                        }
-                        return (
-                          <li
-                            key={textSubmission.id}
-                            className={`${styles.submission} ${styles.separator}`}
-                          >
-                            <div className={styles.submissionHeader}>
-                              <span
-                                className={`${styles.rankNumber} ${rankColor}`}
-                              >
-                                {index + 1}
-                              </span>
-                              <div className={styles.created}>
-                                <img
-                                  src={
-                                    textSubmission.belongs_to
-                                      .profile_picture_url
-                                  }
-                                />
-                                <div>
-                                  <h5>{textSubmission.belongs_to.username}</h5>
-                                  <h6>
-                                    Created:{" "}
-                                    {new Date(
-                                      textSubmission.created_at
-                                    ).toLocaleString()}
-                                  </h6>
-                                </div>
-                              </div>
-                              <button
-                                onClick={() => handleUpvote(textSubmission.id)}
-                                className={`${styles.thumbsUp} ${
-                                  hasVoted[textSubmission.id]
-                                    ? styles.highlighted
-                                    : styles.regular
-                                }`}
-                              >
-                                <span>👍 {textSubmission.vote_count}</span>
-                              </button>
-                            </div>
-                            <div>
-                              {textSubmission.submission_type === "TEXT" && (
-                                <>
-                                  <span className={styles.submissionBadge}>
-                                    📰 Text Submission
-                                  </span>
-                                  <p>{textSubmission.content}</p>
-                                </>
-                              )}
-                              {textSubmission.submission_type === "URL" && (
-                                <>
-                                  <span className={styles.submissionBadge}>
-                                    🔗 URL Submission
-                                  </span>
-                                  <a
-                                    href={textSubmission.content}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {textSubmission.content}
-                                  </a>
-                                </>
-                              )}
-                              {textSubmission.submission_type ===
-                                "IMAGE_URL" && (
-                                <>
-                                  <span className={styles.submissionBadge}>
-                                    🖼️ Image Submission
-                                  </span>
-                                  <img
-                                    src={textSubmission.content}
-                                    alt="Submitted content"
-                                    className={styles.imageContent}
-                                  />
-                                </>
-                              )}
-                            </div>
-                          </li>
-                        );
-                      })}
-                </ul>
-              </div>
-            ) : (
-              <div className={styles.competitionOver}>
-                Competition Over! Contact the competition creator if you believe
-                this is incorrect.
-              </div>
-            )}
-
-            <div className={styles.previousEvents}>
-              <h3>Previous Competitions</h3>
-              {previousEvents.length > 0 ? (
-                <div className={styles.eventList}>
-                  {previousEvents.map((event) => (
-                    <button
-                      key={event.id}
-                      className={styles.eventButton}
-                      onClick={() => {
-                        navigate(`/competition/${id}/events/${event.id}`);
-                      }}
-                    >
-                      <div className={styles.eventCard}>
-                        <div className={styles.eventHeader}>
-                          <h4>{event.date.toLocaleDateString()}</h4>
-                          <span>
-                            Winner:{" "}
-                            {event.winner ? (
-                              <strong className={styles.winnerName}>
-                                {event.winner.username}
-                              </strong>
-                            ) : (
-                              <span>No winner</span>
-                            )}
-                          </span>
-                        </div>
-                        <ul className={styles.submissionsList}>
-                          {event.submissions
-                            .slice(0, 3)
-                            .map((submission, index) => {
-                              let rankColor;
-                              switch (index) {
-                                case 0:
-                                  rankColor = styles.gold;
-                                  break;
-                                case 1:
-                                  rankColor = styles.silver;
-                                  break;
-                                case 2:
-                                  rankColor = styles.bronze;
-                                  break;
-                                default:
-                                  rankColor = styles.defaultRank;
-                              }
-                              return (
-                                <li
-                                  key={submission.id}
-                                  className={styles.submissionItem}
-                                >
-                                  <span
-                                    className={`${styles.rankNumber} ${rankColor}`}
-                                  >
-                                    {index + 1}
-                                  </span>
-                                  <div className={styles.submissionInfo}>
-                                    <Image
-                                      className={styles.profilePicture}
-                                      src={
-                                        submission.belongs_to
-                                          .profile_picture_url
-                                      }
-                                    />
-                                    <span>
-                                      {submission.belongs_to.username}
-                                    </span>
-                                  </div>
-                                  <div className={styles.submissionContent}>
-                                    {submission.submission_type === "TEXT" && (
-                                      <p>{submission.content}</p>
-                                    )}
-                                    {submission.submission_type === "URL" && (
-                                      <a
-                                        href={submission.content}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                      >
-                                        {submission.content}
-                                      </a>
-                                    )}
-                                    {submission.submission_type ===
-                                      "IMAGE_URL" && (
-                                      <img
-                                        src={submission.content}
-                                        alt="Submitted content"
-                                        className={styles.imageContent}
-                                      />
-                                    )}
-                                  </div>
-                                </li>
-                              );
-                            })}
-                        </ul>
-                      </div>
-                    </button>
-                  ))}
+                        })}
+                  </ul>
                 </div>
               ) : (
-                <p>No previous competitions available.</p>
+                <div className={styles.competitionOver}>
+                  Competition Over! Contact the competition creator if you
+                  believe this is incorrect.
+                </div>
               )}
+
+              <div className={styles.previousEvents}>
+                <h3>Previous Competitions</h3>
+                {previousEvents.length > 0 ? (
+                  <div className={styles.eventList}>
+                    {previousEvents.map((event) => (
+                      <button
+                        key={event.id}
+                        className={styles.eventButton}
+                        onClick={() => {
+                          navigate(`/competition/${id}/events/${event.id}`);
+                        }}
+                      >
+                        <div className={styles.eventCard}>
+                          <div className={styles.eventHeader}>
+                            <h4>{event.date.toLocaleDateString()}</h4>
+                            <span>
+                              Winner:{" "}
+                              {event.winner ? (
+                                <strong className={styles.winnerName}>
+                                  {event.winner.username}
+                                </strong>
+                              ) : (
+                                <span>No winner</span>
+                              )}
+                            </span>
+                          </div>
+                          <ul className={styles.submissionsList}>
+                            {event.submissions
+                              .slice(0, 3)
+                              .map((submission, index) => {
+                                let rankColor;
+                                switch (index) {
+                                  case 0:
+                                    rankColor = styles.gold;
+                                    break;
+                                  case 1:
+                                    rankColor = styles.silver;
+                                    break;
+                                  case 2:
+                                    rankColor = styles.bronze;
+                                    break;
+                                  default:
+                                    rankColor = styles.defaultRank;
+                                }
+                                return (
+                                  <li
+                                    key={submission.id}
+                                    className={styles.submissionItem}
+                                  >
+                                    <span
+                                      className={`${styles.rankNumber} ${rankColor}`}
+                                    >
+                                      {index + 1}
+                                    </span>
+                                    <div className={styles.submissionInfo}>
+                                      <Image
+                                        className={styles.profilePicture}
+                                        src={
+                                          submission.belongs_to
+                                            .profile_picture_url
+                                        }
+                                      />
+                                      <span>
+                                        {submission.belongs_to.username}
+                                      </span>
+                                    </div>
+                                    <div className={styles.submissionContent}>
+                                      {submission.submission_type ===
+                                        "TEXT" && <p>{submission.content}</p>}
+                                      {submission.submission_type === "URL" && (
+                                        <a
+                                          href={submission.content}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                        >
+                                          {submission.content}
+                                        </a>
+                                      )}
+                                      {submission.submission_type ===
+                                        "IMAGE_URL" && (
+                                        <img
+                                          src={submission.content}
+                                          alt="Submitted content"
+                                          className={styles.imageContent}
+                                        />
+                                      )}
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                          </ul>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p>No previous competitions available.</p>
+                )}
+              </div>
             </div>
-          </div>
-          <div className={styles.participants}>
-            <h3>Users</h3>
-            <ul>
-              <div className={styles.userList}>
-                {competition.users_in_competitions
-                  .filter((uic) =>
-                    submissions.some(
-                      (submission) => submission.user_id === uic.user.id
+            <div className={styles.participants}>
+              <h3>Users</h3>
+              <ul>
+                <div className={styles.userList}>
+                  {competition.users_in_competitions
+                    .filter((uic) =>
+                      submissions.some(
+                        (submission) => submission.user_id === uic.user.id
+                      )
+                    ) // Users with submissions
+                    .map((uic) => {
+                      const userSubmissions = submissions.filter(
+                        (submission) => submission.user_id === uic.user.id
+                      );
+                      return (
+                        <div
+                          onClick={() => navigate(`/profile/${uic.user.id}`)}
+                          className={styles.userContainer}
+                        >
+                          <li key={uic.user.id}>
+                            <span
+                              style={{
+                                color: "green", // Always green for users with submissions
+                              }}
+                            >
+                              {uic.user.username}
+                              {competition.created_by.username ===
+                                uic.user.username && (
+                                <span
+                                  role="img"
+                                  aria-label="crown"
+                                  style={{ marginLeft: "5px" }}
+                                >
+                                  👑
+                                </span>
+                              )}
+                            </span>
+                            <img
+                              className={styles.profilePicture}
+                              src={uic.user.profile_picture_url}
+                            />
+                            <span>
+                              {userSubmissions.map((submission) => (
+                                <span key={submission.id}>
+                                  {` - Submitted ${formatDistanceToNow(
+                                    new Date(submission.created_at),
+                                    { addSuffix: true }
+                                  )}`}
+                                </span>
+                              ))}
+                            </span>
+                          </li>
+                        </div>
+                      );
+                    })}
+                </div>
+                <div className={styles.userList}>
+                  {competition.users_in_competitions
+                    .filter(
+                      (uic) =>
+                        !submissions.some(
+                          (submission) => submission.user_id === uic.user.id
+                        )
                     )
-                  ) // Users with submissions
-                  .map((uic) => {
-                    const userSubmissions = submissions.filter(
-                      (submission) => submission.user_id === uic.user.id
-                    );
-                    return (
+                    .map((uic) => (
                       <div
                         onClick={() => navigate(`/profile/${uic.user.id}`)}
                         className={styles.userContainer}
                       >
                         <li key={uic.user.id}>
-                          <span
-                            style={{
-                              color: "green", // Always green for users with submissions
-                            }}
-                          >
+                          <span>
                             {uic.user.username}
                             {competition.created_by.username ===
                               uic.user.username && (
@@ -701,86 +754,37 @@ function Competition() {
                             className={styles.profilePicture}
                             src={uic.user.profile_picture_url}
                           />
-                          <span>
-                            {userSubmissions.map((submission) => (
-                              <span key={submission.id}>
-                                {` - Submitted ${formatDistanceToNow(
-                                  new Date(submission.created_at),
-                                  { addSuffix: true }
-                                )}`}
-                              </span>
-                            ))}
-                          </span>
                         </li>
                       </div>
-                    );
-                  })}
-              </div>
-              <div className={styles.userList}>
-                {competition.users_in_competitions
-                  .filter(
-                    (uic) =>
-                      !submissions.some(
-                        (submission) => submission.user_id === uic.user.id
-                      )
-                  )
-                  .map((uic) => (
-                    <div
-                      onClick={() => navigate(`/profile/${uic.user.id}`)}
-                      className={styles.userContainer}
+                    ))}
+                </div>
+              </ul>
+              <h5 style={{ marginTop: "20px" }}>Pending Invites</h5>
+              <ul>
+                {invites.length > 0 ? (
+                  invites.map((invite) => (
+                    <li
+                      key={invite.invitee.id}
+                      className={styles.inviteContainer}
                     >
-                      <li key={uic.user.id}>
-                        <span
-                          style={{
-                            color: "black",
-                          }}
-                        >
-                          {uic.user.username}
-                          {competition.created_by.username ===
-                            uic.user.username && (
-                            <span
-                              role="img"
-                              aria-label="crown"
-                              style={{ marginLeft: "5px" }}
-                            >
-                              👑
-                            </span>
-                          )}
-                        </span>
-                        <img
-                          className={styles.profilePicture}
-                          src={uic.user.profile_picture_url}
-                        />
-                      </li>
-                    </div>
-                  ))}
-              </div>
-            </ul>
-            <h5 style={{ marginTop: "20px" }}>Pending Invites</h5>
-            <ul>
-              {invites.length > 0 ? (
-                invites.map((invite) => (
-                  <li
-                    key={invite.invitee.id}
-                    className={styles.inviteContainer}
-                  >
-                    <span style={{ color: "black" }}>
-                      {invite.invitee.username}
-                    </span>
-                    <img
-                      className={styles.profilePicture}
-                      src={invite.invitee.profile_picture_url}
-                      alt={`${invite.invitee.username}'s profile`}
-                    />
-                  </li>
-                ))
-              ) : (
-                <p>No pending invites</p>
-              )}
-            </ul>
+                      <span style={{ color: "black" }}>
+                        {invite.invitee.username}
+                      </span>
+                      <img
+                        className={styles.profilePicture}
+                        src={invite.invitee.profile_picture_url}
+                        alt={`${invite.invitee.username}'s profile`}
+                      />
+                    </li>
+                  ))
+                ) : (
+                  <p>No pending invites</p>
+                )}
+              </ul>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

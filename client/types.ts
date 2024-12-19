@@ -3,6 +3,13 @@ export interface LoginProps {
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+export interface NavbarProps {
+  isLoggedIn: boolean;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+}
+
 export interface Competition {
   userId: number;
   joinedAt: string;

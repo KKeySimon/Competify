@@ -31,7 +31,8 @@ function NewCompetitionPopup({
   trigger,
   setTrigger,
   competitionData,
-}: NewCompetitionPopupProps) {
+  isDarkMode,
+}: NewCompetitionPopupProps & { isDarkMode: boolean }) {
   const [errors, setErrors] = useState<newCompetitionError>({
     name: "",
     apiError: "",
@@ -304,7 +305,10 @@ function NewCompetitionPopup({
   };
 
   return trigger ? (
-    <div className={styles.overlay} onClick={() => setTrigger(false)}>
+    <div
+      className={`${styles.overlay} ${isDarkMode ? styles.darkMode : ""}`}
+      onClick={() => setTrigger(false)}
+    >
       <div
         className={styles.container}
         onClick={(e) => {
@@ -316,7 +320,10 @@ function NewCompetitionPopup({
             e.stopPropagation();
           }}
         >
-          <CloseButton onClick={() => setTrigger(false)} />
+          <CloseButton
+            color={isDarkMode ? "white" : "black"}
+            onClick={() => setTrigger(false)}
+          />
           <h1 className={styles.prompt}>
             {competitionData
               ? "Update Competition"
@@ -331,7 +338,10 @@ function NewCompetitionPopup({
           )}
           {deleteSuccess && <Alert variant="success">{deleteSuccess}</Alert>}
           {deleteError && <Alert variant="danger">{deleteError}</Alert>}
-          <Form onSubmit={handleCreateCompetition}>
+          <Form
+            onSubmit={handleCreateCompetition}
+            data-bs-theme={isDarkMode && "dark"}
+          >
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Name</Form.Label>
               <Form.Control

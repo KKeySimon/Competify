@@ -10,7 +10,10 @@ interface CompetitionsListProps {
   isLoggedIn: boolean;
 }
 
-function CompetitionsList({ isLoggedIn }: CompetitionsListProps) {
+function CompetitionsList({
+  isLoggedIn,
+  isDarkMode,
+}: CompetitionsListProps & { isDarkMode: boolean }) {
   const [trigger, setTrigger] = useState(false);
   const [competitions, setCompetitions] = useState<Competition[]>([]);
 
@@ -45,7 +48,11 @@ function CompetitionsList({ isLoggedIn }: CompetitionsListProps) {
         <h1>Competition</h1>
         <Button onClick={() => setTrigger(true)}>New Competition</Button>
       </div>
-      <NewCompetitionPopup trigger={trigger} setTrigger={setTrigger} />
+      <NewCompetitionPopup
+        trigger={trigger}
+        setTrigger={setTrigger}
+        isDarkMode={isDarkMode}
+      />
       <ul className={styles.list}>
         {competitions.map((competition) => (
           <Link
@@ -61,6 +68,7 @@ function CompetitionsList({ isLoggedIn }: CompetitionsListProps) {
               createdBy={competition.createdBy}
               profilePictureUrl={competition.profilePictureUrl}
               createdAt={competition.createdAt}
+              isDarkMode={isDarkMode}
             />
           </Link>
         ))}
