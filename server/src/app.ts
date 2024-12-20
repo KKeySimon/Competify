@@ -1,5 +1,9 @@
 require("dotenv").config();
 
+import { startDiscordBot } from "./discord";
+
+startDiscordBot();
+
 import express from "express";
 import session from "express-session";
 const pgSession = require("connect-pg-simple")(session);
