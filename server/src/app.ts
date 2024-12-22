@@ -1,7 +1,11 @@
 require("dotenv").config();
 
 import { startDiscordBot } from "./discord/discord";
-startDiscordBot();
+if (process.env.NODE_ENV !== "production") {
+  startDiscordBot();
+} else {
+  console.log("Discord bot not started in production environment.");
+}
 
 import express from "express";
 import session from "express-session";
