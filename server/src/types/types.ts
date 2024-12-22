@@ -27,3 +27,14 @@ export interface HandleInvite extends Omit<invites, "sent_at" | "invitee_id"> {}
 export interface CreateSubmissions {
   content: string;
 }
+
+import { Client, Collection } from "discord.js";
+
+export class BotClient extends Client {
+  commands: Collection<string, any>;
+
+  constructor(options) {
+    super(options);
+    this.commands = new Collection();
+  }
+}

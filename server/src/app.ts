@@ -1,7 +1,6 @@
 require("dotenv").config();
 
-import { startDiscordBot } from "./discord";
-
+import { startDiscordBot } from "./discord/discord";
 startDiscordBot();
 
 import express from "express";
