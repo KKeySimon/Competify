@@ -247,6 +247,13 @@ router.post(
     let submissionNumber;
     if (event.is_numerical) {
       submissionNumber = parseInt(submissionText, 10);
+    } else {
+      if (submissionText.length > 200) {
+        res
+          .status(400)
+          .json({ message: "Submission exceeds max length (200)." });
+        return;
+      }
     }
 
     const existingSubmission = await prisma.submissions.findUnique({
