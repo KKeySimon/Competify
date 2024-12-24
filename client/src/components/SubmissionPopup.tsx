@@ -42,11 +42,11 @@ function SubmissionPopup({
         body: JSON.stringify({ content: { submission, inputType } }),
       }
     )
-      .then((response) => {
+      .then(async (response) => {
         if (!response.ok) {
           // TODO : Update other errors to include this
           // TODO: errorMessage has not been tested yet.
-          const errorMessage = response.text();
+          const errorMessage = await response.text();
           const errorCode = response.status;
           throw new Error(
             `Submission Error! Code: ${errorCode}, Message: ${errorMessage}`

@@ -70,10 +70,16 @@ router.post("/sign-up", async (req, res, next) => {
     );
     return res.status(201).json({ message: "Sign up successful!" });
   } catch (err) {
-    // 23505 occurs when unique constraint is violated which in this case is the unique username constraint
+    // 23505 occurs when unique constraint is violated
     if (err.code === "23505") {
       // 409 means request can't be completed due to current state
-      return res.status(409).json({ message: "Username already exists" });
+      if (err.constraint == "users_username_auth_type_key") {
+        return res.status(409).json({ message: "Username already in use." });
+      } else if (err.constraint == "users_email_key") {
+        return res.status(409).json({ message: "Email already in use." });
+      } else {
+        console.error("Shouldn't get here: ", err);
+      }
     }
     return next(err);
   }
