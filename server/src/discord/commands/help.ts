@@ -1,14 +1,20 @@
-import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  SlashCommandBuilder,
+} from "discord.js";
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("help")
     .setDescription("Help menu for commands"),
 
-  async execute(interaction) {
-    const embed = new EmbedBuilder()
-      .setTitle("Help")
-      .setDescription("Bot help menu");
+  async execute(interaction: ChatInputCommandInteraction) {
+    const embed = new EmbedBuilder().setTitle("Help").addFields({
+      name: "/connect",
+      value: "Connects current text channel to competition",
+      inline: false,
+    });
 
     await interaction.reply({
       embeds: [embed],

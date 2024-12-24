@@ -78,6 +78,7 @@ model competitions {
   priority              Priority
   // policy                Policy
   description           String?
+  competition_to_channel competition_to_channel[]
 }
 
 model events {
@@ -123,6 +124,14 @@ model votes {
   eventsId      Int?
 
   @@unique([submission_id, user_id])
+}
+
+model competition_to_channel {
+  discord_channel_id BigInt       @unique
+  competition_id     Int
+  competition        competitions @relation(fields: [competition_id], references: [id], onDelete: Cascade)
+  
+  @@unique([discord_channel_id, competition_id])
 }
 
 enum Frequency {
