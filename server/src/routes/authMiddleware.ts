@@ -1,5 +1,12 @@
 import prisma from "../prisma/client";
 module.exports.isAuth = (req, res, next) => {
+  const botSecret = req.headers["x-bot-secret"];
+
+  if (botSecret && botSecret === process.env.DISCORD_BOT_SECRET) {
+    req.isBot = true;
+    return next();
+  }
+
   if (req.isAuthenticated()) {
     next();
   } else {
@@ -10,6 +17,13 @@ module.exports.isAuth = (req, res, next) => {
 };
 
 module.exports.isCompetitionAuth = async (req, res, next) => {
+  const botSecret = req.headers["x-bot-secret"];
+
+  if (botSecret && botSecret === process.env.DISCORD_BOT_SECRET) {
+    req.isBot = true;
+    return next();
+  }
+
   const currUserId = req.user.id;
   const { competitionId, eventId, submissionId } = req.params;
   const competitionIdNumber = parseInt(competitionId, 10);

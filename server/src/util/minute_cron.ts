@@ -241,10 +241,9 @@ const determineWinner = async (event: OldUpcomingEvent) => {
     content: string;
     content_number: number;
   };
-  let bestComparison = 0;
+  // let bestComparison = 0;
   let currBestVotes = 0;
   submissions.forEach((submission) => {
-    // TODO: Insert priority algo (should it be largest/smallest? Biggest Percentage/Flat Increase?, etc)
     if (event.is_numerical) {
       if (event.priority === Priority.HIGHEST) {
         if (!best || submission.content_number > best.content_number) {

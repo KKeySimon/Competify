@@ -216,13 +216,62 @@ router.get(
 );
 
 router.post(
-  "/:eventId/submit",
+  "/upcoming/submit",
   isAuth,
   isCompetitionAuth,
   asyncHandler(async (req: AuthRequest<any>, res, next) => {
-    const currUserId = req.user.id;
-    const { eventId } = req.params;
-    const eventIdNumber = parseInt(eventId, 10);
+    let currUserId: number;
+    if (req.isBot) {
+      const { discordId } = req.body;
+      if (!discordId) {
+        res
+          .status(400)
+          .json({ message: "Discord ID is required for bot submissions." });
+        return;
+      }
+
+      const user = await prisma.users.findUnique({
+        where: { discord_id: discordId },
+        select: { id: true },
+      });
+
+      if (!user) {
+        res
+          .status(404)
+          .json({ message: "User not found for the provided Discord ID." });
+        return;
+      }
+
+      currUserId = user.id;
+    } else {
+      currUserId = req.user.id;
+    }
+    const { competitionId } = req.params;
+    const competitionIdNumber = parseInt(competitionId, 10);
+
+    const event = await prisma.events.findFirst({
+      where: {
+        competition_id: competitionIdNumber,
+        upcoming: true,
+        belongs_to: {
+          users_in_competitions: {
+            some: {
+              user_id: currUserId,
+            },
+          },
+        },
+      },
+    });
+
+    if (!event) {
+      res
+        .status(404)
+        .json({ message: "No upcoming event available for submission." });
+      return;
+    }
+
+    const eventIdNumber = event.id;
+
     const submissionText = req.body.content.submission;
     let inputType: SubmissionType;
     switch (req.body.content.inputType.toLowerCase()) {
@@ -239,11 +288,6 @@ router.post(
         throw new Error("Invalid input type");
     }
 
-    const event = await prisma.events.findFirst({
-      where: {
-        id: eventIdNumber,
-      },
-    });
     let submissionNumber;
     if (event.is_numerical) {
       submissionNumber = parseInt(submissionText, 10);

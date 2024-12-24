@@ -22,7 +22,6 @@ function SubmissionPopup({
   const [success, setSuccess] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [inputType, setInputType] = useState("text");
-  // TODO: NOT COMPELTED
   async function handleCreateSubmission(e: React.FormEvent) {
     e.preventDefault();
     console.log(submission);
@@ -30,9 +29,7 @@ function SubmissionPopup({
     await fetch(
       `${import.meta.env.VITE_SERVER_URL}/api/competition/ ` +
         id +
-        "/events/" +
-        eventId +
-        "/submit",
+        "/events/upcoming/submit",
       {
         method: "POST",
         credentials: "include",
@@ -44,8 +41,6 @@ function SubmissionPopup({
     )
       .then(async (response) => {
         if (!response.ok) {
-          // TODO : Update other errors to include this
-          // TODO: errorMessage has not been tested yet.
           const errorMessage = await response.text();
           const errorCode = response.status;
           throw new Error(

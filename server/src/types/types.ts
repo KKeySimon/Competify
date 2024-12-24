@@ -4,6 +4,7 @@ export interface AuthRequest<T> extends Request {
   user: {
     id: number;
   };
+  isBot: boolean;
   body: T;
 }
 
