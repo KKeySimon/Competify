@@ -223,24 +223,11 @@ router.post(
     let currUserId: number;
     if (req.isBot) {
       const { discordId } = req.body;
-      if (!discordId) {
-        res
-          .status(400)
-          .json({ message: "Discord ID is required for bot submissions." });
-        return;
-      }
 
       const user = await prisma.users.findUnique({
         where: { discord_id: discordId },
         select: { id: true },
       });
-
-      if (!user) {
-        res
-          .status(404)
-          .json({ message: "User not found for the provided Discord ID." });
-        return;
-      }
 
       currUserId = user.id;
     } else {

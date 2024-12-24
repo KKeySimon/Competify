@@ -391,7 +391,6 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
                     trigger={trigger}
                     setTrigger={setTrigger}
                     isNumerical={competition.is_numerical}
-                    eventId={upcoming?.id}
                     handleSubmitSubmission={handleSubmitSubmission}
                   />
                   <h4>Leaderboard</h4>

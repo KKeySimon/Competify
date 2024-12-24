@@ -6,7 +6,6 @@ import styles from "./SubmissionPopup.module.css";
 
 interface SubmissionPopupProps extends PopupProps {
   isNumerical: boolean;
-  eventId: number;
   handleSubmitSubmission: (newSubmission: Submission) => void;
 }
 
@@ -14,7 +13,6 @@ function SubmissionPopup({
   trigger,
   setTrigger,
   isNumerical,
-  eventId,
   handleSubmitSubmission,
 }: SubmissionPopupProps) {
   const { id } = useParams();

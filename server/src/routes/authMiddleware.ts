@@ -21,10 +21,35 @@ module.exports.isCompetitionAuth = async (req, res, next) => {
 
   if (botSecret && botSecret === process.env.DISCORD_BOT_SECRET) {
     req.isBot = true;
-    return next();
   }
 
-  const currUserId = req.user.id;
+  let currUserId: number;
+  if (req.isBot) {
+    const { discordId } = req.body;
+    if (!discordId) {
+      res
+        .status(400)
+        .json({ message: "Discord ID is required for bot submissions." });
+      return;
+    }
+
+    const user = await prisma.users.findUnique({
+      where: { discord_id: discordId },
+      select: { id: true },
+    });
+
+    if (!user) {
+      res
+        .status(404)
+        .json({ message: "User not found for the provided Discord ID." });
+      return;
+    }
+
+    currUserId = user.id;
+  } else {
+    currUserId = req.user.id;
+  }
+
   const { competitionId, eventId, submissionId } = req.params;
   const competitionIdNumber = parseInt(competitionId, 10);
   if (isNaN(competitionIdNumber)) {
@@ -33,7 +58,7 @@ module.exports.isCompetitionAuth = async (req, res, next) => {
   const valid = await prisma.users_in_competitions.findFirst({
     where: {
       user_id: currUserId,
-      competition_id: parseInt(competitionId),
+      competition_id: competitionIdNumber,
     },
   });
   if (!valid) {

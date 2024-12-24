@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
@@ -13,7 +15,7 @@ module.exports = {
       option
         .setName("competition-id")
         .setDescription(
-          `Copy the ID of "https://competify.vercel.app/competition/{ID COPY THIS}"`
+          `Copy the ID of "${process.env.CLIENT_URL}/competition/{ID COPY THIS}"`
         )
         .setRequired(true)
     )
@@ -62,7 +64,7 @@ module.exports = {
         },
       });
 
-      const competitionLink = `https://competify.vercel.app/competition/${competitionId}`;
+      const competitionLink = `${process.env.CLIENT_URL}/competition/${competitionId}`;
 
       await interaction.editReply(
         `Competition successfully connected to the channel! [View Competition](${competitionLink})`

@@ -22,7 +22,11 @@ module.exports = {
         )
     )
     .addStringOption((option) =>
-      option.setName("submission-content").setRequired(true).setMaxLength(200)
+      option
+        .setName("submission-content")
+        .setDescription("Enter the content of your submission")
+        .setMaxLength(200)
+        .setRequired(true)
     ),
 
   async execute(interaction: ChatInputCommandInteraction) {
@@ -56,7 +60,7 @@ module.exports = {
             }
 
             const response = await axios.post(
-              `${process.env.API_URL}/upcoming/submit`,
+              `${process.env.API_URL}/api/competition/${competition.id}/events/upcoming/submit`,
               {
                 discordId: interaction.user.id,
                 content: {
@@ -73,15 +77,8 @@ module.exports = {
 
             await interaction.editReply("Submission received successfully!");
           } else {
-            if (content.length > 200) {
-              await interaction.editReply(
-                "Your submission exceeds the maximum allowed length of 200 characters."
-              );
-              return;
-            }
-
             const response = await axios.post(
-              `${process.env.API_URL}/upcoming/submit`,
+              `${process.env.API_URL}/api/competition/${competition.id}/events/upcoming/submit`,
               {
                 discordId: interaction.user.id,
                 content: {
