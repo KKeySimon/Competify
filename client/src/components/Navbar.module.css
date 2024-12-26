@@ -112,3 +112,23 @@
   top: 5%;
   left: 5%; /* Keep consistent with design */
 }
+
+.navbar.darkMode {
+  background-color: #333;
+  color: white;
+  border-bottom: 2px solid #444;
+}
+
+.navbar a.darkMode {
+  color: lightgray;
+}
+
+.navbar a.darkMode:hover {
+  background-color: #555;
+  color: white;
+}
+
+.navbar a.active.darkMode {
+  background-color: rgba(100, 100, 100, 0.5);
+  color: white;
+}
