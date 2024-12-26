@@ -23,9 +23,10 @@ module.exports.isCompetitionAuth = async (req, res, next) => {
     req.isBot = true;
   }
 
-  let currUserId: number;
+  let currUserId;
   if (req.isBot) {
-    const { discordId } = req.body;
+    const { discordId } = req.query;
+
     if (!discordId) {
       res
         .status(400)

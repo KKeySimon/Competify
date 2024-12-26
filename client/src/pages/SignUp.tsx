@@ -203,6 +203,19 @@ function SignUp({
               <Button variant="primary" type="submit">
                 Sign Up
               </Button>
+              <a
+                href={`${import.meta.env.VITE_SERVER_URL}/api/login/discord`}
+                className={styles.discordButton}
+              >
+                <button type="button" className={styles.discord}>
+                  <img
+                    src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/636e0a6ca814282eca7172c6_icon_clyde_white_RGB.svg"
+                    alt="Discord Logo"
+                    className={styles.discordLogo}
+                  />
+                  Login with Discord
+                </button>
+              </a>
               <Link to="/login">Already have an account? Log in</Link>
             </div>
           </Form>

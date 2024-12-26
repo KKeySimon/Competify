@@ -89,10 +89,26 @@ router.get(
   isAuth,
   isCompetitionAuth,
   asyncHandler(async (req: AuthRequest<{}>, res, next) => {
-    const currUserId = req.user.id;
+    let currUserId: number;
+    if (req.isBot) {
+      const { discordId } = req.query;
+      if (typeof discordId !== "string") {
+        res.status(400).json({ message: "Invalid discordId type." });
+        return;
+      }
+      const discordIdAsBigInt = BigInt(discordId);
+
+      const user = await prisma.users.findUnique({
+        where: { discord_id: discordIdAsBigInt },
+        select: { id: true },
+      });
+
+      currUserId = user.id;
+    } else {
+      currUserId = req.user.id;
+    }
     const { competitionId } = req.params;
     const competitionIdNumber = parseInt(competitionId, 10);
-
     const events = await prisma.events.findFirst({
       where: {
         competition_id: competitionIdNumber,
@@ -116,7 +132,6 @@ router.get(
   isAuth,
   isCompetitionAuth,
   asyncHandler(async (req: AuthRequest<{}>, res, next) => {
-    const currUserId = req.user.id;
     const { eventId } = req.params;
     const eventIdNumber = parseInt(eventId, 10);
 
@@ -222,10 +237,15 @@ router.post(
   asyncHandler(async (req: AuthRequest<any>, res, next) => {
     let currUserId: number;
     if (req.isBot) {
-      const { discordId } = req.body;
+      const { discordId } = req.query;
+      if (typeof discordId !== "string") {
+        res.status(400).json({ message: "Invalid discordId type." });
+        return;
+      }
+      const discordIdAsBigInt = BigInt(discordId);
 
       const user = await prisma.users.findUnique({
-        where: { discord_id: discordId },
+        where: { discord_id: discordIdAsBigInt },
         select: { id: true },
       });
 

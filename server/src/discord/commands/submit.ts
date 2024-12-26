@@ -49,8 +49,9 @@ module.exports = {
       });
       if (competition) {
         try {
+          let parsedContent: string | number;
           if (competition.is_numerical) {
-            const parsedContent = parseInt(content, 10);
+            parsedContent = parseInt(content, 10);
 
             if (isNaN(parsedContent)) {
               await interaction.editReply(
@@ -58,43 +59,34 @@ module.exports = {
               );
               return;
             }
-
-            const response = await axios.post(
-              `${process.env.API_URL}/api/competition/${competition.id}/events/upcoming/submit`,
-              {
-                discordId: interaction.user.id,
-                content: {
-                  inputType: submissionType,
-                  submission: parsedContent,
-                },
-              },
-              {
-                headers: {
-                  "X-Bot-Secret": process.env.DISCORD_BOT_SECRET,
-                },
-              }
-            );
-
-            await interaction.editReply("Submission received successfully!");
           } else {
-            const response = await axios.post(
-              `${process.env.API_URL}/api/competition/${competition.id}/events/upcoming/submit`,
-              {
-                discordId: interaction.user.id,
-                content: {
-                  inputType: submissionType,
-                  submission: content,
-                },
-              },
-              {
-                headers: {
-                  "X-Bot-Secret": process.env.DISCORD_BOT_SECRET,
-                },
-              }
-            );
-
-            await interaction.editReply("Submission received successfully!");
+            parsedContent = content;
           }
+
+          const submissionData = {
+            discordId: interaction.user.id,
+            content: {
+              inputType: submissionType,
+              submission: competition.is_numerical ? parsedContent : content,
+            },
+          };
+
+          const response = await axios.post(
+            `${process.env.API_URL}/api/competition/${competition.id}/events/upcoming/submit`,
+            submissionData,
+            {
+              params: {
+                discordId: interaction.user.id,
+              },
+              headers: {
+                "X-Bot-Secret": process.env.DISCORD_BOT_SECRET,
+              },
+            }
+          );
+
+          await interaction.editReply({
+            content: `${interaction.user.username} has successfully submitted their entry to the competition! 🎉\nUse the \`/view\` command to check out submissions in this channel: #${interaction.channel.name}`,
+          });
         } catch (error) {
           console.error(error);
 
