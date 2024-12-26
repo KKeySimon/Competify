@@ -107,22 +107,24 @@ function Navbar({
 
   return (
     <div className={`${styles.navbar} ${isDarkMode ? styles.darkMode : ""}`}>
-      <Link
-        to="/"
-        className={`${location.pathname === "/" ? styles.active : ""} ${
-          isDarkMode ? styles.darkMode : ""
-        }`}
-      >
-        Home
-      </Link>
-      <Link
-        to="/competition"
-        className={`${
-          location.pathname === "/competition" ? styles.active : ""
-        } ${isDarkMode ? styles.darkMode : ""}`}
-      >
-        Competitions
-      </Link>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <Link
+          to="/"
+          className={`${location.pathname === "/" ? styles.active : ""} ${
+            isDarkMode ? styles.darkMode : ""
+          }`}
+        >
+          Home
+        </Link>
+        <Link
+          to="/competition"
+          className={`${
+            location.pathname === "/competition" ? styles.active : ""
+          } ${isDarkMode ? styles.darkMode : ""}`}
+        >
+          Competitions
+        </Link>
+      </div>
       <div style={{ display: "flex", flexDirection: "row" }}>
         <button
           onClick={toggleDarkMode}
