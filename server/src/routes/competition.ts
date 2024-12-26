@@ -32,6 +32,19 @@ router.get(
               },
               created_at: true,
               repeats_every: true,
+              events: {
+                where: {
+                  upcoming: true,
+                },
+                select: {
+                  date: true,
+                },
+              },
+              users_in_competitions: {
+                select: {
+                  user_id: true,
+                },
+              },
             },
           },
         },
@@ -46,6 +59,8 @@ router.get(
           repeatsEvery: entry.competition.repeats_every,
           profilePictureUrl: entry.competition.created_by.profile_picture_url,
           createdAt: entry.competition.created_at,
+          upcoming: entry.competition.events.map((event) => event.date),
+          participantCount: entry.competition.users_in_competitions.length,
         }))
       );
       return;

@@ -33,3 +33,35 @@
 .link:hover {
   color: rgb(132, 132, 255);
 }
+
+.sortButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center the buttons */
+  margin: 20px 0; /* Add some space above and below */
+}
+
+.sortButtons Button {
+  margin: 5px; /* Add spacing between buttons */
+  padding: 10px 15px; /* Increase padding for better click area */
+  font-size: 16px; /* Set a comfortable font size */
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Slightly round the corners */
+  background-color: #007bff; /* Bootstrap primary color */
+  color: white; /* Text color */
+  cursor: pointer; /* Change cursor on hover */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.sortButtons Button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.sortButtons Button:focus {
+  outline: none; /* Remove the default focus outline */
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Add custom focus style */
+}
+
+.sortButtons Button.selected {
+  background-color: #004085; /* Darker blue for selected button */
+}

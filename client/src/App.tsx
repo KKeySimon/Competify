@@ -81,7 +81,7 @@ function App() {
       />
       <div className="content">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<HomePage isLoggedIn={isLoggedIn} />} />
           <Route
             path="/login"
             element={

@@ -18,6 +18,8 @@ export interface Competition {
   createdBy: string;
   profilePictureUrl: string;
   createdAt: string;
+  upcoming: string[];
+  participantCount: number;
 }
 
 export interface ICompetition {
