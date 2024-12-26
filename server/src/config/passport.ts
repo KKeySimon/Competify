@@ -58,7 +58,16 @@ passport.use(
         let user = rows[0];
 
         if (!user) {
-          // Construct the profile picture URL
+          const emailCheck = await pool.query(
+            "SELECT * FROM users WHERE email = $1",
+            [email]
+          );
+          if (emailCheck.rows.length > 0) {
+            return cb(null, false, {
+              message: "email_exists",
+            });
+          }
+
           let profilePictureUrl = avatar
             ? `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png`
             : `https://cdn.discordapp.com/embed/avatars/${
@@ -70,6 +79,7 @@ passport.use(
              VALUES ($1, $2, $3, $4, 'DISCORD') RETURNING *`,
             [discordId, username, email, profilePictureUrl]
           );
+
           user = insertResult.rows[0];
         }
 
@@ -80,8 +90,13 @@ passport.use(
     }
   )
 );
-passport.serializeUser((user: any, done) => {
-  done(null, user.id);
+passport.serializeUser((user, done) => {
+  if (user && user.id) {
+    console.log("Serializing user:", user);
+    done(null, user.id);
+  } else {
+    done(null, null);
+  }
 });
 
 passport.deserializeUser(async (id, done) => {

@@ -39,3 +39,13 @@ export class BotClient extends Client {
     this.commands = new Collection();
   }
 }
+
+declare global {
+  namespace Express {
+    interface User {
+      discordId?: string;
+      message?: string;
+      id: number;
+    }
+  }
+}

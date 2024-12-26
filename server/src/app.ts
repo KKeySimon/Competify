@@ -59,6 +59,7 @@ app.use("/api", indexRouter);
 
 // We use any for err as any request could throw any error in the application
 app.use((err: any, req, res, next) => {
+  console.error("Error details:", err); // Log the error details
   res.status(500).json({ message: "Unhandled Error" });
 });
 
