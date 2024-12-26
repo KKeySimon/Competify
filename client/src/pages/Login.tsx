@@ -27,6 +27,25 @@ function Login({
   const navigate = useNavigate();
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const error = params.get("error");
+    if (error) {
+      if (error === "email_exists") {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          apiError:
+            "An account with this email already exists. Please log in using your email. If you wish to log in with discord, log in and link the accounts under profile!",
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          apiError: "An unknown discord login error has occured",
+        }));
+      }
+    }
+  }, [location.search]);
+
+  useEffect(() => {
     if (isLoggedIn) {
       navigate("/");
     }
