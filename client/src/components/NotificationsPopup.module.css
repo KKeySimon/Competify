@@ -5,6 +5,7 @@
   width: 20rem;
   height: 100%;
   background-color: white;
+  color: black;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
   overflow-y: auto;
   z-index: 1000;
@@ -16,11 +17,21 @@
   right: 0;
 }
 
+.popup.darkMode {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  box-shadow: -2px 0 5px rgba(255, 255, 255, 0.2);
+}
+
 .notificationList {
   cursor: pointer;
   padding: 10px;
   border-bottom: 1px solid #ccc;
   list-style-type: none;
+}
+
+.notificationList.darkMode {
+  border-bottom: 1px solid #333;
 }
 
 ul {
@@ -42,6 +53,32 @@ ul {
   gap: 10px;
 }
 
+.buttonContainer button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.buttonContainer button:hover {
+  background-color: #0056b3;
+}
+
+.buttonContainer button.darkMode {
+  background-color: #4a90e2;
+}
+
+.buttonContainer button.darkMode:hover {
+  background-color: #3b78cc;
+}
+
 .feedback {
   font-weight: bold;
+}
+
+.feedback.darkMode {
+  color: #ffcc00;
 }
