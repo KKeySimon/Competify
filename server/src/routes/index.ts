@@ -40,19 +40,22 @@ router.get(
   passport.authenticate("discord", { scope: ["identify", "email"] })
 );
 
-router.get(
-  "/login/discord/callback",
-  passport.authenticate("discord", {
-    failureRedirect: "/login",
-  }),
-  (req, res) => {
-    if (req.user) {
-      res.redirect(`${process.env.CLIENT_URL}/`);
-    } else {
-      res.redirect(`${process.env.CLIENT_URL}/login`);
+router.get("/login/discord/callback", (req, res, next) => {
+  passport.authenticate("discord", (err, user, info) => {
+    if (err || !user) {
+      const message = info?.message || "unknown_error";
+      return res.redirect(`${process.env.CLIENT_URL}/login?error=${message}`);
     }
-  }
-);
+    req.logIn(user, (loginErr) => {
+      if (loginErr) {
+        return res.redirect(
+          `${process.env.CLIENT_URL}/login?error=login_failed`
+        );
+      }
+      return res.redirect(`${process.env.CLIENT_URL}/`);
+    });
+  })(req, res, next);
+});
 
 router.post("/sign-up", async (req, res, next) => {
   try {

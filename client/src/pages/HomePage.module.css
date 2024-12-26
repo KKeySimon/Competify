@@ -1,37 +1,70 @@
 .background {
-  /* Height is set to 95vh as navbar should take up 5vh */
   width: 100vw;
   height: 100%;
   display: flex;
   justify-content: center;
-  font-weight: 1000;
-  display: flex;
   flex-direction: column;
+  align-items: center; /* Center align items */
+  font-weight: 1000;
+  background-color: #f8f9fa; /* Light background for contrast */
+  min-height: 95vh;
 }
 
 .titleTyping {
   font-family: monospace;
-  font-size: 2em;
+  font-size: 2.5em; /* Default size for larger screens */
+  color: #333; /* Darker text color for better readability */
+  text-align: left; /* Center align text */
+  margin-bottom: 1em; /* Space below title */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .content {
+    margin: 2em;
+  }
+  .titleTyping {
+    font-size: 1.8em; /* Font size for tablets */
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    margin: 2em;
+  }
+  .titleTyping {
+    font-size: 1.5em; /* Font size for mobile phones */
+  }
+}
+
+.content {
+  flex: 1;
 }
 
 .introBlock {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 4em;
+  margin: 4em 0; /* Reduced margin for a more compact look */
+  width: 100%; /* Full width for the intro block */
+  max-width: 1200px; /* Limit max width for better readability */
+  margin-top: 8em;
 }
 
 .introText {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  flex: 1; /* Allow text to take available space */
 }
 
 .introBlock img {
   height: auto;
-  max-height: min(100%, 10rem);
-  object-fit: contain;
-  margin-left: 1rem;
+  max-height: 10rem; /* Limit trophy height */
+  margin-left: 2rem;
+  filter: drop-shadow(
+    0px 4px 6px rgba(0, 0, 0, 0.1)
+  ); /* Subtle shadow for the image */
 }
 
 .registerButton {
@@ -51,4 +84,80 @@
 .registerButton:hover {
   background-color: #5a44d1; /* Slightly darker shade on hover */
   transform: scale(1.05); /* Slight enlargement */
+}
+
+.featureContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-family: Arial, sans-serif;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.listItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.listItem strong {
+  font-size: 1.2em;
+  color: #2c3e50;
+}
+
+.listItem p {
+  margin: 0;
+  font-size: 0.95em;
+  color: #666;
+  font-weight: normal;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  color: #27ae60;
+  font-size: 1.5em;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer {
+  width: 100%;
+  background-color: #cdcdcd; /* Footer background color */
+  color: #fff; /* Text color */
+  text-align: center; /* Center text */
+  font-size: 1em; /* Font size */
+  position: relative; /* Keeps it at the bottom of the container */
+  display: flex; /* Use flexbox for alignment */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center items horizontally */
+  padding: 10px 0; /* Add padding for better spacing */
+}
+
+.footerLink {
+  text-decoration: none; /* Remove underline from links */
+}
+
+.footerIcon {
+  width: 30px; /* Icon width */
+  height: 30px; /* Icon height */
+  display: block; /* Ensure the icon is treated as a block element */
+  margin: 0 auto; /* Center the icon */
 }

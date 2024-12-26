@@ -216,7 +216,7 @@ function SignUp({
                   Login with Discord
                 </button>
               </a>
-              <Link to="/login">Already have an account? Log in</Link>
+              <Link to="/login">Log in</Link>
             </div>
           </Form>
         </div>

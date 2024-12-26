@@ -7,11 +7,18 @@ function CompetitionCard({
   createdBy,
   profilePictureUrl,
   createdAt,
+  upcoming,
+  participantCount,
   isDarkMode,
 }: Competition & { isDarkMode: boolean }) {
   const joinDate = new Date(joinedAt);
   const localJoinDate = joinDate.toLocaleDateString();
   const localCreateDate = new Date(createdAt).toLocaleDateString();
+  const upcomingDate =
+    upcoming && upcoming.length > 0 ? new Date(upcoming[0]) : null;
+  const localUpcomingDate = upcomingDate
+    ? upcomingDate.toLocaleDateString()
+    : "No upcoming events";
 
   return (
     <div
@@ -23,16 +30,20 @@ function CompetitionCard({
         <h3>{name}</h3>
         <div className={styles.createdBy}>
           <h4>{createdBy}</h4>
-          <img src={profilePictureUrl} />
+          <img src={profilePictureUrl} alt={`${createdBy}'s profile`} />
         </div>
       </div>
       <div className={styles.joinCreateTag}>
         <h4>Joined At:</h4>
         <h4>Created At:</h4>
+        <h4>Participants:</h4>
+        <h4>Upcoming:</h4>
       </div>
       <div className={styles.joinCreateDate}>
         <h4>{localJoinDate}</h4>
         <h4>{localCreateDate}</h4>
+        <h4>{participantCount}</h4>
+        <h4>{localUpcomingDate}</h4>
       </div>
     </div>
   );

@@ -7,11 +7,13 @@ interface notificationPopupProps {
   notifications: Invite[];
   bellClicked: boolean;
   removeNotification: (key: string) => void;
+  isDarkMode: boolean;
 }
 const NotificationsPopup = ({
   notifications,
   bellClicked,
   removeNotification,
+  isDarkMode,
 }: notificationPopupProps) => {
   const navigate = useNavigate();
 
@@ -66,7 +68,11 @@ const NotificationsPopup = ({
   };
 
   return (
-    <div className={`${styles.popup} ${bellClicked ? styles.visible : ""}`}>
+    <div
+      className={`${styles.popup} ${bellClicked ? styles.visible : ""} ${
+        isDarkMode ? styles.darkMode : ""
+      }`}
+    >
       <ul>
         <h3>Notifications</h3>
 

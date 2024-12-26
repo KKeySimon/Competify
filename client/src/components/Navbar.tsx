@@ -149,6 +149,7 @@ function Navbar({
                 notifications={notifications}
                 bellClicked={bellClicked}
                 removeNotification={removeNotification}
+                isDarkMode={isDarkMode}
               />
 
               <button
