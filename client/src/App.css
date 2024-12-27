@@ -1,7 +1,9 @@
 .content {
   margin-top: 5vh;
-  height: 95vh;
+  min-height: 95vh;
+  height: auto;
   width: 100vw;
+  box-sizing: border-box; /* Ensure padding and borders are included in width/height */
 }
 
 body {

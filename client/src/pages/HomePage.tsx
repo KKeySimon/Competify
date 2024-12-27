@@ -8,6 +8,14 @@ function HomePage({ isLoggedIn }: { isLoggedIn: boolean }) {
   const el = useRef(null);
   const navigate = useNavigate();
 
+  const tutorialRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTutorial = () => {
+    if (tutorialRef.current) {
+      tutorialRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   useEffect(() => {
     const typed = new Typed(el.current, {
       strings: [
@@ -48,6 +56,9 @@ function HomePage({ isLoggedIn }: { isLoggedIn: boolean }) {
                 Competify is designed to foster habit-building and motivate
                 individuals to push their limits through engaging, friendly
                 competitions.
+              </a>
+              <a onClick={scrollToTutorial} className={styles.scrollLink}>
+                First time using Competify?
               </a>
               <button
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -118,6 +129,63 @@ function HomePage({ isLoggedIn }: { isLoggedIn: boolean }) {
                 </div>
               </li>
             </ul>
+          </div>
+          <div ref={tutorialRef} className={styles.tutorialContainer}>
+            <h1 className={styles.title}>How to Use Competify</h1>
+            <ol className={styles.tutorialList}>
+              <li>
+                <strong>Sign Up or Log In:</strong>
+                <p>
+                  Create your account using either email or Discord. For access
+                  to exclusive Discord features, such as submitting entries or
+                  viewing results directly on Discord, sign up with Discord or
+                  link your Discord account via the profile page after creating
+                  a Competify account.
+                </p>
+              </li>
+              <li>
+                <strong>Join or Create Competitions:</strong>
+                <p>
+                  Explore existing competitions or start your own. When creating
+                  a competition, provide a name and description, invite
+                  registered users, set a start time (must be in the future),
+                  and decide if it should be a recurring event.
+                </p>
+                <p>
+                  - Numerical Competitions: Submit a number, and winners will be
+                  determined automatically based on the set priority (e.g.,
+                  highest or lowest value wins).
+                </p>
+                <p>
+                  - Non-Numerical Competitions: Submit entries for others to
+                  vote on. Votes are tallied, and the submission with the most
+                  votes wins!
+                </p>
+              </li>
+              <li>
+                <strong>Submit Entries and Vote:</strong>
+                <p>
+                  Check out what other users submitted and make sure to submit
+                  as well before the deadline! (Don't forget to vote if the
+                  competition is non-numerical)
+                </p>
+              </li>
+              <li>
+                <strong>Check Your Profile:</strong>
+                <p>
+                  Track your achievements by viewing the number of competitions
+                  you've won, review past submissions, and personalize your
+                  profile to reflect your journey.
+                </p>
+              </li>
+              <li>
+                <strong>Stay Engaged:</strong>
+                <p>
+                  Participate regularly in competitions to develop strong
+                  habits, reach your goals, and push your limits.
+                </p>
+              </li>
+            </ol>
           </div>
         </div>
         <div className={styles.footer}>

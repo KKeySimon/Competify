@@ -39,6 +39,7 @@
 
 .content {
   flex: 1;
+  height: 100%;
 }
 
 .introBlock {
@@ -144,7 +145,6 @@
   color: #fff; /* Text color */
   text-align: center; /* Center text */
   font-size: 1em; /* Font size */
-  position: relative; /* Keeps it at the bottom of the container */
   display: flex; /* Use flexbox for alignment */
   align-items: center; /* Center items vertically */
   justify-content: center; /* Center items horizontally */
@@ -160,4 +160,52 @@
   height: 30px; /* Icon height */
   display: block; /* Ensure the icon is treated as a block element */
   margin: 0 auto; /* Center the icon */
+}
+
+.tutorialContainer {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  margin: 20px auto;
+  max-width: 1200px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tutorialList {
+  list-style: decimal;
+  padding-left: 20px;
+  font-size: 1em;
+  color: #333;
+}
+
+.tutorialList li {
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.tutorialList p {
+  margin: 0;
+  font-size: 0.95em;
+  color: #666;
+  font-weight: normal;
+}
+
+.tutorialContainer h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-family: Arial, sans-serif;
+}
+
+.scrollLink {
+  display: block;
+  margin-top: 10px;
+  color: #27ae60;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.scrollLink:hover {
+  color: #219150;
 }

@@ -1,6 +1,6 @@
 .background {
   /* Height is set to 95vh as navbar should take up 5vh */
-  height: 100vh;
+  height: 95vh;
   width: 100vw;
   display: flex;
   justify-content: center;

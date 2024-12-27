@@ -12,12 +12,12 @@
   z-index: 1000;
   border-bottom: 2px solid rgb(225, 225, 225);
   cursor: default;
-  transition: background-color 0.5s ease, color 0.5s ease, border-bottom 0.5 ease;
+  transition: background-color 0.5s ease, color 0.5s ease,
+    border-bottom 0.5 ease;
 }
 
 .navbar a {
   padding: 0; /* Standardize padding */
-  height: 100%; /* Ensure full height */
   display: flex; /* For vertical alignment */
   align-items: center; /* Align content inside links vertically */
   cursor: pointer;
@@ -26,6 +26,7 @@
   text-decoration: none;
   color: black;
   margin: 0 10px; /* Space between icons */
+  padding: 1vh;
 }
 
 .centered-items {
