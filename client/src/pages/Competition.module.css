@@ -325,33 +325,6 @@
   border-radius: 4px;
 }
 
-.userContainer {
-  display: inline-block; /* Make container size match text width */
-  cursor: pointer; /* Hand cursor */
-  position: relative; /* Positioning context for pseudo-element */
-}
-
-.userContainer::after {
-  content: ""; /* Required for pseudo-elements */
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0; /* No underline initially */
-  height: 2px; /* Thickness of underline */
-  background-color: lightgray; /* Color of the underline */
-  transition: width 0.3s ease-in-out; /* Smooth transition for underline */
-}
-
-.userContainer:hover::after {
-  width: 100%; /* Expand the underline on hover */
-}
-
-.userList {
-  display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: flex-start; /* Align items to the left */
-}
-
 /* Dark Mode */
 /* .darkMode .submitButton {
   background-color: #1e88e5;
@@ -362,10 +335,6 @@
   background-color: #1565c0;
 }
 
-.darkMode .eventCard {
-  background-color: #333333;
-  border-color: #444444;
-}
 
 .darkMode .container {
   background-color: #1e1e1e;
@@ -462,6 +431,13 @@
 .darkMode .eventList {
   background-color: #1e1e1e;
 }
+*/
+
+.darkMode .eventCard {
+  background-color: #333333;
+  border-color: #444444;
+  color: white;
+}
 
 .darkMode .eventButton {
   border: 1px solid #444444;
@@ -471,6 +447,7 @@
   border-color: #1e88e5;
   box-shadow: 0 4px 8px rgba(30, 136, 229, 0.2);
 }
+/*
 
 .darkMode .submissionsList {
   background-color: #1e1e1e;

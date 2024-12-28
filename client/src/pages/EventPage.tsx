@@ -78,7 +78,8 @@ function EventPage() {
           <strong>Upcoming:</strong> {eventData.upcoming ? "Yes" : "No"}
         </p>
         <p>
-          <strong>Winner:</strong> {eventData.winner.username}
+          <strong>Winner:</strong>{" "}
+          {eventData.winner ? eventData.winner.username : "No Winner"}
         </p>
       </div>
 

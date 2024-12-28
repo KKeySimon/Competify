@@ -44,6 +44,7 @@ export interface ICompetition {
       username: string;
       profile_picture_url: string;
     };
+    is_admin: boolean;
   }[];
   priority: string;
   policy: string;

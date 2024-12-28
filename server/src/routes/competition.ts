@@ -8,6 +8,7 @@ import prisma from "../prisma/client";
 
 const router = express.Router();
 const isAuth = require("./authMiddleware").isAuth;
+const isCompetitionAuth = require("./authMiddleware").isCompetitionAuth;
 
 router.get(
   "/",
@@ -418,6 +419,120 @@ router.get(
         return;
       }
       res.status(200).send(competition);
+      return;
+    }
+  )
+);
+
+router.post(
+  "/:competitionId/admin",
+  isAuth,
+  isCompetitionAuth,
+  asyncHandler(
+    async (req: AuthRequest<any>, res: Response, next): Promise<void> => {
+      const { competitionId } = req.params;
+      const { userId } = req.body;
+      const currUserId = req.user.id;
+
+      const competitionIdNumber = parseInt(competitionId, 10);
+      if (isNaN(competitionIdNumber)) {
+        res.status(400).json({ message: "Competition ID is not a number!" });
+        return;
+      }
+
+      const competitionOwner = prisma.competitions.findFirst({
+        where: { user_id: currUserId, id: competitionIdNumber },
+      });
+
+      if (!competitionOwner) {
+        res.status(403).json({
+          message: "Only the owner of the competition may assign admins!",
+        });
+        return;
+      }
+
+      const isUserInCompetition = prisma.users_in_competitions.findFirst({
+        where: { user_id: userId, competition_id: competitionIdNumber },
+      });
+      if (!isUserInCompetition) {
+        res.status(404).json({
+          message: "User does not found in competition!",
+        });
+      }
+
+      await prisma.users_in_competitions.update({
+        where: {
+          user_id_competition_id: {
+            user_id: userId,
+            competition_id: competitionIdNumber,
+          },
+        },
+        data: {
+          is_admin: true,
+        },
+      });
+
+      res.status(200).json({
+        message: `User ${userId} has been successfully assigned as an admin for competition ${competitionId}!`,
+      });
+      return;
+    }
+  )
+);
+
+router.delete(
+  "/:competitionId/admin",
+  isAuth,
+  isCompetitionAuth,
+  asyncHandler(
+    async (req: AuthRequest<any>, res: Response, next): Promise<void> => {
+      const { competitionId } = req.params;
+      const { userId } = req.body;
+      const currUserId = req.user.id;
+
+      const competitionIdNumber = parseInt(competitionId, 10);
+      if (isNaN(competitionIdNumber)) {
+        res.status(400).json({ message: "Competition ID is not a number!" });
+        return;
+      }
+
+      const competitionOwner = await prisma.competitions.findFirst({
+        where: { user_id: currUserId, id: competitionIdNumber },
+      });
+
+      if (!competitionOwner) {
+        res.status(403).json({
+          message: "Only the owner of the competition may remove admins!",
+        });
+        return;
+      }
+
+      const isUserInCompetition = await prisma.users_in_competitions.findFirst({
+        where: { user_id: userId, competition_id: competitionIdNumber },
+      });
+
+      if (!isUserInCompetition) {
+        res.status(404).json({
+          message: "User is not part of this competition!",
+        });
+        return;
+      }
+
+      await prisma.users_in_competitions.update({
+        where: {
+          user_id_competition_id: {
+            user_id: userId,
+            competition_id: competitionIdNumber,
+          },
+        },
+        data: {
+          is_admin: false,
+        },
+      });
+
+      res.status(200).json({
+        message: `User ${userId} has been removed as an admin for competition ${competitionId}!`,
+      });
       return;
     }
   )

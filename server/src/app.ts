@@ -55,6 +55,11 @@ app.use(passport.session());
 
 const PORT = parseInt(process.env.PORT || "3000", 10);
 const indexRouter = require("./routes/index");
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 app.use("/api", indexRouter);
 
 // We use any for err as any request could throw any error in the application

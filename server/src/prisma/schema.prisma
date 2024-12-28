@@ -42,6 +42,7 @@ model users_in_competitions {
   competition    competitions @relation(fields: [competition_id], references: [id], onDelete: Cascade)
   competition_id Int
   joined_at      DateTime     @default(now())
+  is_admin       Boolean      @default(false)
 
   @@id([user_id, competition_id])
 }

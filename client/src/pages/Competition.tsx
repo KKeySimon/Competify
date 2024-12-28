@@ -5,7 +5,7 @@ import SubmissionPopup from "../components/SubmissionPopup";
 import { ICompetition, Invite, Submission, Vote } from "../../types";
 import NewCompetitionPopup from "../components/NewCompetitionPopup";
 import styles from "./Competition.module.css";
-import { formatDistanceToNow } from "date-fns";
+import UsersInCompetition from "../components/UsersInCompetition";
 
 function Competition({ isDarkMode }: { isDarkMode: boolean }) {
   interface Event {
@@ -666,121 +666,11 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
                 )}
               </div>
             </div>
-            <div className={styles.participants}>
-              <h3>Users</h3>
-              <ul>
-                <div className={styles.userList}>
-                  {competition.users_in_competitions
-                    .filter((uic) =>
-                      submissions.some(
-                        (submission) => submission.user_id === uic.user.id
-                      )
-                    ) // Users with submissions
-                    .map((uic) => {
-                      const userSubmissions = submissions.filter(
-                        (submission) => submission.user_id === uic.user.id
-                      );
-                      return (
-                        <div
-                          onClick={() => navigate(`/profile/${uic.user.id}`)}
-                          className={styles.userContainer}
-                        >
-                          <li key={uic.user.id}>
-                            <span
-                              style={{
-                                color: "green", // Always green for users with submissions
-                              }}
-                            >
-                              {uic.user.username}
-                              {competition.created_by.username ===
-                                uic.user.username && (
-                                <span
-                                  role="img"
-                                  aria-label="crown"
-                                  style={{ marginLeft: "5px" }}
-                                >
-                                  👑
-                                </span>
-                              )}
-                            </span>
-                            <img
-                              className={styles.profilePicture}
-                              src={uic.user.profile_picture_url}
-                            />
-                            <span>
-                              {userSubmissions.map((submission) => (
-                                <span key={submission.id}>
-                                  {` - Submitted ${formatDistanceToNow(
-                                    new Date(submission.created_at),
-                                    { addSuffix: true }
-                                  )}`}
-                                </span>
-                              ))}
-                            </span>
-                          </li>
-                        </div>
-                      );
-                    })}
-                </div>
-                <div className={styles.userList}>
-                  {competition.users_in_competitions
-                    .filter(
-                      (uic) =>
-                        !submissions.some(
-                          (submission) => submission.user_id === uic.user.id
-                        )
-                    )
-                    .map((uic) => (
-                      <div
-                        onClick={() => navigate(`/profile/${uic.user.id}`)}
-                        className={styles.userContainer}
-                      >
-                        <li key={uic.user.id}>
-                          <span>
-                            {uic.user.username}
-                            {competition.created_by.username ===
-                              uic.user.username && (
-                              <span
-                                role="img"
-                                aria-label="crown"
-                                style={{ marginLeft: "5px" }}
-                              >
-                                👑
-                              </span>
-                            )}
-                          </span>
-                          <img
-                            className={styles.profilePicture}
-                            src={uic.user.profile_picture_url}
-                          />
-                        </li>
-                      </div>
-                    ))}
-                </div>
-              </ul>
-              <h5 style={{ marginTop: "20px" }}>Pending Invites</h5>
-              <ul>
-                {invites.length > 0 ? (
-                  invites.map((invite) => (
-                    <li
-                      key={invite.invitee.id}
-                      className={styles.inviteContainer}
-                    >
-                      <span style={{ color: "black" }}>
-                        {invite.invitee.username}
-                      </span>
-                      <img
-                        className={styles.profilePicture}
-                        src={invite.invitee.profile_picture_url}
-                        alt={`${invite.invitee.username}'s profile`}
-                      />
-                    </li>
-                  ))
-                ) : (
-                  <p>No pending invites</p>
-                )}
-              </ul>
-            </div>
+            <UsersInCompetition
+              competition={competition}
+              submissions={submissions}
+              invites={invites}
+            />
           </div>
         )}
       </div>
