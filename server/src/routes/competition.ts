@@ -538,6 +538,86 @@ router.delete(
   )
 );
 
+router.delete(
+  "/:competitionId/kick",
+  isAuth,
+  isCompetitionAuth,
+  asyncHandler(async (req: AuthRequest<any>, res: Response): Promise<void> => {
+    const { competitionId } = req.params;
+    const { userId } = req.body;
+    const currUserId = req.user.id;
+
+    const competitionIdNumber = parseInt(competitionId, 10);
+    if (isNaN(competitionIdNumber)) {
+      res.status(400).json({ message: "Competition ID is not a number!" });
+      return;
+    }
+
+    const competition = await prisma.competitions.findFirst({
+      where: { id: competitionIdNumber },
+      include: {
+        users_in_competitions: true,
+      },
+    });
+
+    if (!competition) {
+      res.status(404).json({ message: "Competition not found!" });
+      return;
+    }
+
+    const isOwner = competition.user_id === currUserId;
+    const isAdmin = competition.users_in_competitions.some(
+      (uic) => uic.user_id === currUserId && uic.is_admin
+    );
+
+    if (!isOwner && !isAdmin) {
+      res.status(403).json({
+        message: "You must be an admin or the owner to kick a user!",
+      });
+      return;
+    }
+
+    if (userId === competition.user_id) {
+      res.status(403).json({
+        message: "The owner cannot be removed from the competition!",
+      });
+      return;
+    }
+
+    const targetUser = competition.users_in_competitions.find(
+      (uic) => uic.user_id === userId
+    );
+
+    if (!targetUser) {
+      res
+        .status(404)
+        .json({ message: "User is not part of this competition!" });
+      return;
+    }
+
+    if (!isOwner && targetUser.is_admin) {
+      res.status(403).json({
+        message: "Admins can only remove non-admin users!",
+      });
+      return;
+    }
+
+    await prisma.users_in_competitions.delete({
+      where: {
+        user_id_competition_id: {
+          user_id: userId,
+          competition_id: competitionIdNumber,
+        },
+      },
+    });
+
+    res.status(200).json({
+      message: `User ${userId} has been removed from competition ${competitionId}!`,
+    });
+    return;
+  })
+);
+
 import eventsRoute, { upcomingEvent } from "./events";
 router.use("/:competitionId/events", eventsRoute);
 

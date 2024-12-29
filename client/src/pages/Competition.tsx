@@ -51,7 +51,7 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
   const [popupTrigger, setPopupTrigger] = useState(false);
   const [hasVoted, setHasVoted] = useState<Record<number, boolean>>({});
   const [invites, setInvites] = useState<Invite[]>([]);
-  const [userId, setUserId] = useState<number | null>(null);
+  const [userId, setUserId] = useState<number>(-1);
 
   const handleSubmitSubmission = (newSubmission: Submission) => {
     setSubmissions((prevSubmissions) => {
@@ -321,14 +321,18 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
             <div className={styles.contents}>
               <div className={styles.header}>
                 <h1>{competition.name}</h1>
-                {competition && competition.user_id === userId && (
-                  <button
-                    className={styles.gear}
-                    onClick={() => setPopupTrigger(true)}
-                  >
-                    ⚙️
-                  </button>
-                )}
+                {competition &&
+                  (competition.user_id === userId ||
+                    competition.users_in_competitions.some(
+                      (uic) => uic.user_id === userId && uic.is_admin
+                    )) && (
+                    <button
+                      className={styles.gear}
+                      onClick={() => setPopupTrigger(true)}
+                    >
+                      ⚙️
+                    </button>
+                  )}
               </div>
 
               <div className={styles.description}>
@@ -670,6 +674,7 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
               competition={competition}
               submissions={submissions}
               invites={invites}
+              userId={userId}
             />
           </div>
         )}

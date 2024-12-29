@@ -8,10 +8,12 @@ function UsersInCompetition({
   competition,
   submissions,
   invites,
+  userId,
 }: {
   competition: ICompetition;
   submissions: Submission[];
   invites: Invite[];
+  userId: number;
 }) {
   const navigate = useNavigate();
   const contextMenuRef = useRef<HTMLDivElement | null>(null);
@@ -103,6 +105,38 @@ function UsersInCompetition({
     } catch (error) {
       console.error("Error removing admin status:", error);
       alert("An error occurred while removing admin status.");
+    } finally {
+      closeContextMenu();
+    }
+  };
+
+  const kickUser = async (userId: number) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/competition/${
+          competition.id
+        }/kick`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId }),
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        setUsers((prevUsers) =>
+          prevUsers.filter((user) => user.user_id !== userId)
+        );
+      } else {
+        const errorData = await response.json();
+        console.error(errorData.message);
+      }
+    } catch (error) {
+      console.error("Error kicking user:", error);
+      alert("An error occurred while trying to kick the user.");
     } finally {
       closeContextMenu();
     }
@@ -271,8 +305,8 @@ function UsersInCompetition({
             <li onClick={() => navigate(`/profile/${selectedUser.id}`)}>
               View Profile
             </li>
-            {/* Check if the selected user is the owner */}
-            {competition.created_by.username !== selectedUser.username &&
+            {competition.created_by.id === userId &&
+              competition.created_by.username !== selectedUser.username &&
               (users.find((u) => u.user_id === selectedUser.id)?.is_admin ? (
                 <li onClick={() => deleteAdmin(selectedUser.id)}>
                   Remove Admin
@@ -280,6 +314,11 @@ function UsersInCompetition({
               ) : (
                 <li onClick={() => makeAdmin(selectedUser.id)}>Make Admin</li>
               ))}
+            {(competition.created_by.id === userId ||
+              users.find((u) => u.user_id === userId)?.is_admin) &&
+              competition.created_by.username !== selectedUser.username && (
+                <li onClick={() => kickUser(selectedUser.id)}>Kick User</li>
+              )}
           </ul>
         </div>
       )}

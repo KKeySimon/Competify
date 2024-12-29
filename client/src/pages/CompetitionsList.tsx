@@ -38,7 +38,6 @@ function CompetitionsList({
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         setCompetitions(data);
       })
       .catch((error) => {
