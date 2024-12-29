@@ -1,8 +1,10 @@
+require("dotenv").config();
+
 import { Frequency, Priority, AuthType, competitions } from "@prisma/client";
 import { Response, NextFunction } from "express";
 import express from "express";
 import asyncHandler from "express-async-handler";
-
+import { v4 as uuidv4 } from "uuid";
 import { AuthRequest, CreateCompetition } from "../types/types";
 import prisma from "../prisma/client";
 
@@ -615,6 +617,173 @@ router.delete(
       message: `User ${userId} has been removed from competition ${competitionId}!`,
     });
     return;
+  })
+);
+
+router.delete(
+  "/:competitionId/leave",
+  isAuth,
+  isCompetitionAuth,
+  asyncHandler(async (req: AuthRequest<any>, res: Response): Promise<void> => {
+    const { competitionId } = req.params;
+    const currUserId = req.user.id;
+
+    const competitionIdNumber = parseInt(competitionId, 10);
+    if (isNaN(competitionIdNumber)) {
+      res.status(400).json({ message: "Competition ID is not a number!" });
+      return;
+    }
+
+    const competition = await prisma.competitions.findFirst({
+      where: { id: competitionIdNumber },
+    });
+
+    if (!competition) {
+      res.status(404).json({ message: "Competition not found!" });
+      return;
+    }
+
+    if (competition.user_id === currUserId) {
+      res.status(403).json({
+        message:
+          "The owner cannot leave the competition! Instead delete the competition!",
+      });
+      return;
+    }
+
+    const isParticipant = await prisma.users_in_competitions.findFirst({
+      where: {
+        user_id: currUserId,
+        competition_id: competitionIdNumber,
+      },
+    });
+
+    if (!isParticipant) {
+      res.status(404).json({
+        message: "You are not part of this competition!",
+      });
+      return;
+    }
+
+    await prisma.users_in_competitions.delete({
+      where: {
+        user_id_competition_id: {
+          user_id: currUserId,
+          competition_id: competitionIdNumber,
+        },
+      },
+    });
+
+    res.status(200).json({
+      message: `You have successfully left the competition ${competitionId}!`,
+    });
+  })
+);
+
+router.post(
+  "/:competitionId/generate-invite",
+  isAuth,
+  isCompetitionAuth,
+  asyncHandler(async (req: AuthRequest<any>, res: Response): Promise<void> => {
+    const { competitionId } = req.params;
+    const currUserId = req.user.id;
+
+    const competitionIdNumber = parseInt(competitionId, 10);
+    if (isNaN(competitionIdNumber)) {
+      res.status(400).json({ message: "Competition ID is not a number!" });
+      return;
+    }
+
+    const competition = await prisma.competitions.findFirst({
+      where: { id: competitionIdNumber },
+      include: { users_in_competitions: true },
+    });
+
+    if (!competition) {
+      res.status(404).json({ message: "Competition not found!" });
+      return;
+    }
+
+    const isOwner = competition.user_id === currUserId;
+    const isAdmin = competition.users_in_competitions.some(
+      (uic) => uic.user_id === currUserId && uic.is_admin
+    );
+
+    if (!isOwner && !isAdmin) {
+      res.status(403).json({
+        message: "Only the owner or admins can generate invite links!",
+      });
+      return;
+    }
+
+    const existingInvite = await prisma.competition_invites.findFirst({
+      where: { competition_id: competitionIdNumber },
+    });
+
+    if (existingInvite) {
+      res.status(200).json({
+        inviteLink: `${process.env.CLIENT_URL}/join/${existingInvite.token}`,
+      });
+      return;
+    }
+
+    const inviteToken = uuidv4();
+
+    await prisma.competition_invites.create({
+      data: {
+        competition_id: competitionIdNumber,
+        token: inviteToken,
+      },
+    });
+
+    res.status(200).json({
+      inviteLink: `${process.env.CLINET_URL}/join/${inviteToken}`,
+    });
+  })
+);
+
+router.post(
+  "/join/:inviteToken",
+  isAuth,
+  asyncHandler(async (req: AuthRequest<any>, res: Response): Promise<void> => {
+    const { inviteToken } = req.params;
+    const currUserId = req.user.id;
+
+    const invite = await prisma.competition_invites.findFirst({
+      where: { token: inviteToken },
+    });
+
+    if (!invite) {
+      res.status(404).json({ message: "Invalid or expired invite link!" });
+      return;
+    }
+
+    const isAlreadyInCompetition = await prisma.users_in_competitions.findFirst(
+      {
+        where: {
+          user_id: currUserId,
+          competition_id: invite.competition_id,
+        },
+      }
+    );
+
+    if (isAlreadyInCompetition) {
+      res.status(400).json({
+        message: "You are already a member of this competition!",
+      });
+      return;
+    }
+
+    await prisma.users_in_competitions.create({
+      data: {
+        user_id: currUserId,
+        competition_id: invite.competition_id,
+      },
+    });
+
+    res.status(200).json({
+      message: "You have successfully joined the competition!",
+    });
   })
 );
 

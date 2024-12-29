@@ -142,6 +142,39 @@ function UsersInCompetition({
     }
   };
 
+  const leaveCompetition = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/api/competition/${
+          competition.id
+        }/leave`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        alert("You have successfully left the competition!");
+        setUsers((prevUsers) =>
+          prevUsers.filter((user) => user.user_id !== userId)
+        );
+        navigate("/competition/");
+      } else {
+        const errorData = await response.json();
+        console.error(errorData.message);
+      }
+    } catch (error) {
+      console.error("Error leaving competition:", error);
+      alert("An error occurred while leaving the competition.");
+    } finally {
+      closeContextMenu();
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -319,6 +352,9 @@ function UsersInCompetition({
               competition.created_by.username !== selectedUser.username && (
                 <li onClick={() => kickUser(selectedUser.id)}>Kick User</li>
               )}
+            {selectedUser.id === userId && (
+              <li onClick={() => leaveCompetition()}>Leave Competition</li>
+            )}
           </ul>
         </div>
       )}

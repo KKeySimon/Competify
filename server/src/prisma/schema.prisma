@@ -61,7 +61,7 @@ model invites {
 
 model competitions {
   id                    Int                     @id @default(autoincrement())
-  name                  String
+  name                  String                  @db.VarChar(100)
   start_time            DateTime
   end_time              DateTime?
   // https://stackoverflow.com/questions/313417/whats-the-best-way-to-store-the-days-of-the-week-an-event-takes-place-on-in-a-r
@@ -78,8 +78,17 @@ model competitions {
   events                events[]
   priority              Priority
   // policy                Policy
-  description           String?
+  description           String?                 @db.VarChar(500)
   competition_to_channel competition_to_channel[]
+  competition_invites competition_invites[]
+}
+
+model competition_invites {
+  id             Int         @id @default(autoincrement())
+  competition_id Int
+  token          String      @unique
+  created_at     DateTime    @default(now())
+  competition    competitions @relation(fields: [competition_id], references: [id], onDelete: Cascade)
 }
 
 model events {
@@ -106,7 +115,7 @@ model submissions {
   belongs_to      users           @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id         Int
   created_at      DateTime        @default(now())
-  content         String?
+  content         String  ?       @db.VarChar(500)
   content_number  Float?
   submission_type SubmissionType?
   votes           votes[]

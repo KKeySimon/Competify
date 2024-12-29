@@ -12,6 +12,7 @@ import Competition from "./pages/Competition";
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import EventPage from "./pages/EventPage";
+import JoinCompetition from "./pages/JoinCompetition";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -114,6 +115,10 @@ function App() {
           <Route
             path="/competition/:competitionId/events/:eventId"
             element={<EventPage />}
+          />
+          <Route
+            path="/join/:inviteToken"
+            element={<JoinCompetition isLoggedIn={isLoggedIn} />}
           />
         </Routes>
       </div>

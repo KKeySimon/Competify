@@ -95,6 +95,7 @@ function NewCompetitionPopup({
   );
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [inviteLinkError, setInviteLinkError] = useState<string | null>(null);
 
   function convertTo24Hour(time: string) {
     const [timePart, modifier] = time.split(" ");
@@ -302,6 +303,32 @@ function NewCompetitionPopup({
     setInvites((prev) => [...prev, { username: inviteInput.trim(), authType }]);
     setInviteInput("");
     setErrors({ ...errors, usernames: "" });
+  };
+
+  const handleGenerateInviteLink = async (competitionId: number) => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_SERVER_URL
+        }/api/competition/${competitionId}/generate-invite`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        navigator.clipboard.writeText(data.inviteLink);
+        alert("Invite link copied to clipboard!");
+      } else {
+        const errorMessage = await response.text();
+        setInviteLinkError(errorMessage || "Failed to generate invite link.");
+      }
+    } catch (error) {
+      console.error("Error generating invite link:", error);
+      setInviteLinkError("An error occurred while generating the invite link.");
+    }
   };
 
   return trigger ? (
@@ -573,6 +600,13 @@ function NewCompetitionPopup({
               <Button variant="primary" type="submit">
                 {competitionData ? "Update Competition" : "Create Competition"}
               </Button>
+              <Button
+                variant="primary"
+                onClick={() => handleGenerateInviteLink(competitionData!.id)}
+                className={styles.generateInviteButton}
+              >
+                Generate and Copy Invite Link
+              </Button>
               {competitionData && (
                 <a
                   className={styles.deleteCompetitionLink}
@@ -583,6 +617,12 @@ function NewCompetitionPopup({
                 >
                   Delete Competition
                 </a>
+              )}
+
+              {inviteLinkError && (
+                <Alert variant="danger" className={styles.inviteLinkError}>
+                  {inviteLinkError}
+                </Alert>
               )}
             </div>
           </Form>
