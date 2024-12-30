@@ -347,10 +347,20 @@ function NewCompetitionPopup({
             e.stopPropagation();
           }}
         >
-          <CloseButton
-            color={isDarkMode ? "white" : "black"}
-            onClick={() => setTrigger(false)}
-          />
+          <div className={styles.top}>
+            <CloseButton
+              color={isDarkMode ? "white" : "black"}
+              onClick={() => setTrigger(false)}
+            />
+            {competitionData && (
+              <a
+                onClick={() => handleGenerateInviteLink(competitionData!.id)}
+                className={styles.generateInviteButton}
+              >
+                Generate and Copy Invite Link
+              </a>
+            )}
+          </div>
           <h1 className={styles.prompt}>
             {competitionData
               ? "Update Competition"
@@ -416,6 +426,7 @@ function NewCompetitionPopup({
                   }}
                   isInvalid={!!errors.usernames}
                 />
+                @
                 <Form.Select
                   value={authType}
                   onChange={(e) => setAuthType(e.target.value)}
@@ -600,13 +611,7 @@ function NewCompetitionPopup({
               <Button variant="primary" type="submit">
                 {competitionData ? "Update Competition" : "Create Competition"}
               </Button>
-              <Button
-                variant="primary"
-                onClick={() => handleGenerateInviteLink(competitionData!.id)}
-                className={styles.generateInviteButton}
-              >
-                Generate and Copy Invite Link
-              </Button>
+
               {competitionData && (
                 <a
                   className={styles.deleteCompetitionLink}

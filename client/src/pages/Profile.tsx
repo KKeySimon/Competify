@@ -16,6 +16,7 @@ function Profile() {
   const [submissions, setSubmissions] = useState<Submission[]>([]); // To hold the submissions data
   const [wins, setWins] = useState<number>(0);
   const [authType, setAuthType] = useState<string>("");
+  const [discordLinked, setDiscordLinked] = useState<boolean>(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +61,7 @@ function Profile() {
         setSubmissions(data.submissions);
         setWins(data.wins);
         setAuthType(data.authType);
+        setDiscordLinked(!!data.discord_id);
       } catch (error) {
         console.error(error);
       }
@@ -89,6 +91,29 @@ function Profile() {
               <span className={styles.winsNumber}>{wins}</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {isSelf && authType === "EMAIL" && (
+        <div className={styles.discordLinking}>
+          {discordLinked ? (
+            <p className={styles.discordLinkedMessage}>
+              Your Discord account is already linked.
+            </p>
+          ) : (
+            <Button
+              variant="info"
+              className={styles.discordLinkButton}
+              onClick={() => {
+                const discordOAuthUrl = `${
+                  import.meta.env.VITE_SERVER_URL
+                }/api/login/discord`;
+                window.location.href = discordOAuthUrl;
+              }}
+            >
+              Link to Discord
+            </Button>
+          )}
         </div>
       )}
 

@@ -118,3 +118,9 @@
 .authType {
   color: gray;
 }
+
+.discordLinkedMessage {
+  font-size: 1rem;
+  color: green;
+  margin-top: 10px;
+}

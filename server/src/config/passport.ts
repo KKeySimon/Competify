@@ -39,9 +39,10 @@ passport.use(
         process.env.NODE_ENV === "production"
           ? "https://competify.onrender.com/api/login/discord/callback"
           : "http://localhost:3000/api/login/discord/callback",
-      scope: scopes,
+      scope: ["identify", "email"],
+      passReqToCallback: true, // Pass the request object to the callback
     },
-    async (accessToken, refreshToken, profile, cb) => {
+    async (req, accessToken, refreshToken, profile, cb) => {
       try {
         const {
           id: discordId,
@@ -51,45 +52,73 @@ passport.use(
           discriminator,
         } = profile;
 
-        const { rows } = await pool.query(
-          "SELECT * FROM users WHERE discord_id = $1",
-          [profile.id]
-        );
-        let user = rows[0];
+        const userLoggedIn = req.user; // Check if the user is already logged in
 
-        if (!user) {
-          const emailCheck = await pool.query(
-            "SELECT * FROM users WHERE email = $1",
-            [email]
-          );
-          if (emailCheck.rows.length > 0) {
+        // Check if discord_id is already linked to another account
+        const { rows: discordRows } = await pool.query(
+          "SELECT * FROM users WHERE discord_id = $1",
+          [discordId]
+        );
+        const discordLinkedUser = discordRows[0];
+
+        if (discordLinkedUser) {
+          if (userLoggedIn && discordLinkedUser.id !== userLoggedIn.id) {
             return cb(null, false, {
-              message: "email_exists",
+              message:
+                "This Discord account is already linked to another user.",
             });
           }
-
-          let profilePictureUrl = avatar
-            ? `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png`
-            : `https://cdn.discordapp.com/embed/avatars/${
-                parseInt(discriminator) % 5
-              }.png`;
-
-          const insertResult = await pool.query(
-            `INSERT INTO users (discord_id, username, email, profile_picture_url, auth_type)
-             VALUES ($1, $2, $3, $4, 'DISCORD') RETURNING *`,
-            [discordId, username, email, profilePictureUrl]
-          );
-
-          user = insertResult.rows[0];
+          return cb(null, discordLinkedUser); // Discord already linked for the logged-in user
         }
 
-        return cb(null, user);
+        if (userLoggedIn) {
+          // Associate discord_id with the logged-in user's account
+          await pool.query(
+            "UPDATE users SET discord_id = $1, username = $2 WHERE id = $3",
+            [discordId, username, userLoggedIn.id]
+          );
+
+          const { rows: updatedRows } = await pool.query(
+            "SELECT * FROM users WHERE id = $1",
+            [userLoggedIn.id]
+          );
+          return cb(null, updatedRows[0]);
+        }
+
+        // If not logged in, check if email matches an existing account
+        const { rows: emailRows } = await pool.query(
+          "SELECT * FROM users WHERE email = $1",
+          [email]
+        );
+        const emailUser = emailRows[0];
+
+        if (emailUser) {
+          return cb(null, false, {
+            message: "email_exists",
+          });
+        }
+
+        // Create a new user if no existing account matches
+        let profilePictureUrl = avatar
+          ? `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png`
+          : `https://cdn.discordapp.com/embed/avatars/${
+              parseInt(discriminator) % 5
+            }.png`;
+
+        const { rows: newUserRows } = await pool.query(
+          `INSERT INTO users (discord_id, username, email, profile_picture_url, auth_type)
+           VALUES ($1, $2, $3, $4, 'DISCORD') RETURNING *`,
+          [discordId, username, email, profilePictureUrl]
+        );
+
+        return cb(null, newUserRows[0]);
       } catch (err) {
         return cb(err, null);
       }
     }
   )
 );
+
 passport.serializeUser((user, done) => {
   if (user && user.id) {
     console.log("Serializing user:", user);

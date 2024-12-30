@@ -68,6 +68,7 @@ const getProfile = async (userId: number) => {
     url,
     authType: profile.auth_type,
     username: profile.username,
+    discord_id: profile.discord_id ? profile.discord_id.toString() : null, // Convert BigInt to string
     submissions: profile.submissions || [],
   };
 };
