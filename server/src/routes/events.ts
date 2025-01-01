@@ -2,12 +2,59 @@ import express from "express";
 import asyncHandler from "express-async-handler";
 import prisma from "../prisma/client";
 import { AuthRequest, CreateSubmissions } from "../types/types";
-import { competitions, Frequency, SubmissionType } from "@prisma/client";
+import {
+  competitions,
+  Frequency,
+  SubmissionType,
+  events,
+} from "@prisma/client";
 import { addDays, addMonths, addWeeks, isBefore, isEqual } from "date-fns";
 
 const router = express.Router({ mergeParams: true });
 const isAuth = require("./authMiddleware").isAuth;
 const isCompetitionAuth = require("./authMiddleware").isCompetitionAuth;
+const sortSubmissions = (submissions: any[]) => {
+  return submissions.sort((a, b) => {
+    const aVotes = a.votes.length;
+    const bVotes = b.votes.length;
+
+    if (bVotes !== aVotes) {
+      return bVotes - aVotes; // Sort by votes descending
+    }
+
+    const aDate = new Date(a.created_at).getTime();
+    const bDate = new Date(b.created_at).getTime();
+    return aDate - bDate; // Sort by created_at ascending
+  });
+};
+const formatEvent = (event: any) => {
+  const submissionsSorted = sortSubmissions(event.submissions);
+
+  return {
+    id: event.id,
+    competition_id: event.competition_id,
+    date: event.date,
+    winner: event.winner
+      ? {
+          username: event.winner.username,
+          profile_picture_url: event.winner.profile_picture_url,
+        }
+      : null,
+    submissions: submissionsSorted.map((submission) => ({
+      id: submission.id,
+      user: {
+        id: submission.user_id,
+        username: submission.belongs_to.username,
+        profile_picture_url: submission.belongs_to.profile_picture_url,
+      },
+      content: submission.content,
+      content_number: submission.content_number,
+      created_at: submission.created_at,
+      submission_type: submission.submission_type,
+      vote_count: submission.votes.length,
+    })),
+  };
+};
 
 router.get(
   "/",
@@ -57,28 +104,7 @@ router.get(
       },
     });
 
-    const formattedEvents = events.map((event) => {
-      const submissionsSorted = event.submissions.sort((a, b) => {
-        const aVotes = a.votes.length;
-        const bVotes = b.votes.length;
-
-        // Sort primarily by votes (descending)
-        if (bVotes !== aVotes) {
-          return bVotes - aVotes;
-        }
-
-        // If tied by votes, sort by created_at (earlier first)
-        const aDate = new Date(a.created_at).getTime();
-        const bDate = new Date(b.created_at).getTime();
-        return aDate - bDate;
-      });
-
-      return {
-        ...event,
-        submissions: submissionsSorted,
-      };
-    });
-
+    const formattedEvents = events.map(formatEvent);
     res.status(200).json(formattedEvents);
     return;
   })

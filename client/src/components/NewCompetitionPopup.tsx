@@ -96,7 +96,9 @@ function NewCompetitionPopup({
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [inviteLinkError, setInviteLinkError] = useState<string | null>(null);
-  const [compPublic, setCompPublic] = useState<boolean>(false);
+  const [compPublic, setCompPublic] = useState<boolean>(
+    competitionData?.public ? competitionData.public : false
+  );
 
   function convertTo24Hour(time: string) {
     const [timePart, modifier] = time.split(" ");

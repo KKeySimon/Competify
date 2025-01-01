@@ -6,6 +6,7 @@ import { ICompetition, Invite, Submission, Vote } from "../../types";
 import NewCompetitionPopup from "../components/NewCompetitionPopup";
 import styles from "./Competition.module.css";
 import UsersInCompetition from "../components/UsersInCompetition";
+import Confetti from "react-confetti";
 
 function Competition({ isDarkMode }: { isDarkMode: boolean }) {
   interface Event {
@@ -52,6 +53,7 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
   const [hasVoted, setHasVoted] = useState<Record<number, boolean>>({});
   const [invites, setInvites] = useState<Invite[]>([]);
   const [userId, setUserId] = useState<number>(-1);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const handleSubmitSubmission = (newSubmission: Submission) => {
     setSubmissions((prevSubmissions) => {
@@ -206,7 +208,13 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
         const now = new Date();
         const timeDiff = upcoming.date.getTime() - now.getTime();
 
-        if (timeDiff > 0) {
+        if (timeDiff <= 0) {
+          clearInterval(interval);
+          setShowCelebration(true);
+          setTimeout(() => {
+            window.location.reload();
+          }, 5000);
+        } else {
           const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
           const hours = Math.floor(
             (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -315,6 +323,16 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
 
   return (
     <div className={isDarkMode ? styles.darkMode : ""}>
+      {showCelebration && (
+        <>
+          <Confetti />
+
+          <div className={styles.celebrationPopup}>
+            <h2>🎉 Event Completed! 🎉</h2>
+            <p>Congratulations to all participants!</p>
+          </div>
+        </>
+      )}
       <div className={styles.window}>
         {competition && (
           <div className={styles.container}>
@@ -353,7 +371,6 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
                   />
                 )}
               </div>
-
               {upcoming ? (
                 <div className={styles.leaderboard}>
                   <div className={styles.deadline}>
