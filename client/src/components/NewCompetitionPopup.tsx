@@ -96,6 +96,7 @@ function NewCompetitionPopup({
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [inviteLinkError, setInviteLinkError] = useState<string | null>(null);
+  const [compPublic, setCompPublic] = useState<boolean>(false);
 
   function convertTo24Hour(time: string) {
     const [timePart, modifier] = time.split(" ");
@@ -231,6 +232,7 @@ function NewCompetitionPopup({
       priority,
       description,
       is_numerical: isNumerical,
+      public: compPublic,
     };
 
     await fetch(
@@ -554,23 +556,39 @@ function NewCompetitionPopup({
                 </Form.Group>
               </>
             )}
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                label="Public"
+                checked={compPublic}
+                onChange={() => setCompPublic(!compPublic)}
+              />
+            </Form.Group>
 
             <Modal
               show={startDateFocus}
               onHide={() => setStartDateFocus(false)}
             >
-              <Modal.Header closeButton>
+              <Modal.Header
+                style={isDarkMode ? { backgroundColor: "#2c3e50" } : undefined}
+                closeButton
+              >
                 <Modal.Title>Select Date and Time</Modal.Title>
               </Modal.Header>
-              <Modal.Body>
+              <Modal.Body
+                style={isDarkMode ? { backgroundColor: "#2c3e50" } : undefined}
+              >
                 <DateTimePicker
                   dateValue={startDate}
                   setDateValue={setStartDate}
                   timeValue={startTime}
                   setTimeValue={setStartTime}
+                  isDarkMode={isDarkMode}
                 />
               </Modal.Body>
-              <Modal.Footer>
+              <Modal.Footer
+                style={isDarkMode ? { backgroundColor: "#2c3e50" } : undefined}
+              >
                 <Button
                   variant="secondary"
                   onClick={() => setStartDateFocus(false)}
@@ -590,6 +608,7 @@ function NewCompetitionPopup({
                   setDateValue={setEndDate}
                   timeValue={endTime}
                   setTimeValue={setEndTime}
+                  isDarkMode={isDarkMode}
                 />
               </Modal.Body>
               <Modal.Footer>

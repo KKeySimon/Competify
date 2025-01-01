@@ -17,26 +17,28 @@ import JoinCompetition from "./pages/JoinCompetition";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const storedPreference = localStorage.getItem("darkMode");
-    if (storedPreference) {
-      setIsDarkMode(storedPreference === "true");
-    }
-  }, []);
+    return storedPreference === "true"; // Initialize state from localStorage
+  });
 
   useEffect(() => {
-    localStorage.setItem("darkMode", isDarkMode.toString());
-  }, [isDarkMode]);
-
-  useEffect(() => {
+    // Apply or remove dark mode class from body
     if (isDarkMode) {
       document.body.classList.add("dark-mode");
     } else {
       document.body.classList.remove("dark-mode");
     }
   }, [isDarkMode]);
+
+  useEffect(() => {
+    // Persist dark mode preference in localStorage
+    localStorage.setItem("darkMode", isDarkMode.toString());
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prevMode) => !prevMode);
+  };
 
   // useEffect & isLoggedIn state is moved from NavBar to App as other components will eventually
   // need to use whether user is logged in. Shouldn't tighty couple the 2 together
@@ -61,10 +63,6 @@ function App() {
       });
   }, []);
 
-  const toggleDarkMode = () => {
-    setIsDarkMode((prevMode) => !prevMode);
-  };
-
   // This is needed as without loading, i.e. isLoggedIn is initially set to false
   // App loads and instantly renders /competition before isLoggedIn is set to true and will redirect
   // to home and /competition will not finish loading
@@ -82,7 +80,12 @@ function App() {
       />
       <div className="content">
         <Routes>
-          <Route path="/" element={<HomePage isLoggedIn={isLoggedIn} />} />
+          <Route
+            path="/"
+            element={
+              <HomePage isLoggedIn={isLoggedIn} isDarkMode={isDarkMode} />
+            }
+          />
           <Route
             path="/login"
             element={

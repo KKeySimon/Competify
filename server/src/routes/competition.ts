@@ -71,6 +71,61 @@ router.get(
   )
 );
 
+router.get(
+  "/public",
+  asyncHandler(
+    async (req: AuthRequest<{}>, res: Response, next: NextFunction) => {
+      try {
+        const publicCompetitions = await prisma.competitions.findMany({
+          where: {
+            public: true,
+          },
+          select: {
+            id: true,
+            name: true,
+            created_by: {
+              select: {
+                username: true,
+                profile_picture_url: true,
+              },
+            },
+            created_at: true,
+            repeats_every: true,
+            events: {
+              where: {
+                upcoming: true,
+              },
+              select: {
+                date: true,
+              },
+            },
+            users_in_competitions: {
+              select: {
+                user_id: true,
+              },
+            },
+          },
+        });
+
+        res.status(200).json(
+          publicCompetitions.map((competition) => ({
+            competitionId: competition.id,
+            name: competition.name,
+            createdBy: competition.created_by.username,
+            profilePictureUrl: competition.created_by.profile_picture_url,
+            createdAt: competition.created_at,
+            repeatsEvery: competition.repeats_every,
+            upcoming: competition.events.map((event) => event.date),
+            participantCount: competition.users_in_competitions.length,
+          }))
+        );
+      } catch (error) {
+        next(error);
+      }
+    }
+  )
+);
+
 router.post(
   "/new",
   isAuth,
@@ -128,6 +183,7 @@ router.post(
           repeats_every: req.body.repeatEvery,
           frequency: frequency,
           priority: priority,
+          public: req.body.public,
           // policy: policy,
           is_numerical: req.body.is_numerical,
           description: req.body.description,
@@ -270,6 +326,7 @@ router.put(
           repeats_every: req.body.repeatEvery,
           frequency: frequency,
           priority: priority,
+          public: req.body.public,
           // policy: policy,
           description: req.body.description,
           is_numerical: req.body.is_numerical,

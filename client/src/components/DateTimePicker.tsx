@@ -2,6 +2,7 @@ import React, { ChangeEventHandler } from "react";
 
 import { setHours, setMinutes } from "date-fns";
 import { DayPicker } from "react-day-picker";
+import "./DateTimePicker.css"; // Your custom styles
 
 interface DateTimePickerProps {
   dateValue: Date | undefined;
@@ -16,7 +17,8 @@ export function DateTimePicker({
   setDateValue,
   timeValue,
   setTimeValue,
-}: DateTimePickerProps) {
+  isDarkMode,
+}: DateTimePickerProps & { isDarkMode: boolean }) {
   const handleTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const time = e.target.value;
     if (!dateValue) {
@@ -47,8 +49,16 @@ export function DateTimePicker({
     setDateValue(newDate);
   };
 
+  const darkTheme = {
+    backgroundColor: "#2c3e50",
+    color: "#ecf0f1",
+    "--rdp-accent-color": "yellow",
+    "--rdp-accent-background-color": "black",
+    "--rdp-hover-color": "#e0e0e0",
+    "--rdp-selected-color": "yellow",
+  } as React.CSSProperties;
   return (
-    <div>
+    <div style={isDarkMode ? { backgroundColor: "#2c3e50" } : undefined}>
       <form style={{ marginBlockEnd: "1em" }}>
         <label>
           Set the time:{" "}
@@ -62,6 +72,7 @@ export function DateTimePicker({
         footer={`Selected date: ${
           dateValue ? dateValue.toLocaleString() : "none"
         }`}
+        style={isDarkMode ? darkTheme : undefined}
       />
     </div>
   );

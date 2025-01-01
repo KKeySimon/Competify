@@ -56,14 +56,19 @@ module.exports.isCompetitionAuth = async (req, res, next) => {
   if (isNaN(competitionIdNumber)) {
     res.status(400).send({ message: "Competition ID is not a number!" });
   }
-  const valid = await prisma.users_in_competitions.findFirst({
-    where: {
-      user_id: currUserId,
-      competition_id: competitionIdNumber,
-    },
+  const comp = await prisma.competitions.findFirst({
+    where: { id: competitionIdNumber },
   });
-  if (!valid) {
-    res.status(401).send({ message: "No permission to enter competition" });
+  if (!comp.public) {
+    const valid = await prisma.users_in_competitions.findFirst({
+      where: {
+        user_id: currUserId,
+        competition_id: competitionIdNumber,
+      },
+    });
+    if (!valid) {
+      res.status(401).send({ message: "No permission to enter competition" });
+    }
   }
   next();
 };

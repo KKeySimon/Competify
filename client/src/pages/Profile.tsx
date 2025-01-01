@@ -82,8 +82,10 @@ function Profile() {
             />
             <h1 className={styles.username}>
               {username}
-              {authType && authType !== "EMAIL" && (
-                <span className={styles.authType}>@{authType}</span>
+              {authType && (
+                <span className={styles.authType}>
+                  @{authType === "EMAIL" ? "COMPETIFY" : authType}
+                </span>
               )}
             </h1>
             <div className={styles.winsBox}>

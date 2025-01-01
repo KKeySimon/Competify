@@ -4,7 +4,13 @@ import { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trophy } from "react-bootstrap-icons";
 
-function HomePage({ isLoggedIn }: { isLoggedIn: boolean }) {
+function HomePage({
+  isLoggedIn,
+  isDarkMode,
+}: {
+  isLoggedIn: boolean;
+  isDarkMode: boolean;
+}) {
   const el = useRef(null);
   const navigate = useNavigate();
 
@@ -44,12 +50,16 @@ function HomePage({ isLoggedIn }: { isLoggedIn: boolean }) {
   }, []);
 
   return (
-    <>
+    <div>
       <div className={styles.background}>
         <div className={styles.content}>
           <div className={styles.introBlock}>
             <div className={styles.introText}>
-              <div className={styles.titleTyping}>
+              <div
+                className={`${styles.titleTyping} ${
+                  isDarkMode ? styles.darkMode : ""
+                }`}
+              >
                 <span ref={el} />
               </div>
               <a>
@@ -59,6 +69,12 @@ function HomePage({ isLoggedIn }: { isLoggedIn: boolean }) {
               </a>
               <a onClick={scrollToTutorial} className={styles.scrollLink}>
                 First time using Competify?
+              </a>
+              <a
+                className={styles.discordLink}
+                href="https://discord.com/oauth2/authorize?client_id=1318987396582215690&scope=bot%20applications.commands&permissions=8"
+              >
+                Add the Competify Discord bot for easy submissions!
               </a>
               <button
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -72,7 +88,11 @@ function HomePage({ isLoggedIn }: { isLoggedIn: boolean }) {
             </div>
             <Trophy size={150} />
           </div>
-          <div className={styles.featureContainer}>
+          <div
+            className={`${styles.featureContainer} ${
+              isDarkMode ? styles.darkMode : ""
+            }`}
+          >
             <h1 className={styles.title}>Features</h1>
             <ul className={styles.list}>
               <li className={styles.listItem}>
@@ -130,7 +150,12 @@ function HomePage({ isLoggedIn }: { isLoggedIn: boolean }) {
               </li>
             </ul>
           </div>
-          <div ref={tutorialRef} className={styles.tutorialContainer}>
+          <div
+            className={`${styles.tutorialContainer} ${
+              isDarkMode ? styles.darkMode : ""
+            }`}
+            ref={tutorialRef}
+          >
             <h1 className={styles.title}>How to Use Competify</h1>
             <ol className={styles.tutorialList}>
               <li>
@@ -188,7 +213,9 @@ function HomePage({ isLoggedIn }: { isLoggedIn: boolean }) {
             </ol>
           </div>
         </div>
-        <div className={styles.footer}>
+        <div
+          className={`${styles.footer} ${isDarkMode ? styles.darkMode : ""}`}
+        >
           <a
             href="https://github.com/KKeySimon/Competify"
             target="_blank"
@@ -203,7 +230,7 @@ function HomePage({ isLoggedIn }: { isLoggedIn: boolean }) {
           </a>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 export default HomePage;

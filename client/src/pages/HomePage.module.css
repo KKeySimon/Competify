@@ -6,7 +6,6 @@
   flex-direction: column;
   align-items: center; /* Center align items */
   font-weight: 1000;
-  background-color: #f8f9fa; /* Light background for contrast */
   min-height: 95vh;
 }
 
@@ -16,6 +15,10 @@
   color: #333; /* Darker text color for better readability */
   text-align: left; /* Center align text */
   margin-bottom: 1em; /* Space below title */
+}
+
+.titleTyping.darkMode {
+  color: #f8f9fa; /* Light text color for dark background */
 }
 
 /* Responsive adjustments */
@@ -97,11 +100,21 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.featureContainer.darkMode {
+  background: #2c3e50; /* Dark mode background */
+  color: #f1f1f1; /* Light text for dark mode */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
 .title {
   text-align: center;
   margin-bottom: 20px;
   color: #2c3e50;
   font-family: Arial, sans-serif;
+}
+
+.featureContainer.darkMode .title {
+  color: #ecf0f1; /* Light text for dark mode */
 }
 
 .list {
@@ -125,6 +138,22 @@
   font-size: 0.95em;
   color: #666;
   font-weight: normal;
+}
+
+.featureContainer.darkMode .listItem {
+  color: #ecf0f1; /* Light text for dark mode */
+}
+
+.featureContainer.darkMode .listItem strong {
+  color: #ecf0f1; /* Light primary text for dark mode */
+}
+
+.featureContainer.darkMode .listItem p {
+  color: #b0b0b0; /* Secondary light text for dark mode */
+}
+
+.featureContainer.darkMode .icon {
+  color: #1abc9c; /* Adjusted icon color for dark mode */
 }
 
 .icon {
@@ -151,6 +180,11 @@
   padding: 10px 0; /* Add padding for better spacing */
 }
 
+.footer.darkMode {
+  background-color: #2c3e50; /* Dark mode background */
+  color: #ecf0f1; /* Light text for dark mode */
+}
+
 .footerLink {
   text-decoration: none; /* Remove underline from links */
 }
@@ -162,6 +196,14 @@
   margin: 0 auto; /* Center the icon */
 }
 
+.footer.darkMode .footerLink {
+  color: #1abc9c; /* Dark mode link */
+}
+
+.footer.darkMode .footerLink:hover {
+  color: #16a085; /* Dark mode link hover */
+}
+
 .tutorialContainer {
   padding: 20px;
   background-color: #f9f9f9;
@@ -169,6 +211,12 @@
   margin: 20px auto;
   max-width: 1200px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tutorialContainer.darkMode {
+  background-color: #34495e; /* Dark mode background */
+  color: #f1f1f1; /* Light text for dark mode */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
 }
 
 .tutorialList {
@@ -197,9 +245,33 @@
   font-family: Arial, sans-serif;
 }
 
+.tutorialContainer.darkMode h1 {
+  color: #ecf0f1; /* Light title for dark mode */
+}
+
+.tutorialContainer.darkMode .tutorialList {
+  color: #ecf0f1; /* Light text for dark mode */
+}
+
+.tutorialContainer.darkMode .tutorialList li p {
+  color: #b0b0b0; /* Secondary light text for dark mode */
+}
+
+.tutorialContainer.darkMode .tutorialList li strong {
+  color: #ecf0f1; /* Light primary text for dark mode */
+}
+
 .scrollLink {
   display: block;
   margin-top: 10px;
+  color: #27ae60;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.discordLink {
+  display: block;
   color: #27ae60;
   text-decoration: underline;
   cursor: pointer;

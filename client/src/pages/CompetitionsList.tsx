@@ -18,6 +18,7 @@ function CompetitionsList({
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [sortCriteria, setSortCriteria] = useState<string>("joinedAt");
   const [isAscending, setIsAscending] = useState<boolean>(true);
+  const [viewPublic, setViewPublic] = useState<boolean>(false); // Track whether viewing public competitions
 
   const navigate = useNavigate();
 
@@ -28,7 +29,11 @@ function CompetitionsList({
   }, [isLoggedIn, navigate]);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_SERVER_URL}/api/competition`, {
+    const endpoint = viewPublic
+      ? `${import.meta.env.VITE_SERVER_URL}/api/competition/public`
+      : `${import.meta.env.VITE_SERVER_URL}/api/competition`;
+
+    fetch(endpoint, {
       credentials: "include",
     })
       .then((response) => {
@@ -43,7 +48,7 @@ function CompetitionsList({
       .catch((error) => {
         console.log(error.message);
       });
-  }, []);
+  }, [viewPublic]); // Refetch whenever the view changes
 
   const sortedCompetitions = [...competitions].sort((a, b) => {
     let comparison = 0;
@@ -77,7 +82,7 @@ function CompetitionsList({
         }
         break;
       case "participantCount":
-        comparison = a.participantCount - b.participantCount; // Add this line
+        comparison = a.participantCount - b.participantCount;
         break;
       default:
         break;
@@ -98,7 +103,7 @@ function CompetitionsList({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Competition</h1>
+        <h1>Competitions</h1>
         <Button onClick={() => setTrigger(true)}>New Competition</Button>
       </div>
       <NewCompetitionPopup
@@ -106,6 +111,20 @@ function CompetitionsList({
         setTrigger={setTrigger}
         isDarkMode={isDarkMode}
       />
+      <div className={styles.sortButtons}>
+        <Button
+          className={!viewPublic ? styles.selected : ""}
+          onClick={() => setViewPublic(false)}
+        >
+          My Competitions
+        </Button>
+        <Button
+          className={viewPublic ? styles.selected : ""}
+          onClick={() => setViewPublic(true)}
+        >
+          Public Competitions
+        </Button>
+      </div>
       <div className={styles.sortButtons}>
         <Button
           className={sortCriteria === "name" ? styles.selected : ""}

@@ -12,6 +12,10 @@
   z-index: 1;
 }
 
+.overlay.darkMode {
+  background-color: rgba(50, 50, 50, 0.8); /* Darker overlay for dark mode */
+}
+
 .container {
   display: flex;
   text-align: left;
