@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Event, EventResponse, Submission } from "../../types";
 import styles from "./EventPage.module.css";
 
-function EventPage() {
+function EventPage({ isDarkMode }: { isDarkMode: boolean }) {
   const { competitionId, eventId } = useParams();
   const [eventData, setEventData] = useState<Event | null>(null);
   const [submissions, setSubmissions] = useState<Submission[] | null>(null);
@@ -29,7 +29,6 @@ function EventPage() {
         const eventData: EventResponse = await eventResponse.json();
         setEventData(eventData.event);
         setSubmissions(eventData.submissions);
-        console.log(eventData);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
@@ -43,11 +42,19 @@ function EventPage() {
   }, [competitionId, eventId]);
 
   if (loading) {
-    return <div className={styles.loading}>Loading...</div>;
+    return (
+      <div className={`${styles.loading} ${isDarkMode ? styles.darkMode : ""}`}>
+        Loading...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className={styles.error}>Error: {error}</div>;
+    return (
+      <div className={`${styles.error} ${isDarkMode ? styles.darkMode : ""}`}>
+        Error: {error}
+      </div>
+    );
   }
 
   if (!eventData) {
@@ -55,12 +62,16 @@ function EventPage() {
   }
 
   return (
-    <div className={styles.eventPage}>
-      <h1>
+    <div className={`${styles.eventPage} ${isDarkMode ? styles.darkMode : ""}`}>
+      <h1 className={isDarkMode ? styles.darkMode : ""}>
         {eventData.belongs_to.name}'s{" "}
         {new Date(eventData.date).toLocaleDateString()} Event
       </h1>
-      <div className={styles.eventDetails}>
+      <div
+        className={`${styles.eventDetails} ${
+          isDarkMode ? styles.darkMode : ""
+        }`}
+      >
         <h2>Event Details</h2>
         <p>
           <strong>Date:</strong> {new Date(eventData.date).toLocaleString()}
@@ -84,11 +95,18 @@ function EventPage() {
       </div>
 
       {submissions && submissions.length > 0 ? (
-        <div className={styles.submissions}>
+        <div
+          className={`${styles.submissions} ${
+            isDarkMode ? styles.darkMode : ""
+          }`}
+        >
           <h2>Submissions</h2>
           <ul>
             {submissions.map((submission) => (
-              <li key={submission.id}>
+              <li
+                key={submission.id}
+                className={isDarkMode ? styles.darkMode : ""}
+              >
                 <p>
                   <strong>Submitted by:</strong>{" "}
                   {submission.belongs_to.username}

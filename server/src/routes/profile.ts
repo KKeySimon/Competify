@@ -48,6 +48,11 @@ const getProfile = async (userId: number) => {
           submission_type: true,
           created_at: true,
           event_id: true,
+          event: {
+            select: {
+              is_numerical: true,
+            },
+          },
         },
         orderBy: {
           created_at: "desc",
@@ -64,12 +69,17 @@ const getProfile = async (userId: number) => {
     profile.profile_picture_url ||
     `https://${process.env.AWS_S3_BUCKET}.s3.amazonaws.com/profile_pictures/profile_default.jpg`;
 
+  const submissions = profile.submissions.map((submission) => ({
+    ...submission,
+    is_numerical: submission.event.is_numerical,
+  }));
+
   return {
     url,
     authType: profile.auth_type,
     username: profile.username,
     discord_id: profile.discord_id ? profile.discord_id.toString() : null, // Convert BigInt to string
-    submissions: profile.submissions || [],
+    submissions: submissions,
   };
 };
 

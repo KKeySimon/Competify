@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import styles from "./Profile.module.css";
 import { Submission } from "../../types";
 
-function Profile() {
+function Profile({ isDarkMode }: { isDarkMode: boolean }) {
   const { id } = useParams();
   const [file, setFile] = useState<File | null>(null);
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(
@@ -157,15 +157,24 @@ function Profile() {
         {submissions.length > 0 ? (
           <ul className={styles.submissionsList}>
             {submissions.map((submission, index) => (
-              <li key={index} className={styles.submissionItem}>
+              <li
+                key={index}
+                className={`${styles.submissionItem} ${
+                  isDarkMode ? styles.darkMode : ""
+                }`}
+              >
                 <div className={styles.submissionContent}>
                   <p>
                     <strong>Content:</strong>{" "}
-                    {submission.content || "No content"}
+                    {submission.is_numerical
+                      ? submission.content_number || "No number provided"
+                      : submission.content || "No content"}
                   </p>
                   <p>
                     <strong>Submission Type:</strong>{" "}
-                    {submission.submission_type || "N/A"}
+                    {submission.is_numerical
+                      ? "Number"
+                      : submission.submission_type || "N/A"}
                   </p>
                   <p>
                     <strong>Created At:</strong>{" "}

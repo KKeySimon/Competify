@@ -69,6 +69,7 @@ export interface PopupProps {
   setTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export interface Submission {
+  is_numerical: any;
   id: number;
   event_id: number;
   user_id: number;

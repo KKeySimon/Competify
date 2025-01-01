@@ -132,13 +132,15 @@ function CompetitionsList({
         >
           Sort by Name {sortCriteria === "name" && (isAscending ? "↑" : "↓")}
         </Button>
-        <Button
-          className={sortCriteria === "joinedAt" ? styles.selected : ""}
-          onClick={() => handleSort("joinedAt")}
-        >
-          Sort by Join Date{" "}
-          {sortCriteria === "joinedAt" && (isAscending ? "↑" : "↓")}
-        </Button>
+        {!viewPublic && (
+          <Button
+            className={sortCriteria === "joinedAt" ? styles.selected : ""}
+            onClick={() => handleSort("joinedAt")}
+          >
+            Sort by Join Date{" "}
+            {sortCriteria === "joinedAt" && (isAscending ? "↑" : "↓")}
+          </Button>
+        )}
         <Button
           className={sortCriteria === "createdAt" ? styles.selected : ""}
           onClick={() => handleSort("createdAt")}
@@ -179,6 +181,7 @@ function CompetitionsList({
               upcoming={competition.upcoming}
               participantCount={competition.participantCount}
               isDarkMode={isDarkMode}
+              viewPublic={viewPublic}
             />
           </Link>
         ))}

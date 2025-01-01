@@ -82,6 +82,13 @@
   color: #333333;
 }
 
+.submissionItem.darkMode {
+  background-color: #1e1e1e; /* Dark background */
+  border: 1px solid #444444; /* Subtle border for dark mode */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Slightly stronger shadow */
+  color: #e0e0e0; /* Light text */
+}
+
 .submissionContent {
   margin: 10px 0;
 }

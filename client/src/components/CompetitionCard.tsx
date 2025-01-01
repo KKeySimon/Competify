@@ -10,7 +10,8 @@ function CompetitionCard({
   upcoming,
   participantCount,
   isDarkMode,
-}: Competition & { isDarkMode: boolean }) {
+  viewPublic,
+}: Competition & { isDarkMode: boolean; viewPublic: boolean }) {
   const joinDate = new Date(joinedAt);
   const localJoinDate = joinDate.toLocaleDateString();
   const localCreateDate = new Date(createdAt).toLocaleDateString();
@@ -34,13 +35,13 @@ function CompetitionCard({
         </div>
       </div>
       <div className={styles.joinCreateTag}>
-        <h4>Joined At:</h4>
+        {!viewPublic && <h4>Joined At:</h4>}
         <h4>Created At:</h4>
         <h4>Participants:</h4>
         <h4>Upcoming:</h4>
       </div>
       <div className={styles.joinCreateDate}>
-        <h4>{localJoinDate}</h4>
+        {!viewPublic && <h4>{localJoinDate}</h4>}
         <h4>{localCreateDate}</h4>
         <h4>{participantCount}</h4>
         <h4>{localUpcomingDate}</h4>
