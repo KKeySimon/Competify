@@ -22,7 +22,6 @@ function SubmissionPopup({
   const [inputType, setInputType] = useState("text");
   async function handleCreateSubmission(e: React.FormEvent) {
     e.preventDefault();
-    console.log(submission);
 
     await fetch(
       `${import.meta.env.VITE_SERVER_URL}/api/competition/ ` +

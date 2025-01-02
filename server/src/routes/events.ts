@@ -140,13 +140,6 @@ router.get(
       where: {
         competition_id: competitionIdNumber,
         upcoming: true,
-        belongs_to: {
-          users_in_competitions: {
-            some: {
-              user_id: currUserId,
-            },
-          },
-        },
       },
     });
     res.status(200).json(events);
@@ -283,17 +276,36 @@ router.post(
     const { competitionId } = req.params;
     const competitionIdNumber = parseInt(competitionId, 10);
 
+    const competition = await prisma.competitions.findFirst({
+      where: {
+        id: competitionIdNumber,
+      },
+    });
+
+    if (competition.public) {
+      const userInCompetition = await prisma.users_in_competitions.findUnique({
+        where: {
+          user_id_competition_id: {
+            user_id: currUserId,
+            competition_id: competitionIdNumber,
+          },
+        },
+      });
+
+      if (!userInCompetition) {
+        await prisma.users_in_competitions.create({
+          data: {
+            user_id: currUserId,
+            competition_id: competitionIdNumber,
+          },
+        });
+      }
+    }
+
     const event = await prisma.events.findFirst({
       where: {
         competition_id: competitionIdNumber,
         upcoming: true,
-        belongs_to: {
-          users_in_competitions: {
-            some: {
-              user_id: currUserId,
-            },
-          },
-        },
       },
     });
 
@@ -349,10 +361,14 @@ router.post(
           id: existingSubmission.id,
         },
         data: event.is_numerical
-          ? { content_number: submissionNumber }
+          ? {
+              content_number: submissionNumber,
+              created_at: new Date(),
+            }
           : {
               content: submissionText,
               submission_type: inputType,
+              created_at: new Date(),
             },
         select: {
           id: true,
@@ -364,6 +380,7 @@ router.post(
           belongs_to: {
             select: {
               username: true,
+              profile_picture_url: true,
             },
           },
           submission_type: true,
@@ -405,6 +422,7 @@ router.post(
           belongs_to: {
             select: {
               username: true,
+              profile_picture_url: true,
             },
           },
           _count: {

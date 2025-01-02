@@ -40,7 +40,6 @@
   display: block;
   font-size: 1rem;
   font-weight: 500;
-  color: #333;
 }
 
 .radioButton.selected {
@@ -95,5 +94,5 @@
 }
 
 .submitButton {
-  margin-bottom: 15px;
+  margin: 15px 0;
 }

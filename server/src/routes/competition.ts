@@ -468,14 +468,16 @@ router.get(
         res.status(404).send({ message: "Competition not found" });
         return;
       }
-      const isUserInCompetition = competition.users_in_competitions.some(
-        (uc) => uc.user_id === currUserId
-      );
-      if (!isUserInCompetition) {
-        res
-          .status(401)
-          .send({ message: "No permission to view competition users" });
-        return;
+      if (!competition.public) {
+        const isUserInCompetition = competition.users_in_competitions.some(
+          (uc) => uc.user_id === currUserId
+        );
+        if (!isUserInCompetition) {
+          res
+            .status(401)
+            .send({ message: "No permission to view competition users" });
+          return;
+        }
       }
       res.status(200).send(competition);
       return;
