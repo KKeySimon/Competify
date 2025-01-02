@@ -165,6 +165,11 @@ function NewCompetitionPopup({
       } else if (startDate && endDate <= startDate) {
         newErrors.endDate = "End date needs to be after start date";
       }
+
+      if (repeatEvery <= 0) {
+        newErrors.apiError =
+          "Repeat interval must be greater than 0 when Repeat is enabled";
+      }
     }
     return newErrors;
   };

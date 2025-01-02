@@ -41,6 +41,7 @@ const formatEvent = (event: any) => {
         }
       : null,
     submissions: submissionsSorted.map((submission) => ({
+      ...submission,
       id: submission.id,
       user: {
         id: submission.user_id,
