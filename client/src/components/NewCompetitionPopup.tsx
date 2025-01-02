@@ -6,6 +6,8 @@ import {
   ListGroup,
   ListGroupItem,
   Modal,
+  OverlayTrigger,
+  Tooltip,
 } from "react-bootstrap";
 import styles from "./NewCompetitionPopup.module.css";
 import { useState } from "react";
@@ -412,7 +414,22 @@ function NewCompetitionPopup({
               />
             </Form.Group>
             <Form.Group controlId="formInvitePeople">
-              <Form.Label>Invite Usernames</Form.Label>
+              <Form.Label>
+                Invite Usernames
+                <OverlayTrigger
+                  placement="right"
+                  overlay={
+                    <Tooltip>
+                      Add usernames to invite them to the competition. Press the
+                      "+" button or press enter to add more users. A user can
+                      check if they made their account through Competify or
+                      Discord by going on their profile.
+                    </Tooltip>
+                  }
+                >
+                  <span className={styles.tooltipCircle}>?</span>
+                </OverlayTrigger>
+              </Form.Label>
               <div className={styles.inviteContainer}>
                 <Form.Control
                   type="text"
@@ -475,7 +492,20 @@ function NewCompetitionPopup({
               </ListGroup>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formStartTime">
-              <Form.Label>Start Time</Form.Label>
+              <Form.Label>
+                Start Time
+                <OverlayTrigger
+                  placement="right"
+                  overlay={
+                    <Tooltip>
+                      Specify when the competition begins. If the competition is
+                      not set to repeat, this also serves as the deadline.
+                    </Tooltip>
+                  }
+                >
+                  <span className={styles.tooltipCircle}>?</span>
+                </OverlayTrigger>
+              </Form.Label>
               <Form.Control
                 type="text"
                 placeholder="MM/DD/YYYY HH:MM AM"
@@ -491,7 +521,22 @@ function NewCompetitionPopup({
             <Form.Group className="mb-3">
               <Form.Check
                 type="checkbox"
-                label="Repeat"
+                label={
+                  <>
+                    Repeat
+                    <OverlayTrigger
+                      placement="right"
+                      overlay={
+                        <Tooltip id="tooltip-repeat">
+                          Enable this if the competition should repeat
+                          automatically
+                        </Tooltip>
+                      }
+                    >
+                      <span className={styles.tooltipCircle}>?</span>
+                    </OverlayTrigger>
+                  </>
+                }
                 checked={repeat}
                 onChange={() => setRepeat(!repeat)}
               />
@@ -539,7 +584,25 @@ function NewCompetitionPopup({
             <Form.Group className="mb-3">
               <Form.Check
                 type="checkbox"
-                label="Numerical"
+                label={
+                  <>
+                    Numerical
+                    <OverlayTrigger
+                      placement="right"
+                      overlay={
+                        <Tooltip>
+                          Numerical copmetitions disables voting and a winner
+                          will be automatically decided depending on the
+                          selected policy. Non-numerical competitions require
+                          users to vote and users with the most votes will win
+                          the competition
+                        </Tooltip>
+                      }
+                    >
+                      <span className={styles.tooltipCircle}>?</span>
+                    </OverlayTrigger>
+                  </>
+                }
                 checked={isNumerical}
                 onChange={() => setIsNumerical(!isNumerical)}
               />
@@ -547,7 +610,21 @@ function NewCompetitionPopup({
             {isNumerical && (
               <>
                 <Form.Group className="mb-3" controlId="formInterval">
-                  <Form.Label>Priority</Form.Label>
+                  <Form.Label>
+                    Priority
+                    <OverlayTrigger
+                      placement="right"
+                      overlay={
+                        <Tooltip>
+                          Highest priority means the highest number will win the
+                          competition. Lowest priority means the lowest number
+                          will win the competition
+                        </Tooltip>
+                      }
+                    >
+                      <span className={styles.tooltipCircle}>?</span>
+                    </OverlayTrigger>
+                  </Form.Label>
                   <Form.Select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
@@ -561,7 +638,23 @@ function NewCompetitionPopup({
             <Form.Group className="mb-3">
               <Form.Check
                 type="checkbox"
-                label="Public"
+                label={
+                  <>
+                    Public
+                    <OverlayTrigger
+                      placement="right"
+                      overlay={
+                        <Tooltip>
+                          If a competition is public, users can go to the
+                          competitions tab and find and submit on your
+                          competition by going to "Public Competitions"
+                        </Tooltip>
+                      }
+                    >
+                      <span className={styles.tooltipCircle}>?</span>
+                    </OverlayTrigger>
+                  </>
+                }
                 checked={compPublic}
                 onChange={() => setCompPublic(!compPublic)}
               />
