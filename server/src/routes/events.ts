@@ -42,16 +42,11 @@ const formatEvent = (event: any) => {
       : null,
     submissions: submissionsSorted.map((submission) => ({
       ...submission,
-      id: submission.id,
       user: {
         id: submission.user_id,
         username: submission.belongs_to.username,
         profile_picture_url: submission.belongs_to.profile_picture_url,
       },
-      content: submission.content,
-      content_number: submission.content_number,
-      created_at: submission.created_at,
-      submission_type: submission.submission_type,
       vote_count: submission.votes.length,
     })),
   };
@@ -94,6 +89,7 @@ router.get(
                 username: true,
               },
             },
+            updated_at: true,
             created_at: true,
             votes: {
               select: {
@@ -195,6 +191,7 @@ router.get(
         content: true,
         content_number: true,
         created_at: true,
+        updated_at: true,
         submission_type: true,
         belongs_to: {
           select: {
@@ -363,12 +360,10 @@ router.post(
         data: event.is_numerical
           ? {
               content_number: submissionNumber,
-              created_at: new Date(),
             }
           : {
               content: submissionText,
               submission_type: inputType,
-              created_at: new Date(),
             },
         select: {
           id: true,
@@ -376,6 +371,7 @@ router.post(
           user_id: true,
           content: true,
           created_at: true,
+          updated_at: true,
           content_number: true,
           belongs_to: {
             select: {

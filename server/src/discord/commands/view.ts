@@ -86,7 +86,7 @@ module.exports = {
                   `[Click here to view competition details](http://localhost:5173/competition/${competition.id})`
                 )
                 .addFields({
-                  name: "Event Date",
+                  name: "Deadline",
                   value: new Date(event.date).toLocaleString(),
                   inline: false,
                 });
@@ -135,7 +135,11 @@ module.exports = {
                   name: `${rankEmoji} Rank #${index + 1} - ${
                     sortedSubmission.belongs_to.username
                   }`,
-                  value: `${contentDisplay}\n${voteDisplay}`,
+                  value: `${contentDisplay}\n${voteDisplay}${
+                    index < topSubmissions.length - 1
+                      ? "\n------------------------"
+                      : ""
+                  }`,
                   inline: false,
                 });
               });

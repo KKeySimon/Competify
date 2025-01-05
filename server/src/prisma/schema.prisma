@@ -116,6 +116,7 @@ model submissions {
   belongs_to      users           @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id         Int
   created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
   content         String?
   content_number  Float?
   submission_type SubmissionType?

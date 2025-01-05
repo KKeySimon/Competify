@@ -134,7 +134,7 @@ function SubmissionPopup({
             <img
               src={submission as string}
               alt="Preview"
-              style={{ maxWidth: "100%", height: "auto" }}
+              style={{ maxWidth: "100%", height: "500px" }}
             />
           </div>
         )}

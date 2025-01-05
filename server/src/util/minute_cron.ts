@@ -4,17 +4,105 @@ import prisma from "../prisma/client";
 import { $Enums, Frequency, Priority, submissions } from "@prisma/client";
 import { addDays, addMonths, addWeeks } from "date-fns";
 import { sendEmail } from "./mailgun";
+import { client } from "../discord/discord";
+import { TextChannel } from "discord.js";
 
 export const startCronJob = () => {
   CronJob.from({
     cronTime: "* * * * *", // every minute
     onTick: async () => {
       console.log("Checking notifications");
+      await sendOneHourNotifications();
       await sendNotifications();
     },
     start: true,
     timeZone: "America/New_York",
   });
+};
+
+const sendOneHourNotifications = async () => {
+  const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000);
+
+  const startOfOneHourFromNow = new Date(
+    oneHourFromNow.getFullYear(),
+    oneHourFromNow.getMonth(),
+    oneHourFromNow.getDate(),
+    oneHourFromNow.getHours(),
+    oneHourFromNow.getMinutes(),
+    0,
+    0
+  );
+
+  const endOfOneHourFromNow = new Date(
+    startOfOneHourFromNow.getTime() + 60 * 1000
+  );
+
+  const eventsStartingSoon = await prisma.events.findMany({
+    where: {
+      upcoming: true,
+      date: {
+        gte: startOfOneHourFromNow,
+        lte: endOfOneHourFromNow,
+      },
+    },
+    select: {
+      competition_id: true,
+      date: true,
+      belongs_to: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+  if (eventsStartingSoon.length === 0) return;
+
+  const competitionIds = eventsStartingSoon.map(
+    (event) => event.competition_id
+  );
+  const subscribedChannels = await prisma.competition_to_channel.findMany({
+    where: {
+      competition_id: { in: competitionIds },
+    },
+    select: {
+      discord_channel_id: true,
+      competition_id: true,
+      competition: { select: { name: true } },
+    },
+  });
+
+  subscribedChannels.forEach(async (channel) => {
+    const event = eventsStartingSoon.find(
+      (e) => e.competition_id === channel.competition_id
+    );
+
+    if (!event) return;
+
+    const channelMessage = `
+🔔 **Upcoming Event Reminder!**
+The deadline for **[${channel.competition.name}](${
+      process.env.CLIENT_URL
+    }/competition/${
+      channel.competition_id
+    })** is in 1 hour at ${event.date.toLocaleString()}.
+Don't forget to submit before the deadline!
+`;
+
+    await sendMessageToChannel(channel.discord_channel_id, channelMessage);
+  });
+};
+
+const sendMessageToChannel = async (channelId: bigint, message: string) => {
+  try {
+    const channel = await client.channels.fetch(channelId.toString());
+    if (channel && channel.isTextBased() && channel instanceof TextChannel) {
+      await channel.send(message);
+    } else {
+      console.error(`Channel ${channelId} is not a text-based channel.`);
+    }
+  } catch (error) {
+    console.error(`Failed to send message to channel ${channelId}:`, error);
+  }
 };
 
 const sendNotifications = async () => {
@@ -254,43 +342,6 @@ const determineWinner = async (event: OldUpcomingEvent) => {
           best = submission;
         }
       }
-      // if (event.policy === Policy.FLAT) {
-      //   if (event.priority === Priority.HIGHEST) {
-      //     if (!best || submission.content_number > best.content_number) {
-      //       best = submission;
-      //     }
-      //   } else if (event.priority === Priority.LOWEST) {
-      //     if (!best || submission.content_number < best.content_number) {
-      //       best = submission;
-      //     }
-      //   }
-      // } else if (
-      //   event.policy === Policy.FLAT_CHANGE ||
-      //   event.policy === Policy.PERCENTAGE_CHANGE
-      // ) {
-      //   previousSubmissions.forEach((prevSubmission) => {
-      //     if (prevSubmission.user_id === submission.user_id) {
-      //       let diff: number;
-      //       if (event.policy === Policy.FLAT_CHANGE) {
-      //         diff = submission.content_number - prevSubmission.content_number;
-      //       } else if (event.policy === Policy.PERCENTAGE_CHANGE) {
-      //         diff = submission.content_number / prevSubmission.content_number;
-      //       }
-
-      //       if (event.priority === Priority.HIGHEST) {
-      //         if (!best || diff > bestComparison) {
-      //           best = submission;
-      //           bestComparison = diff;
-      //         }
-      //       } else if (event.priority === Priority.LOWEST) {
-      //         if (!best || diff < bestComparison) {
-      //           best = submission;
-      //           bestComparison = diff;
-      //         }
-      //       }
-      //     }
-      //   });
-      // }
     } else {
       if (!best || submission._count.votes > currBestVotes) {
         best = submission;

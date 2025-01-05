@@ -249,10 +249,19 @@ function UsersInCompetition({
                     <span>
                       {userSubmissions.map((submission) => (
                         <span key={submission.id}>
-                          {` - Submitted ${formatDistanceToNow(
-                            new Date(submission.created_at),
-                            { addSuffix: true }
-                          )}`}
+                          {submission.created_at === submission.updated_at
+                            ? ` - Submitted ${formatDistanceToNow(
+                                new Date(submission.created_at),
+                                {
+                                  addSuffix: true,
+                                }
+                              )}`
+                            : ` - Updated ${formatDistanceToNow(
+                                new Date(submission.updated_at),
+                                {
+                                  addSuffix: true,
+                                }
+                              )}`}
                         </span>
                       ))}
                     </span>

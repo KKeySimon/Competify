@@ -4,7 +4,7 @@ import * as fs from "node:fs";
 import { BotClient } from "../types/types";
 import { getCommands } from "./discordUtil";
 
-const client = new BotClient({ intents: [] });
+export const client = new BotClient({ intents: [] });
 
 export const startDiscordBot = () => {
   try {

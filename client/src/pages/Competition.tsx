@@ -462,11 +462,24 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
                                       <h5>
                                         {sortedSubmission.belongs_to.username}
                                       </h5>
-                                      <h6>
-                                        Created:{" "}
-                                        {new Date(
-                                          sortedSubmission.created_at
-                                        ).toLocaleString()}
+                                      <h6
+                                        title={
+                                          sortedSubmission.created_at !==
+                                          sortedSubmission.updated_at
+                                            ? `Initial Submission: ${new Date(
+                                                sortedSubmission.created_at
+                                              ).toLocaleString()}`
+                                            : undefined
+                                        }
+                                      >
+                                        {`${
+                                          sortedSubmission.created_at ===
+                                          sortedSubmission.updated_at
+                                            ? "Created: "
+                                            : "Updated: "
+                                        }${new Date(
+                                          sortedSubmission.updated_at
+                                        ).toLocaleString()}`}
                                       </h6>
                                     </div>
                                   </div>
@@ -517,11 +530,24 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
                                     <h5>
                                       {textSubmission.belongs_to.username}
                                     </h5>
-                                    <h6>
-                                      Created:{" "}
-                                      {new Date(
-                                        textSubmission.created_at
-                                      ).toLocaleString()}
+                                    <h6
+                                      title={
+                                        textSubmission.created_at !==
+                                        textSubmission.updated_at
+                                          ? `Initial Submission: ${new Date(
+                                              textSubmission.created_at
+                                            ).toLocaleString()}`
+                                          : undefined
+                                      }
+                                    >
+                                      {`${
+                                        textSubmission.created_at ===
+                                        textSubmission.updated_at
+                                          ? "Created: "
+                                          : "Updated: "
+                                      }${new Date(
+                                        textSubmission.updated_at
+                                      ).toLocaleString()}`}
                                     </h6>
                                   </div>
                                 </div>
@@ -552,13 +578,15 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
                                     <span className={styles.submissionBadge}>
                                       🔗 URL Submission
                                     </span>
-                                    <a
-                                      href={textSubmission.content}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      {textSubmission.content}
-                                    </a>
+                                    <p>
+                                      <a
+                                        href={textSubmission.content}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        {textSubmission.content}
+                                      </a>
+                                    </p>
                                   </>
                                 )}
                                 {textSubmission.submission_type ===
@@ -567,11 +595,19 @@ function Competition({ isDarkMode }: { isDarkMode: boolean }) {
                                     <span className={styles.submissionBadge}>
                                       🖼️ Image Submission
                                     </span>
-                                    <img
-                                      src={textSubmission.content}
-                                      alt="Submitted content"
-                                      className={styles.imageContent}
-                                    />
+                                    <br />
+                                    <p>
+                                      <a
+                                        href={textSubmission.content}
+                                        target="_blank"
+                                      >
+                                        <img
+                                          src={textSubmission.content}
+                                          alt="Submitted content"
+                                          className={styles.imageContent}
+                                        />
+                                      </a>
+                                    </p>
                                   </>
                                 )}
                               </div>
