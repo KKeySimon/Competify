@@ -220,6 +220,7 @@ function HomePage({
             href="https://github.com/KKeySimon/Competify"
             target="_blank"
             rel="noopener noreferrer"
+            style={{ marginRight: "20px" }}
             className={styles.footerLink}
           >
             <img
@@ -228,6 +229,7 @@ function HomePage({
               className={styles.footerIcon}
             />
           </a>
+          Contact Me on Discord @kkey
         </div>
       </div>
     </div>
