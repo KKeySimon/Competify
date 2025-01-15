@@ -15,7 +15,7 @@ module.exports = {
       option
         .setName("competition-id")
         .setDescription(
-          `Copy the ID of "${process.env.CLIENT_URL}/competition/{ID COPY THIS}"`
+          `Copy the ID of "competify.vercel.app/competition/{ID COPY THIS}"`
         )
         .setRequired(true)
     )
