@@ -9,8 +9,6 @@ export const client = new BotClient({ intents: [] });
 export const startDiscordBot = () => {
   try {
     client.commands = getCommands("./commands");
-    console.log("Logging in with token:", token);
-
     client.login(token);
 
     const eventsPath = path.join(__dirname, "./events");
@@ -19,8 +17,6 @@ export const startDiscordBot = () => {
       .filter((file) =>
         file.endsWith(process.env.NODE_ENV === "production" ? ".js" : ".ts")
       );
-    console.log("Commands loaded:", client.commands);
-    console.log("Event files found:", eventFiles);
     for (const file of eventFiles) {
       const filePath = path.join(eventsPath, file);
       const event = require(filePath);
