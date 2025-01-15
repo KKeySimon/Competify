@@ -11,7 +11,6 @@ export const startCronJob = () => {
   CronJob.from({
     cronTime: "* * * * *", // every minute
     onTick: async () => {
-      console.log("Checking notifications");
       await sendOneHourNotifications();
       await sendNotifications();
     },

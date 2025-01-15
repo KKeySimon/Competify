@@ -1,28 +1,28 @@
 import * as fs from "node:fs";
 import { Collection } from "discord.js";
+import path from "node:path";
 
 export function getCommands(dir: string) {
-  let commands = new Collection<string, any>();
-  const commandFiles = getFiles(`${__dirname}/${dir}`);
+  const commands = new Collection<string, any>();
+  const commandsPath = path.resolve(__dirname, dir);
+  const commandFiles = getFiles(commandsPath);
+
   for (const commandFile of commandFiles) {
-    const command = require(commandFile);
-    commands.set(command.data.toJSON().name, command);
+    try {
+      const command = require(commandFile);
+      commands.set(command.data.name, command);
+    } catch (error) {
+      console.error(`Error loading command file ${commandFile}:`, error);
+    }
   }
   return commands;
 }
 
-function getFiles(dir: string) {
-  const files = fs.readdirSync(dir, {
-    withFileTypes: true,
-  });
-  let commandFiles = [];
+export function getFiles(dir: string) {
+  const ext = process.env.NODE_ENV === "production" ? ".js" : ".ts";
 
-  for (const file of files) {
-    if (file.isDirectory()) {
-      commandFiles = [...commandFiles, ...getFiles(`${dir}/${file.name}`)];
-    } else if (file.name.endsWith(".ts")) {
-      commandFiles.push(`${dir}/${file.name}`);
-    }
-  }
-  return commandFiles;
+  return fs
+    .readdirSync(dir)
+    .filter((file) => file.endsWith(ext))
+    .map((file) => path.join(dir, file));
 }
