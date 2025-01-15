@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Response } from "express";
 import asyncHandler from "express-async-handler";
 import { AuthRequest, CreateCompetition } from "../types/types";
 import prisma from "../prisma/client";
@@ -11,7 +11,7 @@ router.post(
   "/:submissionId/vote/submit",
   isAuth,
   isCompetitionAuth,
-  asyncHandler(async (req: AuthRequest<any>, res, next) => {
+  asyncHandler(async (req: AuthRequest<any>, res: Response, next) => {
     const userId = req.user.id;
     const { eventId, submissionId } = req.params;
     const submissionIdNum = parseInt(submissionId, 10);
@@ -55,7 +55,7 @@ router.delete(
   "/:submissionId/vote/submit",
   isAuth,
   isCompetitionAuth,
-  asyncHandler(async (req: AuthRequest<any>, res, next) => {
+  asyncHandler(async (req: AuthRequest<any>, res: Response, next) => {
     const userId = req.user.id;
     const { eventId, submissionId } = req.params;
     const submissionIdNum = parseInt(submissionId, 10);

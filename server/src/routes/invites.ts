@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Response } from "express";
 import asyncHandler from "express-async-handler";
 import { AuthRequest } from "../types/types";
 import { HandleInvite } from "../types/types";
@@ -13,7 +13,7 @@ const isCompetitionAuth = require("./authMiddleware").isCompetitionAuth;
 router.get(
   "/",
   isAuth,
-  asyncHandler(async (req: AuthRequest<{}>, res, next) => {
+  asyncHandler(async (req: AuthRequest<{}>, res: Response, next) => {
     const currUserId = req.user.id;
     const invites = await prisma.invites.findMany({
       where: {
@@ -50,7 +50,7 @@ router.get(
   "/:competitionId",
   isAuth,
   isCompetitionAuth,
-  asyncHandler(async (req: AuthRequest<{}>, res, next) => {
+  asyncHandler(async (req: AuthRequest<{}>, res: Response, next) => {
     const { competitionId } = req.params;
     const competitionIdNumber = parseInt(competitionId, 10);
     const invites = await prisma.invites.findMany({
@@ -77,7 +77,7 @@ router.get(
 router.post(
   "/handle",
   isAuth,
-  asyncHandler(async (req: AuthRequest<HandleInvite>, res, next) => {
+  asyncHandler(async (req: AuthRequest<HandleInvite>, res: Response, next) => {
     const currUserId = req.user.id;
     const { inviter_id, competition_id } = req.body;
     const invite = await prisma.invites.findFirst({
@@ -117,7 +117,7 @@ router.post(
 router.delete(
   "/handle",
   isAuth,
-  asyncHandler(async (req: AuthRequest<HandleInvite>, res, next) => {
+  asyncHandler(async (req: AuthRequest<HandleInvite>, res: Response, next) => {
     const currUserId = req.user.id;
     const { inviter_id, competition_id } = req.body;
     const invite = await prisma.invites.findFirst({

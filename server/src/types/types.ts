@@ -6,8 +6,6 @@ export interface AuthRequest<T> extends Request {
   };
   isBot: boolean;
   body: T;
-  params: Record<string, any>;
-  query: Record<string, any>;
 }
 
 import { competitions } from "@prisma/client";

@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Response } from "express";
 import asyncHandler from "express-async-handler";
 import prisma from "../prisma/client";
 import { AuthRequest, CreateSubmissions } from "../types/types";
@@ -56,7 +56,7 @@ router.get(
   "/",
   isAuth,
   isCompetitionAuth,
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req: AuthRequest<any>, res: Response, next) => {
     const { competitionId } = req.params;
     const competitionIdNumber = parseInt(competitionId, 10);
 
@@ -111,7 +111,7 @@ router.get(
   "/upcoming",
   isAuth,
   isCompetitionAuth,
-  asyncHandler(async (req: AuthRequest<{}>, res, next) => {
+  asyncHandler(async (req: AuthRequest<{}>, res: Response, next) => {
     let currUserId: number;
     if (req.isBot) {
       const { discordId } = req.query;
@@ -147,7 +147,7 @@ router.get(
   "/:eventId",
   isAuth,
   isCompetitionAuth,
-  asyncHandler(async (req: AuthRequest<{}>, res, next) => {
+  asyncHandler(async (req: AuthRequest<{}>, res: Response, next) => {
     const { eventId } = req.params;
     const eventIdNumber = parseInt(eventId, 10);
 
@@ -225,7 +225,7 @@ router.get(
   "/:eventId/votes",
   isAuth,
   isCompetitionAuth,
-  asyncHandler(async (req: AuthRequest<any>, res, next) => {
+  asyncHandler(async (req: AuthRequest<any>, res: Response, next) => {
     const currUserId = req.user.id;
     const { eventId } = req.params;
     const eventIdNumber = parseInt(eventId, 10);
@@ -251,7 +251,7 @@ router.post(
   "/upcoming/submit",
   isAuth,
   isCompetitionAuth,
-  asyncHandler(async (req: AuthRequest<any>, res, next) => {
+  asyncHandler(async (req: AuthRequest<any>, res: Response, next) => {
     let currUserId: number;
     if (req.isBot) {
       const { discordId } = req.query;

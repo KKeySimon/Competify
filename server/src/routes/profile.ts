@@ -95,7 +95,7 @@ const getNumberOfWins = async (userId: number) => {
 router.get(
   "/me",
   isAuth,
-  asyncHandler(async (req: AuthRequest<any>, res) => {
+  asyncHandler(async (req: AuthRequest<any>, res: Response) => {
     if (req.user) {
       const currUserId = req.user.id;
       const profile = await getProfile(currUserId);
@@ -111,7 +111,7 @@ router.get(
 
 router.get(
   "/:id",
-  asyncHandler(async (req: AuthRequest<any>, res) => {
+  asyncHandler(async (req: AuthRequest<any>, res: Response) => {
     const { id } = req.params;
     if (req.user) {
       const currUserId = req.user.id;
