@@ -106,72 +106,90 @@ function Navbar({
   };
 
   return (
-    <div className={`${styles.navbar} ${isDarkMode ? styles.darkMode : ""}`}>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <Link
-          to="/"
-          className={`${location.pathname === "/" ? styles.active : ""} ${
-            isDarkMode ? styles.darkMode : ""
-          }`}
-        >
-          Home
-        </Link>
-        <Link
-          to="/competition"
-          className={`${
-            location.pathname === "/competition" ? styles.active : ""
-          } ${isDarkMode ? styles.darkMode : ""}`}
-        >
-          Competitions
-        </Link>
-      </div>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <button
-          onClick={toggleDarkMode}
-          style={{ backgroundColor: "transparent", border: "none" }}
-        >
-          {!isDarkMode ? <Sun /> : <Moon style={{ color: "white" }} />}
-        </button>
-        <div>
-          {isLoggedIn ? (
-            <div ref={dropdownRef} className={styles.logoutNotif}>
-              <Bell
-                onClick={() => {
-                  setBellClicked(!bellClicked);
-                }}
-                className={styles.bell}
+    <div
+      className={`${styles.navbarWrapper} ${isDarkMode ? styles.darkMode : ""}`}
+    >
+      <div className={`${styles.navbar}  ${isDarkMode ? styles.darkMode : ""}`}>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <Link
+            to="/"
+            className="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none"
+          >
+            {isDarkMode ? (
+              <img
+                src="/logoDarkMode.svg"
+                alt="Competify"
+                width="40"
+                height="32"
+                className="bi me-2"
               />
-              {notifications.length > 0 && (
-                <span className={styles.notificationCount}>
-                  {notifications.length}
-                </span>
-              )}
-
-              <NotificationsPopup
-                notifications={notifications}
-                bellClicked={bellClicked}
-                removeNotification={removeNotification}
-                isDarkMode={isDarkMode}
+            ) : (
+              <img
+                src="/logo.svg"
+                alt="Competify"
+                width="40"
+                height="32"
+                className="bi me-2"
               />
-
-              <button
-                onClick={() => {
-                  navigate(`/profile/${userId}`);
-                }}
-                className={styles.profileButton}
-              >
-                <img
-                  className={styles.profilePicture}
-                  src={profilePicture}
-                  alt="Profile"
+            )}
+          </Link>
+          <Link
+            to="/competition"
+            className={`${
+              location.pathname === "/competition" ? styles.active : ""
+            } ${isDarkMode ? styles.darkMode : ""}`}
+          >
+            Competitions
+          </Link>
+        </div>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <button
+            onClick={toggleDarkMode}
+            style={{ backgroundColor: "transparent", border: "none" }}
+          >
+            {!isDarkMode ? <Sun /> : <Moon style={{ color: "white" }} />}
+          </button>
+          <div>
+            {isLoggedIn ? (
+              <div ref={dropdownRef} className={styles.logoutNotif}>
+                <Bell
+                  onClick={() => {
+                    setBellClicked(!bellClicked);
+                  }}
+                  className={styles.bell}
                 />
-              </button>
+                {notifications.length > 0 && (
+                  <span className={styles.notificationCount}>
+                    {notifications.length}
+                  </span>
+                )}
 
-              <a onClick={handleLogout}>Logout</a>
-            </div>
-          ) : (
-            <a onClick={() => navigate("/login")}>Login</a>
-          )}
+                <NotificationsPopup
+                  notifications={notifications}
+                  bellClicked={bellClicked}
+                  removeNotification={removeNotification}
+                  isDarkMode={isDarkMode}
+                />
+
+                <button
+                  onClick={() => {
+                    navigate(`/profile/${userId}`);
+                  }}
+                  className={styles.profileButton}
+                >
+                  <img
+                    className={styles.profilePicture}
+                    src={profilePicture}
+                    alt="Profile"
+                  />
+                </button>
+
+                <a onClick={handleLogout}>Logout</a>
+              </div>
+            ) : (
+              <a onClick={() => navigate("/login")}>Login</a>
+            )}
+          </div>
         </div>
       </div>
     </div>

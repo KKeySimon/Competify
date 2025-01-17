@@ -1,19 +1,31 @@
+.navbarWrapper {
+  width: 100%;
+  background-color: white; /* Full-width background */
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  border-bottom: 2px solid rgb(225, 225, 225);
+  align-items: center;
+}
+
+.navbarWrapper.darkMode {
+  background-color: #333;
+  border-bottom: 2px solid rgb(0, 0, 0);
+}
+
 .navbar {
-  width: 100vw;
+  width: 1200px;
   height: 5vh;
+  min-height: 50px;
   display: flex;
   flex-direction: row; /* Ensures items are arranged in a row */
   justify-content: space-between;
   align-items: center;
   background-color: white;
-  position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
-  border-bottom: 2px solid rgb(225, 225, 225);
   cursor: default;
-  transition: background-color 0.5s ease, color 0.5s ease,
-    border-bottom 0.5 ease;
 }
 
 .navbar a {
@@ -117,7 +129,6 @@
 .navbar.darkMode {
   background-color: #333;
   color: white;
-  border-bottom: 2px solid #444;
 }
 
 .navbar a.darkMode {
