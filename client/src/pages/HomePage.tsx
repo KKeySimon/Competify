@@ -2,7 +2,6 @@ import styles from "./HomePage.module.css";
 import Typed from "typed.js";
 import { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Trophy } from "react-bootstrap-icons";
 
 function HomePage({
   isLoggedIn,
