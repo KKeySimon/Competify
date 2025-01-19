@@ -107,48 +107,57 @@ function Login({
       <div
         className={`${styles.container} ${isDarkMode ? styles.darkMode : ""}`}
       >
-        <h1 className={styles.logo}>Competify</h1>
+        {isDarkMode ? (
+          <img
+            src="/logoDarkMode.svg"
+            alt="Competify"
+            className={`${styles.logo}`}
+          />
+        ) : (
+          <img src="/logo.svg" alt="Competify" className={`${styles.logo}`} />
+        )}
         <div className={styles.forms}>
-          <h1 className={styles.login}>Login</h1>
+          <h2 className={styles.login}>Login</h2>
           {errors.apiError && <Alert variant="danger">{errors.apiError}</Alert>}
-          <Form onSubmit={handleLogin} data-bs-theme={isDarkMode && "dark"}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
+          <Form onSubmit={handleLogin} data-bs-theme={isDarkMode ? "dark" : ""}>
+            {/* Email Input */}
+            <div className="form-floating">
+              <input
                 type="email"
-                placeholder="Email"
+                className="form-control"
+                id="floatingInput"
+                placeholder="name@example.com"
+                required
                 value={email}
                 onChange={(e) => {
                   setErrors({ ...errors, email: "" });
                   setEmail(e.target.value);
                 }}
-                isInvalid={!!errors.email}
               />
-              <Form.Control.Feedback type="invalid">
-                {errors.email}
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
+              <label htmlFor="floatingInput">Email address</label>
+            </div>
+            {/* Password Input */}
+            <div className="form-floating mt-3">
+              <input
                 type="password"
+                className="form-control"
+                id="floatingPassword"
                 placeholder="Password"
+                required
                 value={password}
                 onChange={(e) => {
                   setErrors({ ...errors, password: "" });
                   setPassword(e.target.value);
                 }}
-                isInvalid={!!errors.password}
               />
-              <Form.Control.Feedback type="invalid">
-                {errors.password}
-              </Form.Control.Feedback>
-            </Form.Group>
+              <label htmlFor="floatingPassword">Password</label>
+            </div>
             <div className={styles.loginSignupBtn}>
+              {/* Login Button */}
               <Button variant="primary" type="submit">
                 Login
               </Button>
+              {/* Discord Login Button */}
               <a
                 href={`${import.meta.env.VITE_SERVER_URL}/api/login/discord`}
                 className={styles.discordButton}
@@ -159,10 +168,14 @@ function Login({
                     alt="Discord Logo"
                     className={styles.discordLogo}
                   />
-                  Login with Discord
+                  <span className={styles.discordText}>Login with Discord</span>
                 </button>
               </a>
-              <Link to="/sign-up">Sign Up</Link>
+
+              {/* Sign Up Link */}
+              <Link to="/sign-up">
+                <Button variant="primary">Sign Up</Button>
+              </Link>
             </div>
           </Form>
         </div>

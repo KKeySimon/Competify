@@ -121,9 +121,17 @@ function SignUp({
       <div
         className={`${styles.container} ${isDarkMode ? styles.darkMode : ""}`}
       >
-        <h1 className={styles.logo}>Competify</h1>
+        {isDarkMode ? (
+          <img
+            src="/logoDarkMode.svg"
+            alt="Competify"
+            className={`${styles.logo}`}
+          />
+        ) : (
+          <img src="/logo.svg" alt="Competify" className={`${styles.logo}`} />
+        )}
         <div className={styles.forms}>
-          <h1 className={styles.signup}>Sign Up</h1>
+          <h2 className={styles.signup}>Sign Up</h2>
           {errors.apiError && <Alert variant="danger">{errors.apiError}</Alert>}
           {success && (
             <Alert variant="success">
@@ -132,72 +140,69 @@ function SignUp({
           )}
 
           <Form onSubmit={handleSignUp} data-bs-theme={isDarkMode && "dark"}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
+            <div className="form-floating mt-3">
+              <input
                 type="email"
+                className="form-control"
+                id="floatingEmail"
                 placeholder="Email"
+                required
                 value={email}
                 onChange={(e) => {
                   setErrors({ ...errors, email: "" });
                   setEmail(e.target.value);
                 }}
-                isInvalid={!!errors.email}
               />
-              <Form.Control.Feedback type="invalid">
-                {errors.email}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicUsername">
-              <Form.Label>Username</Form.Label>
-              <Form.Control
+              <label htmlFor="floatingEmail">Email address</label>
+            </div>
+            {/* Username Input */}
+            <div className="form-floating mt-3">
+              <input
                 type="text"
+                className="form-control"
+                id="floatingUsername"
                 placeholder="Username"
+                required
                 value={username}
                 onChange={(e) => {
                   setErrors({ ...errors, username: "" });
                   setUsername(e.target.value);
                 }}
-                isInvalid={!!errors.username}
               />
-              <Form.Control.Feedback type="invalid">
-                {errors.username}
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
+              <label htmlFor="floatingUsername">Username</label>
+            </div>
+            {/* Password Input */}
+            <div className="form-floating mt-3">
+              <input
                 type="password"
+                className="form-control"
+                id="floatingPassword"
                 placeholder="Password"
+                required
                 value={password}
                 onChange={(e) => {
                   setErrors({ ...errors, password: "" });
                   setPassword(e.target.value);
                 }}
-                isInvalid={!!errors.password}
               />
-              <Form.Control.Feedback type="invalid">
-                {errors.password}
-              </Form.Control.Feedback>
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
+              <label htmlFor="floatingPassword">Password</label>
+            </div>
+            {/* Confirm Password Input */}
+            <div className="form-floating mt-3">
+              <input
                 type="password"
+                className="form-control"
+                id="floatingConfirmPassword"
                 placeholder="Confirm Password"
+                required
                 value={confirmPassword}
                 onChange={(e) => {
                   setErrors({ ...errors, confirmPassword: "" });
                   setConfirmPassword(e.target.value);
                 }}
-                isInvalid={!!errors.confirmPassword}
               />
-              <Form.Control.Feedback type="invalid">
-                {errors.confirmPassword}
-              </Form.Control.Feedback>
-            </Form.Group>
+              <label htmlFor="floatingConfirmPassword">Confirm Password</label>
+            </div>
 
             <div className={styles.loginSignupBtn}>
               <Button variant="primary" type="submit">
@@ -213,10 +218,12 @@ function SignUp({
                     alt="Discord Logo"
                     className={styles.discordLogo}
                   />
-                  Login with Discord
+                  <span className={styles.discordText}>Login with Discord</span>
                 </button>
               </a>
-              <Link to="/login">Log in</Link>
+              <Link to="/login">
+                <Button variant="primary">Log in</Button>
+              </Link>
             </div>
           </Form>
         </div>

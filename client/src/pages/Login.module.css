@@ -10,11 +10,13 @@
   display: flex;
   text-align: left;
   flex-direction: column;
+  align-items: center; /* Centers horizontally */
+  text-align: center;
   background-color: white;
   border: 1px solid rgb(225, 225, 225);
-  padding: 2rem;
+  padding: 3rem;
   border-radius: 1em;
-  width: clamp(45ch, 50%, 65ch);
+  width: fit-content;
 }
 
 .container.darkMode {
@@ -24,8 +26,9 @@
 }
 
 .logo {
-  text-align: center;
-  flex: 1 1 0%;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1rem;
 }
 .forms {
   flex: 5 1 0%;
@@ -33,6 +36,7 @@
 .loginSignupBtn {
   display: flex;
   justify-content: space-between;
+  gap: 30px;
   margin-top: 30px;
 }
 .login {
@@ -47,7 +51,6 @@
 
 .discordLogo {
   height: 20px;
-  margin-right: 10px;
 }
 
 .discord {
@@ -70,4 +73,17 @@
 .discord:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.5);
+}
+
+.discordText {
+  display: inline; /* Default to visible */
+  justify-content: center;
+  margin-left: 10px;
+}
+
+/* Hide text on smaller screens */
+@media (max-width: 768px) {
+  .discordText {
+    display: none;
+  }
 }

@@ -14,7 +14,8 @@
 }
 
 .navbar {
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   height: 5vh;
   min-height: 50px;
   display: flex;
