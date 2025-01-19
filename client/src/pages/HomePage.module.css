@@ -98,6 +98,8 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
+  font-weight: normal;
 }
 
 .featureContainer.darkMode {
@@ -112,11 +114,6 @@
   color: #2c3e50;
   font-family: Arial, sans-serif;
 }
-
-.featureContainer.darkMode .title {
-  color: #ecf0f1; /* Light text for dark mode */
-}
-
 .list {
   list-style: none;
   padding: 0;
@@ -138,22 +135,6 @@
   font-size: 0.95em;
   color: #666;
   font-weight: normal;
-}
-
-.featureContainer.darkMode .listItem {
-  color: #ecf0f1; /* Light text for dark mode */
-}
-
-.featureContainer.darkMode .listItem strong {
-  color: #ecf0f1; /* Light primary text for dark mode */
-}
-
-.featureContainer.darkMode .listItem p {
-  color: #b0b0b0; /* Secondary light text for dark mode */
-}
-
-.featureContainer.darkMode .icon {
-  color: #1abc9c; /* Adjusted icon color for dark mode */
 }
 
 .icon {
@@ -211,6 +192,8 @@
   margin: 20px auto;
   max-width: 1200px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
+  font-weight: normal;
 }
 
 .tutorialContainer.darkMode {
@@ -276,6 +259,7 @@
   text-decoration: underline;
   cursor: pointer;
   font-size: 1em;
+  margin-bottom: 15px;
 }
 
 .scrollLink:hover {

@@ -14,14 +14,6 @@ function HomePage({
   const el = useRef(null);
   const navigate = useNavigate();
 
-  const tutorialRef = useRef<HTMLDivElement>(null);
-
-  const scrollToTutorial = () => {
-    if (tutorialRef.current) {
-      tutorialRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   useEffect(() => {
     const typed = new Typed(el.current, {
       strings: [
@@ -55,162 +47,138 @@ function HomePage({
         <div className={styles.content}>
           <div className={styles.introBlock}>
             <div className={styles.introText}>
-              <div
-                className={`${styles.titleTyping} ${
-                  isDarkMode ? styles.darkMode : ""
-                }`}
-              >
-                <span ref={el} />
-              </div>
-              <a>
-                Competify is designed to foster habit-building and motivate
-                individuals to push their limits through engaging, friendly
-                competitions.
-              </a>
-              <a onClick={scrollToTutorial} className={styles.scrollLink}>
-                First time using Competify?
-              </a>
-              <a
-                className={styles.discordLink}
-                href="https://discord.com/oauth2/authorize?client_id=1318987396582215690&scope=bot%20applications.commands&permissions=8"
-              >
-                Add the Competify Discord bot for easy submissions!
-              </a>
-              <button
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                onClick={(_) =>
-                  navigate(isLoggedIn ? "/competition" : "/sign-up")
-                }
-                className={styles.registerButton}
-              >
-                {isLoggedIn ? "Start Competing!" : "Register"}
-              </button>
+              <section className="hero">
+                <div className="container">
+                  <div
+                    className={`${styles.titleTyping} ${
+                      isDarkMode ? styles.darkMode : ""
+                    }`}
+                  >
+                    <span ref={el} />
+                  </div>
+                  <p className="lead">
+                    Competify is designed to foster habit-building and motivate
+                    individuals through engaging, friendly competitions.
+                  </p>
+                  <a
+                    className={styles.discordLink}
+                    href="https://discord.com/oauth2/authorize?client_id=1318987396582215690&scope=bot%20applications.commands&permissions=8"
+                  >
+                    Add the Competify Discord bot for easy tracking and
+                    submissions!
+                  </a>
+                  <button
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    onClick={(_) =>
+                      navigate(isLoggedIn ? "/competition" : "/sign-up")
+                    }
+                    className={styles.registerButton}
+                  >
+                    {isLoggedIn ? "Start Competing!" : "Register"}
+                  </button>
+                </div>
+              </section>
             </div>
-            <Trophy size={150} />
+            {isDarkMode ? (
+              <img
+                src="/logoDarkMode.svg"
+                alt="Competify"
+                className={`${styles.logo}`}
+              />
+            ) : (
+              <img
+                src="/logo.svg"
+                alt="Competify"
+                className={`${styles.logo}`}
+              />
+            )}
           </div>
-          <div
-            className={`${styles.featureContainer} ${
+          <section
+            className={`py-5 ${styles.featureContainer} ${
               isDarkMode ? styles.darkMode : ""
             }`}
           >
-            <h1 className={styles.title}>Features</h1>
-            <ul className={styles.list}>
-              <li className={styles.listItem}>
-                <div className={styles.icon}>🔥</div>
-                <div>
-                  <strong>Engaging Competitions:</strong>
+            <div className="container">
+              <h2 className="text-center mb-4">Features</h2>
+              <div className="row g-4">
+                <div className="col-md-4 text-center">
+                  <h4>🔥 Engaging Competitions</h4>
                   <p>
                     Create, join, and manage competitions tailored to your
                     interests.
                   </p>
                 </div>
-              </li>
-              <li className={styles.listItem}>
-                <div className={styles.icon}>🔼</div>
-                <div>
-                  <strong>Track Progress:</strong>
+                <div className="col-md-4 text-center">
+                  <h4>🔼 Track Progress</h4>
                   <p>Submit achievements and view dynamic standings.</p>
                 </div>
-              </li>
-              <li className={styles.listItem}>
-                <div className={styles.icon}>🎯</div>
-                <div>
-                  <strong>Build Habits:</strong>
+                <div className="col-md-4 text-center">
+                  <h4>🎯 Build Habits</h4>
                   <p>
                     Participate in regular challenges to develop consistent
                     habits.
                   </p>
                 </div>
-              </li>
-              <li className={styles.listItem}>
-                <div className={styles.icon}>🔐</div>
-                <div>
-                  <strong>Customizable Challenges:</strong>
+              </div>
+              <div className="row g-4 mt-4">
+                <div className="col-md-4 text-center">
+                  <h4>🔐 Customizable Challenges</h4>
                   <p>Set your own rules, deadlines, and metrics.</p>
                 </div>
-              </li>
-              <li className={styles.listItem}>
-                <div className={styles.icon}>🎡</div>
-                <div>
-                  <strong>Social Interaction:</strong>
+                <div className="col-md-4 text-center">
+                  <h4>🎡 Social Interaction</h4>
                   <p>
                     Invite friends, collaborate, and compete as a community.
                   </p>
                 </div>
-              </li>
-              <li className={styles.listItem}>
-                <div className={styles.icon}>🌟</div>
-                <div>
-                  <strong>Cross-Platform Compatibility:</strong>
-                  <p>
-                    Log in seamlessly using Discord or a traditional email
-                    account.
-                  </p>
+                <div className="col-md-4 text-center">
+                  <h4>🌟 Cross-Platform Compatibility</h4>
+                  <p>Log in seamlessly using Discord or email.</p>
                 </div>
-              </li>
-            </ul>
-          </div>
+              </div>
+            </div>
+          </section>
           <div
             className={`${styles.tutorialContainer} ${
               isDarkMode ? styles.darkMode : ""
             }`}
-            ref={tutorialRef}
           >
-            <h1 className={styles.title}>How to Use Competify</h1>
-            <ol className={styles.tutorialList}>
-              <li>
-                <strong>Sign Up or Log In:</strong>
-                <p>
-                  Create your account using either email or Discord. For access
-                  to exclusive Discord features, such as submitting entries or
-                  viewing results directly on Discord, sign up with Discord or
-                  link your Discord account via the profile page after creating
-                  a Competify account.
-                </p>
-              </li>
-              <li>
-                <strong>Join or Create Competitions:</strong>
-                <p>
-                  Explore existing competitions or start your own. When creating
-                  a competition, provide a name and description, invite
-                  registered users, set a start time (must be in the future),
-                  and decide if it should be a recurring event.
-                </p>
-                <p>
-                  - Numerical Competitions: Submit a number, and winners will be
-                  determined automatically based on the set priority (e.g.,
-                  highest or lowest value wins).
-                </p>
-                <p>
-                  - Non-Numerical Competitions: Submit entries for others to
-                  vote on. Votes are tallied, and the submission with the most
-                  votes wins!
-                </p>
-              </li>
-              <li>
-                <strong>Submit Entries and Vote:</strong>
-                <p>
-                  Check out what other users submitted and make sure to submit
-                  as well before the deadline! (Don't forget to vote if the
-                  competition is non-numerical)
-                </p>
-              </li>
-              <li>
-                <strong>Check Your Profile:</strong>
-                <p>
-                  Track your achievements by viewing the number of competitions
-                  you've won, review past submissions, and personalize your
-                  profile to reflect your journey.
-                </p>
-              </li>
-              <li>
-                <strong>Stay Engaged:</strong>
-                <p>
-                  Participate regularly in competitions to develop strong
-                  habits, reach your goals, and push your limits.
-                </p>
-              </li>
-            </ol>
+            <section className="py-4">
+              <h2 className="text-center mb-4">How to Use Competify</h2>
+              <div className="row">
+                <div className="col-md-6">
+                  <h5>1. Sign Up or Log In</h5>
+                  <p>
+                    Create your account using either email or Discord. For
+                    access to exclusive Discord features, link your Discord
+                    account after creating a Competify account.
+                  </p>
+                </div>
+                <div className="col-md-6">
+                  <h5>2. Join or Create Competitions</h5>
+                  <p>
+                    Explore existing competitions or start your own. Set rules,
+                    invite users, and track progress seamlessly.
+                  </p>
+                </div>
+              </div>
+              <div className="row mt-4">
+                <div className="col-md-6">
+                  <h5>3. Submit Entries and Vote</h5>
+                  <p>
+                    Submit your achievements and, in non-numerical competitions,
+                    vote for your favorites.
+                  </p>
+                </div>
+                <div className="col-md-6">
+                  <h5>4. Track Your Achievements</h5>
+                  <p>
+                    Check your profile to view past submissions, track your
+                    wins, and celebrate your milestones!
+                  </p>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
         <div
