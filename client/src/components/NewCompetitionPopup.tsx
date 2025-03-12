@@ -102,6 +102,8 @@ function NewCompetitionPopup({
     competitionData?.public ? competitionData.public : false
   );
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   function convertTo24Hour(time: string) {
     const [timePart, modifier] = time.split(" ");
     // eslint-disable-next-line prefer-const
@@ -211,6 +213,10 @@ function NewCompetitionPopup({
 
   async function handleCreateCompetition(e: React.FormEvent) {
     e.preventDefault();
+
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     const formErrors = validateForm();
     if (Object.values(formErrors).some((error) => error !== "")) {
       setErrors(formErrors);
@@ -285,6 +291,9 @@ function NewCompetitionPopup({
       .catch((error) => {
         console.log(error.message);
         setErrors({ ...errors, apiError: error.message });
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
   }
 
@@ -727,7 +736,7 @@ function NewCompetitionPopup({
                 e.stopPropagation();
               }}
             >
-              <Button variant="primary" type="submit">
+              <Button variant="primary" type="submit" disabled={isSubmitting}>
                 {competitionData ? "Update Competition" : "Create Competition"}
               </Button>
 

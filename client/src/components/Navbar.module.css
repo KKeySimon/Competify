@@ -22,7 +22,6 @@
   flex-direction: row; /* Ensures items are arranged in a row */
   justify-content: space-between;
   align-items: center;
-  background-color: white;
   top: 0;
   left: 0;
   z-index: 1000;
